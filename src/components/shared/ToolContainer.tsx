@@ -57,6 +57,10 @@ const TOOLS_COMPONENTS: Record<string, ComponentType> = {
     loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
     ssr: false,
   }),
+  'pomodoro-timer': dynamic(() => import('@/components/tools/pomodoro-timer'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
 };
 
 interface ToolContainerProps {
