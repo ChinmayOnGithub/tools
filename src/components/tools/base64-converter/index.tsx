@@ -7,25 +7,62 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { validateFile } from '@/lib/file-processor';
+import { 
+  trackToolLaunch, 
+  trackToolCompletion, 
+  trackValidationError, 
+  trackDownloadAction 
+} from '@/lib/analytics';
 
 export default function Base64Converter() {
   const [mounted, setMounted] = useState(false);
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
   const [downloadFilename, setDownloadFilename] = useState('download.txt');
+  const [fileError, setFileError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { copied, copy } = useCopyToClipboard();
+  const { copied, copy } = useCopyToClipboard('base64-converter');
 
+  // Track initial tool page view launch
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      trackToolLaunch('base64-converter');
+    }, 0);
     return () => clearTimeout(timer);
   }, []);
 
-  let output = '';
-  let errorMsg: string | null = null;
+  // Debounce conversion event tracking to prevent flooding GA4 logs during keystrokes
+  useEffect(() => {
+    if (!input.trim() || fileError) return;
 
-  if (input.trim()) {
+    const timer = setTimeout(() => {
+      if (mode === 'encode') {
+        trackToolCompletion('base64-converter');
+      } else {
+        const result = decodeBase64Text(input);
+        if (result.success) {
+          trackToolCompletion('base64-converter');
+        } else {
+          trackValidationError('base64-converter', 'decode_failed');
+        }
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [input, mode, fileError]);
+
+  let output = '';
+  let errorMsg: string | null = fileError;
+
+  // Input boundary checking
+  const isInputTooLarge = input.length > 5000000;
+
+  if (isInputTooLarge) {
+    errorMsg = 'Input size exceeds maximum limit of 5MB. Please clear or paste a smaller snippet.';
+  } else if (input.trim() && !fileError) {
     if (mode === 'encode') {
       output = encodeBase64Text(input);
     } else {
@@ -40,6 +77,7 @@ export default function Base64Converter() {
 
   const handleClear = () => {
     setInput('');
+    setFileError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -49,8 +87,16 @@ export default function Base64Converter() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Please upload files smaller than 5MB.');
+    setFileError(null);
+
+    // Standardized file validation
+    const check = validateFile(file, {
+      maxSize: 5 * 1024 * 1024, // 5MB
+    });
+
+    if (!check.isValid) {
+      setFileError(check.error || 'File validation failed.');
+      trackValidationError('base64-converter', 'file_validation_failed');
       return;
     }
 
@@ -79,6 +125,7 @@ export default function Base64Converter() {
   const handleDownload = () => {
     if (mode === 'encode') {
       if (!output) return;
+      trackDownloadAction('base64-converter');
       const blob = new Blob([output], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -95,6 +142,7 @@ export default function Base64Converter() {
         alert('Invalid Base64 data for binary file conversion.');
         return;
       }
+      trackDownloadAction('base64-converter');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -107,6 +155,7 @@ export default function Base64Converter() {
   };
 
   const handleLoadSample = () => {
+    setFileError(null);
     if (mode === 'encode') {
       setInput('CoolTools: Secure client-side browser utilities.');
     } else {
@@ -173,7 +222,7 @@ export default function Base64Converter() {
       )}
 
       {/* Binary file download panel */}
-      {((mode === 'decode' && input) || (mode === 'encode' && output)) && (
+      {((mode === 'decode' && input) || (mode === 'encode' && output)) && !fileError && (
         <Card className="p-4 flex flex-col sm:flex-row gap-3 items-center justify-between">
           <div className="flex flex-col gap-1 w-full sm:w-auto">
             <label htmlFor="filename" className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
@@ -187,7 +236,7 @@ export default function Base64Converter() {
               className="h-8 max-w-xs text-xs font-semibold"
             />
           </div>
-          <Button size="sm" onClick={handleDownload} className="w-full sm:w-auto shrink-0">
+          <Button size="sm" onClick={handleDownload} className="w-full sm:w-auto shrink-0" disabled={!!errorMsg}>
             {t.downloadButton}
           </Button>
         </Card>
@@ -220,7 +269,7 @@ export default function Base64Converter() {
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               {t.outputLabel}
             </CardTitle>
-            {output && (
+            {output && !fileError && (
               <Button variant="outline" size="sm" onClick={() => copy(output)}>
                 {copied ? t.copiedFeedback : t.copyButton}
               </Button>

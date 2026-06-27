@@ -7,6 +7,13 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { downloadFile } from '@/lib/download';
+import { validateFile } from '@/lib/file-processor';
+import { 
+  trackToolLaunch, 
+  trackToolCompletion, 
+  trackValidationError, 
+  trackDownloadAction 
+} from '@/lib/analytics';
 
 const SAMPLE_JSON = `{
   "name": "CoolTools Platform",
@@ -31,19 +38,32 @@ export default function JSONFormatter() {
   const [isValid, setIsValid] = useState<boolean | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { copied, copy } = useCopyToClipboard();
+  const { copied, copy } = useCopyToClipboard('json-formatter');
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      trackToolLaunch('json-formatter');
+    }, 0);
     return () => clearTimeout(timer);
   }, []);
 
   const handleBeautify = () => {
+    // Input boundary check
+    if (input.length > 5000000) {
+      setOutput('');
+      setIsValid(false);
+      setErrorMsg('Input size exceeds maximum limit of 5MB. Please upload a smaller file.');
+      trackValidationError('json-formatter', 'size_limit_exceeded');
+      return;
+    }
+
     const result = beautifyJSON(input);
     if (result.success) {
       setOutput(result.output);
       setErrorMsg(null);
       setIsValid(true);
+      trackToolCompletion('json-formatter');
     } else {
       setOutput('');
       setIsValid(false);
@@ -53,15 +73,26 @@ export default function JSONFormatter() {
           .replace('{line}', String(result.line || 1))
           .replace('{column}', String(result.column || 1))
       );
+      trackValidationError('json-formatter', 'syntax_error');
     }
   };
 
   const handleMinify = () => {
+    // Input boundary check
+    if (input.length > 5000000) {
+      setOutput('');
+      setIsValid(false);
+      setErrorMsg('Input size exceeds maximum limit of 5MB. Please upload a smaller file.');
+      trackValidationError('json-formatter', 'size_limit_exceeded');
+      return;
+    }
+
     const result = minifyJSON(input);
     if (result.success) {
       setOutput(result.output);
       setErrorMsg(null);
       setIsValid(true);
+      trackToolCompletion('json-formatter');
     } else {
       setOutput('');
       setIsValid(false);
@@ -71,6 +102,7 @@ export default function JSONFormatter() {
           .replace('{line}', String(result.line || 1))
           .replace('{column}', String(result.column || 1))
       );
+      trackValidationError('json-formatter', 'syntax_error');
     }
   };
 
@@ -95,6 +127,19 @@ export default function JSONFormatter() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Standardized file validation
+    const check = validateFile(file, {
+      maxSize: 5 * 1024 * 1024,
+      allowedMimeTypes: ['application/json', 'text/plain'],
+    });
+
+    if (!check.isValid) {
+      setErrorMsg(check.error || 'Invalid file type.');
+      setIsValid(false);
+      trackValidationError('json-formatter', 'file_validation_failed');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
       setInput(event.target?.result as string || '');
@@ -107,6 +152,7 @@ export default function JSONFormatter() {
 
   const handleDownload = () => {
     if (!output) return;
+    trackDownloadAction('json-formatter');
     downloadFile(output, 'formatted.json', 'application/json');
   };
 

@@ -1,9 +1,14 @@
 import { useState, useCallback, useEffect } from 'react';
+import { trackCopyAction } from '@/lib/analytics';
 
-export function useCopyToClipboard(duration = 2000) {
+export function useCopyToClipboard(toolId?: string, duration = 2000) {
   const [copied, setCopied] = useState(false);
 
   const copy = useCallback((text: string) => {
+    if (toolId) {
+      trackCopyAction(toolId);
+    }
+
     if (!navigator?.clipboard) {
       const textArea = document.createElement('textarea');
       textArea.value = text;
@@ -24,7 +29,7 @@ export function useCopyToClipboard(duration = 2000) {
       .catch(() => {
         // Safe fallback
       });
-  }, []);
+  }, [toolId]);
 
   useEffect(() => {
     if (!copied) return;

@@ -6,23 +6,57 @@ import { encodeURLString, decodeURLString } from './utils';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { 
+  trackToolLaunch, 
+  trackToolCompletion, 
+  trackValidationError 
+} from '@/lib/analytics';
 
 export default function URLEncoder() {
   const [mounted, setMounted] = useState(false);
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
   
-  const { copied, copy } = useCopyToClipboard();
+  const { copied, copy } = useCopyToClipboard('url-encoder');
 
+  // Track initial tool page view launch
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      trackToolLaunch('url-encoder');
+    }, 0);
     return () => clearTimeout(timer);
   }, []);
+
+  // Debounce conversion event tracking to prevent flooding GA4 logs during keystrokes
+  useEffect(() => {
+    if (!input.trim()) return;
+
+    const timer = setTimeout(() => {
+      if (mode === 'encode') {
+        trackToolCompletion('url-encoder');
+      } else {
+        const result = decodeURLString(input);
+        if (result.success) {
+          trackToolCompletion('url-encoder');
+        } else {
+          trackValidationError('url-encoder', 'decode_failed');
+        }
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [input, mode]);
 
   let output = '';
   let errorMsg: string | null = null;
 
-  if (input.trim()) {
+  // Input boundary limit checking
+  const isInputTooLarge = input.length > 2000000;
+
+  if (isInputTooLarge) {
+    errorMsg = 'Input size exceeds maximum limit of 2MB. Please enter a smaller URL string.';
+  } else if (input.trim()) {
     if (mode === 'encode') {
       output = encodeURLString(input);
     } else {

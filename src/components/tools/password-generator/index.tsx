@@ -6,6 +6,11 @@ import { generateMultiplePasswords, getPasswordStrength } from './utils';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { 
+  trackToolLaunch, 
+  trackToolCompletion, 
+  trackCopyAction 
+} from '@/lib/analytics';
 
 export default function PasswordGenerator() {
   const [mounted, setMounted] = useState(false);
@@ -21,12 +26,13 @@ export default function PasswordGenerator() {
   const [excludeAmbiguous, setExcludeAmbiguous] = useState(false);
   
   const [passwords, setPasswords] = useState<string[]>([]);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   
-  const { copied: copiedAll, copy: copyAll } = useCopyToClipboard();
+  const { copied: copiedAll, copy: copyAll } = useCopyToClipboard('password-generator');
 
   const handleGenerate = useCallback(() => {
     const opts = {
-      length,
+      length: Math.max(8, Math.min(64, length)),
       uppercase,
       lowercase,
       numbers,
@@ -34,12 +40,19 @@ export default function PasswordGenerator() {
       excludeSimilar,
       excludeAmbiguous,
     };
-    const list = generateMultiplePasswords(opts, quantity);
+    const list = generateMultiplePasswords(opts, Math.max(1, Math.min(15, quantity)));
     setPasswords(list);
-  }, [length, uppercase, lowercase, numbers, symbols, excludeSimilar, excludeAmbiguous, quantity]);
+    
+    if (mounted) {
+      trackToolCompletion('password-generator');
+    }
+  }, [length, uppercase, lowercase, numbers, symbols, excludeSimilar, excludeAmbiguous, quantity, mounted]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      trackToolLaunch('password-generator');
+    }, 0);
     return () => clearTimeout(timer);
   }, []);
 
@@ -51,16 +64,27 @@ export default function PasswordGenerator() {
     }
   }, [mounted, handleGenerate]);
 
+  useEffect(() => {
+    if (copiedIndex === null) return;
+    const timer = setTimeout(() => setCopiedIndex(null), 1500);
+    return () => clearTimeout(timer);
+  }, [copiedIndex]);
+
   const handleCopyAll = () => {
     if (passwords.length === 0) return;
     copyAll(passwords.join('\n'));
+  };
+
+  const handleCopyPassword = (pw: string, index: number) => {
+    navigator.clipboard.writeText(pw);
+    trackCopyAction('password-generator');
+    setCopiedIndex(index);
   };
 
   if (!mounted) {
     return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
   }
 
-  // Calculate strength score based on the first password
   const samplePassword = passwords[0] || '';
   const strength = getPasswordStrength(samplePassword);
 
@@ -238,10 +262,10 @@ export default function PasswordGenerator() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigator.clipboard.writeText(pw)}
+                      onClick={() => handleCopyPassword(pw, index)}
                       className="h-7 px-2 text-[10px] font-semibold opacity-80 group-hover:opacity-100 shrink-0"
                     >
-                      {t.copyButton}
+                      {copiedIndex === index ? t.copiedFeedback : t.copyButton}
                     </Button>
                   </div>
                 );

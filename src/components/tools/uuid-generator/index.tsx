@@ -6,6 +6,8 @@ import { generateUUIDs } from './utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { trackToolLaunch, trackToolCompletion } from '@/lib/analytics';
 
 export default function UUIDGenerator() {
   const [mounted, setMounted] = useState(false);
@@ -13,31 +15,35 @@ export default function UUIDGenerator() {
   const [uppercase, setUppercase] = useState(false);
   const [hyphens, setHyphens] = useState(true);
   const [output, setOutput] = useState<string[]>([]);
-  const [copied, setCopied] = useState(false);
+
+  const { copied, copy } = useCopyToClipboard('uuid-generator');
 
   const handleGenerate = useCallback(() => {
-    const list = generateUUIDs(quantity, { uppercase, hyphens });
+    // Input validation & limits check
+    const boundedQuantity = Math.max(1, Math.min(500, quantity));
+    const list = generateUUIDs(boundedQuantity, { uppercase, hyphens });
     setOutput(list);
-    setCopied(false);
+    trackToolCompletion('uuid-generator');
   }, [quantity, uppercase, hyphens]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      trackToolLaunch('uuid-generator');
+    }, 0);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     if (mounted) {
-      const timer = setTimeout(() => handleGenerate(), 0);
-      return () => clearTimeout(timer);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handleGenerate();
     }
   }, [mounted, handleGenerate]);
 
   const handleCopy = () => {
     if (output.length === 0) return;
-    navigator.clipboard.writeText(output.join('\n'));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    copy(output.join('\n'));
   };
 
   if (!mounted) {
