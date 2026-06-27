@@ -1,0 +1,15 @@
+{
+  "title": "Hash Generator",
+  "description": "Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 cryptographic hashes locally in your browser.",
+  "inputLabel": "Raw Text Input",
+  "placeholder": "Type or paste your text here to generate hashes...",
+  "outputLabel": "Generated Hash",
+  "copiedFeedback": "Copied",
+  "copyButton": "Copy",
+  "downloadButton": "Download Hash",
+  "clearButton": "Clear",
+  "loadSampleButton": "Load Sample",
+  "algorithmLabel": "Cryptographic Hash Algorithm",
+  "validationError": "Hash calculation failed: {message}",
+  "uppercaseLabel": "Uppercase Hash Output"
+}

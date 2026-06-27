@@ -1,0 +1,19 @@
+{
+  "title": "Word Counter",
+  "description": "Analyze word count, character size, paragraphs, sentences, and reading/speaking times in real-time.",
+  "inputLabel": "Raw Text Input",
+  "placeholder": "Type, paste, or drop your text here to analyze statistics...",
+  "clearButton": "Clear",
+  "loadSampleButton": "Load Sample",
+  "statsLabel": "Text Statistics",
+  "words": "Words",
+  "characters": "Characters",
+  "charactersNoSpaces": "Characters (no spaces)",
+  "paragraphs": "Paragraphs",
+  "sentences": "Sentences",
+  "readingTime": "Reading Time",
+  "speakingTime": "Speaking Time",
+  "copiedFeedback": "Copied",
+  "copyButton": "Copy Input",
+  "downloadButton": "Download Text"
+}

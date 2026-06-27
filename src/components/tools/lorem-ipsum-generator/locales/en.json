@@ -1,0 +1,19 @@
+{
+  "title": "Lorem Ipsum Generator",
+  "description": "Generate custom placeholder text in words, sentences, or paragraphs, formatted as plain text or HTML tags locally.",
+  "outputLabel": "Generated Placeholder Text",
+  "copiedFeedback": "Copied",
+  "copyButton": "Copy Placeholder",
+  "downloadButton": "Download Text",
+  "clearButton": "Clear",
+  "generateButton": "Generate",
+  "typeLabel": "Generate Type",
+  "words": "Words",
+  "sentences": "Sentences",
+  "paragraphs": "Paragraphs",
+  "amountLabel": "Amount to Generate",
+  "formatLabel": "Output Format",
+  "plainText": "Plain Text",
+  "html": "HTML Tags (<p>)",
+  "startWithLoremLabel": "Start with 'Lorem ipsum dolor sit amet'"
+}

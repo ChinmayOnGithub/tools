@@ -1,0 +1,20 @@
+{
+  "title": "JWT Decoder",
+  "description": "Decode JSON Web Tokens (JWT) locally to view header, payload, and claim dates.",
+  "inputLabel": "JSON Web Token (JWT)",
+  "placeholder": "Paste your encoded JWT string (Header.Payload.Signature) here...",
+  "clearButton": "Clear",
+  "loadSampleButton": "Load Sample",
+  "copiedFeedback": "Copied",
+  "copyButton": "Copy",
+  "headerLabel": "Header (Algorithm & Token Type)",
+  "payloadLabel": "Payload (Claims)",
+  "metadataLabel": "Token Metadata",
+  "validationError": "Malformed JWT: {message}",
+  "algorithm": "Algorithm",
+  "issuedAt": "Issued At",
+  "expiration": "Expiration",
+  "statusExpired": "Expired",
+  "statusActive": "Active",
+  "statusLabel": "Status"
+}

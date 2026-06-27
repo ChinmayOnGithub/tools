@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent, DragEvent } from 'react';
 import t from './locales/en.json';
 import { encodeBase64Text, decodeBase64Text, base64ToBlob } from './utils';
 import { Button } from '@/components/ui/Button';
@@ -21,6 +21,7 @@ export default function Base64Converter() {
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
   const [downloadFilename, setDownloadFilename] = useState('download.txt');
   const [fileError, setFileError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { copied, copy } = useCopyToClipboard('base64-converter');
@@ -83,10 +84,7 @@ export default function Base64Converter() {
     }
   };
 
-  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processUploadedFile = (file: File) => {
     setFileError(null);
 
     // Standardized file validation
@@ -120,6 +118,34 @@ export default function Base64Converter() {
       }
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    processUploadedFile(file);
+  };
+
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    processUploadedFile(file);
   };
 
   const handleDownload = () => {
@@ -245,13 +271,26 @@ export default function Base64Converter() {
       {/* Inputs grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Input Card */}
-        <Card className="flex flex-col h-full">
+        <Card 
+          className={`flex flex-col h-full relative transition-all duration-200 ${
+            isDragging ? 'border-primary bg-primary/5 ring-1 ring-primary' : ''
+          }`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           <CardHeader className="py-3.5 px-4 border-b">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               {t.inputLabel}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 flex-1">
+          <CardContent className="p-0 flex-1 relative">
+            {isDragging && (
+              <div className="absolute inset-0 bg-background/95 flex flex-col items-center justify-center z-10 text-center p-4">
+                <p className="text-xs font-bold text-primary">Drop File Here</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Accepts any file under 5MB</p>
+              </div>
+            )}
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}

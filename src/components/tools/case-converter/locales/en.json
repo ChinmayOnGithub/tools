@@ -1,0 +1,22 @@
+{
+  "title": "Case Converter",
+  "description": "Convert text casing style between UPPERCASE, lowercase, Title Case, Sentence case, camelCase, PascalCase, and other formats locally.",
+  "inputLabel": "Raw Text Input",
+  "placeholder": "Type, paste, or drop your text here to convert casing formats...",
+  "outputLabel": "Converted Casing Output",
+  "copiedFeedback": "Copied",
+  "copyButton": "Copy Output",
+  "downloadButton": "Download Text",
+  "clearButton": "Clear",
+  "loadSampleButton": "Load Sample",
+  "upper": "UPPERCASE",
+  "lower": "lowercase",
+  "titleCase": "Title Case",
+  "sentence": "Sentence case",
+  "camel": "camelCase",
+  "pascal": "PascalCase",
+  "snake": "snake_case",
+  "kebab": "kebab-case",
+  "train": "Train-Case",
+  "dot": "dot.case"
+}

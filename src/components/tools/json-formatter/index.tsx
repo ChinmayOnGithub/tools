@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent, DragEvent } from 'react';
 import t from './locales/en.json';
 import { beautifyJSON, minifyJSON } from './utils';
 import { Button } from '@/components/ui/Button';
@@ -36,6 +36,7 @@ export default function JSONFormatter() {
   const [output, setOutput] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isValid, setIsValid] = useState<boolean | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { copied, copy } = useCopyToClipboard('json-formatter');
@@ -49,7 +50,6 @@ export default function JSONFormatter() {
   }, []);
 
   const handleBeautify = () => {
-    // Input boundary check
     if (input.length > 5000000) {
       setOutput('');
       setIsValid(false);
@@ -78,7 +78,6 @@ export default function JSONFormatter() {
   };
 
   const handleMinify = () => {
-    // Input boundary check
     if (input.length > 5000000) {
       setOutput('');
       setIsValid(false);
@@ -126,8 +125,10 @@ export default function JSONFormatter() {
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    processUploadedFile(file);
+  };
 
-    // Standardized file validation
+  const processUploadedFile = (file: File) => {
     const check = validateFile(file, {
       maxSize: 5 * 1024 * 1024,
       allowedMimeTypes: ['application/json', 'text/plain'],
@@ -148,6 +149,28 @@ export default function JSONFormatter() {
       setIsValid(null);
     };
     reader.readAsText(file);
+  };
+
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    processUploadedFile(file);
   };
 
   const handleDownload = () => {
@@ -208,13 +231,26 @@ export default function JSONFormatter() {
       {/* Workspaces Panels Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Input Panel */}
-        <Card className="flex flex-col h-full">
+        <Card 
+          className={`flex flex-col h-full relative transition-all duration-200 ${
+            isDragging ? 'border-primary bg-primary/5 ring-1 ring-primary' : ''
+          }`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           <CardHeader className="py-3.5 px-4 border-b">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               {t.inputLabel}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 flex-1">
+          <CardContent className="p-0 flex-1 relative">
+            {isDragging && (
+              <div className="absolute inset-0 bg-background/95 flex flex-col items-center justify-center z-10 text-center p-4">
+                <p className="text-xs font-bold text-primary">Drop JSON File Here</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Accepts .json text files under 5MB</p>
+              </div>
+            )}
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}

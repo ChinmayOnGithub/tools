@@ -17,6 +17,10 @@ const TOOLS_COMPONENTS: Record<string, ComponentType> = {
     loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
     ssr: false,
   }),
+  'word-counter': dynamic(() => import('@/components/tools/word-counter'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
   'json-formatter': dynamic(() => import('@/components/tools/json-formatter'), {
     loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
     ssr: false,
@@ -30,6 +34,26 @@ const TOOLS_COMPONENTS: Record<string, ComponentType> = {
     ssr: false,
   }),
   'password-generator': dynamic(() => import('@/components/tools/password-generator'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'jwt-decoder': dynamic(() => import('@/components/tools/jwt-decoder'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'hash-generator': dynamic(() => import('@/components/tools/hash-generator'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'case-converter': dynamic(() => import('@/components/tools/case-converter'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'remove-duplicate-lines': dynamic(() => import('@/components/tools/remove-duplicate-lines'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'lorem-ipsum-generator': dynamic(() => import('@/components/tools/lorem-ipsum-generator'), {
     loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
     ssr: false,
   }),

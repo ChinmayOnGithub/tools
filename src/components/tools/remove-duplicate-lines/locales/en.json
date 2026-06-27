@@ -1,0 +1,19 @@
+{
+  "title": "Remove Duplicate Lines",
+  "description": "Clean list data by removing duplicate lines. Supports case sensitivity filters, sorting, and whitespace trimming.",
+  "inputLabel": "Raw List Input",
+  "placeholder": "Paste your list here (one item per line) to remove duplicates...",
+  "outputLabel": "Cleaned List Output",
+  "copiedFeedback": "Copied",
+  "copyButton": "Copy Cleaned List",
+  "downloadButton": "Download Cleaned List",
+  "clearButton": "Clear",
+  "loadSampleButton": "Load Sample",
+  "caseSensitiveLabel": "Case Sensitive Compare",
+  "trimWhitespaceLabel": "Trim Whitespace from Lines",
+  "sortLabel": "Sorting Output",
+  "sortNone": "Preserve Original Order",
+  "sortAsc": "Sort Alphabetically (A-Z)",
+  "sortDesc": "Sort Alphabetically (Z-A)",
+  "summaryText": "Removed {count} duplicate lines."
+}
