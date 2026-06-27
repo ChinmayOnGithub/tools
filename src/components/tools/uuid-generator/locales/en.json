@@ -1,0 +1,11 @@
+{
+  "title": "UUID Generator",
+  "description": "Generate RFC4122 version 4 compliant universally unique identifiers (UUIDs) locally in your browser.",
+  "quantityLabel": "Number of UUIDs",
+  "uppercaseLabel": "Uppercase",
+  "hyphensLabel": "Include Hyphens",
+  "generateButton": "Generate UUIDs",
+  "copyButton": "Copy All",
+  "copiedFeedback": "Copied!",
+  "placeholder": "Generated UUIDs will appear here..."
+}
