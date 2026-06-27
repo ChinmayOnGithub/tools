@@ -1,0 +1,18 @@
+{
+  "title": "JSON Formatter & Validator",
+  "description": "Validate, pretty-print, minify, and parse JSON code securely in your web browser. Trace syntax errors instantly with line and column numbers.",
+  "inputLabel": "Input JSON",
+  "outputLabel": "Output",
+  "uploadButton": "Upload File",
+  "sampleButton": "Load Sample",
+  "beautifyButton": "Pretty Print",
+  "minifyButton": "Minify",
+  "copyButton": "Copy All",
+  "downloadButton": "Download JSON",
+  "clearButton": "Clear",
+  "copiedFeedback": "Copied!",
+  "validationValid": "Valid JSON",
+  "validationError": "Syntax Error: {message} at line {line}, col {column}",
+  "placeholder": "Paste raw JSON text here or upload a file...",
+  "outputPlaceholder": "Formatted output will appear here..."
+}

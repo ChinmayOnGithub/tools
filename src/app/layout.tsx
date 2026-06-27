@@ -68,16 +68,24 @@ export default function RootLayout({
             {children}
           </main>
 
-          <footer className="border-t bg-muted/40">
-            <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-muted-foreground text-center md:text-left">
+          <footer className="border-t-2 border-border bg-muted/30 mt-auto">
+            <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b-2 border-border">
+                <div className="flex items-center gap-2">
+                  <span className="bg-primary text-primary-foreground px-3 py-1 text-sm font-extrabold tracking-tight">
+                    COOL
+                  </span>
+                  <span className="font-extrabold tracking-tight">TOOLS</span>
+                </div>
+                <div className="flex space-x-6 text-sm">
+                  <Link href="/#about" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Privacy Policy</Link>
+                  <Link href="/#terms" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Terms of Service</Link>
+                  <a href="https://github.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground font-medium transition-colors">GitHub</a>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground text-center mt-6">
                 &copy; {new Date().getFullYear()} CoolTools. All tools run 100% locally in your browser. No files are uploaded.
               </p>
-              <div className="flex space-x-6 text-xs text-muted-foreground justify-center">
-                <Link href="/#about" className="hover:underline">Privacy Policy</Link>
-                <Link href="/#terms" className="hover:underline">Terms of Service</Link>
-                <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:underline">GitHub</a>
-              </div>
             </div>
           </footer>
         </ThemeProvider>

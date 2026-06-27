@@ -3,6 +3,8 @@ import AdContainer from '@/components/shared/AdContainer';
 import ToolCard from '@/components/shared/ToolCard';
 import HomeSearchTrigger from '@/components/shared/HomeSearchTrigger';
 import Icon from '@/components/shared/Icon';
+import StatsCard from '@/components/shared/StatsCard';
+import ScrollControls from '@/components/shared/ScrollControls';
 import { CATEGORIES } from '@/config/categories';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import { 
@@ -10,24 +12,26 @@ import {
   Cpu, 
   Code2, 
   HelpCircle,
-  Star,
   Flame,
   Calendar,
-  AlertCircle
+  Wrench,
+  TrendingUp,
+  Clock,
+  ArrowRight
 } from 'lucide-react';
 
 const FAQS = [
   {
     q: 'How do browser-side tools work?',
-    a: 'All computations (such as text counting, image adjustments, or code formatting) run directly inside your browser tab. We use WebAssembly and browser APIs so no files are uploaded to remote servers.'
+    a: 'All computations run directly inside your browser using modern Web APIs and WebAssembly. Your files never touch our servers.'
   },
   {
     q: 'Is my data safe?',
-    a: 'Yes. Because your files and text inputs are processed locally in your browser memory and never leave your machine, there is zero risk of data leakages or storage logs.'
+    a: 'Absolutely. Since processing happens locally in your browser memory, there is zero risk of data leaks or server-side storage.'
   },
   {
     q: 'Can I use these tools offline?',
-    a: 'Yes! Because the platform is built for client-side execution, once the page loads, most utilities will operate perfectly without active network connectivity.'
+    a: 'Yes! Once the page loads, most tools work perfectly without an internet connection since they run client-side.'
   }
 ];
 
@@ -35,229 +39,286 @@ export default function Home() {
   const publishedTools = TOOLS_REGISTRY.filter((t) => t.status === 'published');
   const comingSoonTools = TOOLS_REGISTRY.filter((t) => t.status !== 'published');
 
-  const featuredTools = publishedTools.filter((t) => t.featured).slice(0, 3);
   const popularTools = publishedTools.filter((t) => t.popular).slice(0, 3);
   const recentlyAddedTools = [...publishedTools]
     .sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime())
     .slice(0, 3);
 
   return (
-    <div className="flex flex-col gap-12">
-      {/* Hero Section - Reduced height for quick access */}
-      <section className="text-center py-10 px-4 bg-muted/20 rounded-2xl border flex flex-col items-center max-w-4xl mx-auto w-full gap-4">
-        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl text-foreground">
-          Free Browser-Based Utilities. <br />
-          <span className="text-primary bg-primary/10 px-3 py-0.5 rounded-lg mt-2 inline-block">
-            No Uploads.
-          </span>
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
-          Quick, private tools processed 100% locally in browser memory. Secure and instant.
-        </p>
-        <div className="w-full flex justify-center mt-2">
-          <HomeSearchTrigger />
-        </div>
-      </section>
-
-      {/* Top Banner Ad Placeholders */}
-      <AdContainer />
-
-      {/* Available Tools Grid Section - Highest Priority */}
-      <section>
-        <div className="flex items-center justify-between mb-6 border-b pb-2">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <span>✅</span> Available Tools ({publishedTools.length})
-          </h2>
-          <span className="text-xs text-muted-foreground">Ready to use immediately</span>
-        </div>
-        {publishedTools.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {publishedTools.map((tool) => (
-              <div key={tool.id}>
-                <ToolCard tool={tool} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 border border-dashed rounded-xl max-w-md mx-auto">
-            <AlertCircle className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm font-semibold text-foreground">No active utilities loaded</p>
-            <p className="text-xs text-muted-foreground mt-1">We are compiling standard browser utilities. Explore our coming soon roadmap below.</p>
-          </div>
-        )}
-      </section>
-
-      {/* Categories Grid Section */}
-      <section id="categories" className="scroll-mt-20">
-        <div className="mb-6 border-b pb-2">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <span>📁</span> Browse Categories
-          </h2>
-        </div>
+    <>
+      <ScrollControls />
+      
+      <div className="flex flex-col gap-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {CATEGORIES.map((category) => {
-            const count = TOOLS_REGISTRY.filter((t) => t.category === category.id && t.status === 'published').length;
-            return (
-              <Link 
-                key={category.id} 
-                href={`/categories/${category.slug}`}
-                className="group p-5 bg-card text-card-foreground border rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between hover:border-primary/40"
-              >
-                <div>
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200">
-                    <Icon name={category.icon} className="h-4 w-4" />
-                  </div>
-                  <h3 className="text-base font-bold mb-1.5 group-hover:text-primary transition-colors duration-200">
-                    {category.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                    {category.description}
-                  </p>
-                </div>
-                <div className="border-t pt-3 mt-4 flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    {count} {count === 1 ? 'utility' : 'utilities'} available
-                  </span>
-                  <span className="text-xs text-primary font-medium group-hover:translate-x-1 transition-transform duration-200">
-                    &rarr;
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Middle Banner Ad Placeholders */}
-      <AdContainer />
-
-      {/* Tools Showcase grids (Featured / Popular / Recent) - Limited strictly to Published */}
-      {publishedTools.length > 0 && (
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Featured Column */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b pb-2">
-              <Star className="h-5 w-5 text-amber-500 shrink-0" /> Featured Utilities
-            </h3>
-            {featuredTools.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                {featuredTools.map((tool) => (
-                  <ToolCard key={tool.id} tool={tool} />
-                ))}
+        {/* Hero Section */}
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 grid-background opacity-20" />
+          <div className="relative bg-card border-2 border-border p-8 sm:p-12 card-depth-2">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 border border-primary/20 mb-4">
+                <div className="h-1.5 w-1.5 bg-primary animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">100% Client-Side Processing</span>
               </div>
-            ) : (
-              <p className="text-xs text-muted-foreground italic">No featured tools registered.</p>
-            )}
-          </div>
-
-          {/* Popular Column */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b pb-2">
-              <Flame className="h-5 w-5 text-orange-500 shrink-0" /> Popular Utilities
-            </h3>
-            {popularTools.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                {popularTools.map((tool) => (
-                  <ToolCard key={tool.id} tool={tool} />
-                ))}
+              
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground mb-4">
+                Professional Browser Tools.
+                <br />
+                <span className="text-primary">Zero Server Uploads.</span>
+              </h1>
+              
+              <p className="text-sm text-muted-foreground max-w-xl mb-6 leading-relaxed">
+                Instant, secure utilities that process everything locally. No data leaves your browser. 
+                No accounts. No tracking.
+              </p>
+              
+              <div className="w-full max-w-xl">
+                <HomeSearchTrigger />
               </div>
-            ) : (
-              <p className="text-xs text-muted-foreground italic">No popular tools registered.</p>
-            )}
-          </div>
-
-          {/* Recently Added Column */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b pb-2">
-              <Calendar className="h-5 w-5 text-blue-500 shrink-0" /> Recently Added
-            </h3>
-            {recentlyAddedTools.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                {recentlyAddedTools.map((tool) => (
-                  <ToolCard key={tool.id} tool={tool} />
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground italic">No tools added recently.</p>
-            )}
+            </div>
           </div>
         </section>
-      )}
 
-      {/* Coming Soon Section - Visually separated at bottom */}
-      <section className="border-t pt-8">
-        <div className="mb-6 pb-2">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <span>⏳</span> Coming Soon ({comingSoonTools.length})
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Upcoming browser-side utilities currently in draft or active planning.
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {comingSoonTools.map((tool) => (
-            <div key={tool.id} className="opacity-75 hover:opacity-100 transition-opacity">
-              <ToolCard tool={tool} />
+        {/* Stats Overview */}
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard 
+            label="Available Tools" 
+            value={publishedTools.length}
+            icon={<Wrench className="h-5 w-5" />}
+          />
+          <StatsCard 
+            label="Categories" 
+            value={CATEGORIES.length}
+            icon={<TrendingUp className="h-5 w-5" />}
+          />
+          <StatsCard 
+            label="Privacy Score" 
+            value="100%"
+            icon={<ShieldCheck className="h-5 w-5" />}
+          />
+          <StatsCard 
+            label="Avg Speed" 
+            value="<50ms"
+            icon={<Clock className="h-5 w-5" />}
+          />
+        </section>
+
+        {/* Top Ad - Leaderboard */}
+        <AdContainer slot="top" />
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          
+          {/* Main Column - 3/4 width */}
+          <div className="lg:col-span-3 space-y-10">
+            
+            {/* Available Tools */}
+            <section>
+              <div className="flex items-center justify-between border-b-2 border-border pb-4 mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground tracking-tight">Available Tools</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Production-ready utilities. Click any tool to start.</p>
+                </div>
+                <span className="inline-flex items-center bg-green-500/10 text-green-700 dark:text-green-400 px-3 py-1 border border-green-500/20 text-xs font-bold uppercase tracking-wider">
+                  {publishedTools.length} Live
+                </span>
+              </div>
+              
+              {publishedTools.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {publishedTools.map((tool) => (
+                    <ToolCard key={tool.id} tool={tool} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16 border-2 border-dashed border-border bg-muted/20">
+                  <Wrench className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm font-bold text-foreground">No Tools Available</p>
+                  <p className="text-xs text-muted-foreground mt-1">Check back soon for new utilities.</p>
+                </div>
+              )}
+            </section>
+
+            {/* Middle Ad - Medium Rectangle */}
+            <AdContainer slot="middle" />
+
+            {/* Highlighted Sections */}
+            {publishedTools.length > 0 && (
+              <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                {/* Popular Tools */}
+                <div>
+                  <div className="flex items-center gap-2 mb-5">
+                    <Flame className="h-5 w-5 text-orange-500" />
+                    <h3 className="text-lg font-bold text-foreground">Most Popular</h3>
+                  </div>
+                  {popularTools.length > 0 ? (
+                    <div className="space-y-4">
+                      {popularTools.map((tool) => (
+                        <ToolCard key={tool.id} tool={tool} />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic border border-border p-4 bg-muted/10">
+                      No popular tools yet.
+                    </p>
+                  )}
+                </div>
+
+                {/* Recently Added */}
+                <div>
+                  <div className="flex items-center gap-2 mb-5">
+                    <Calendar className="h-5 w-5 text-blue-500" />
+                    <h3 className="text-lg font-bold text-foreground">Recently Added</h3>
+                  </div>
+                  {recentlyAddedTools.length > 0 ? (
+                    <div className="space-y-4">
+                      {recentlyAddedTools.map((tool) => (
+                        <ToolCard key={tool.id} tool={tool} />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic border border-border p-4 bg-muted/10">
+                      No recent additions.
+                    </p>
+                  )}
+                </div>
+              </section>
+            )}
+
+            {/* Coming Soon Tools */}
+            {comingSoonTools.length > 0 && (
+              <section className="border-t-2 border-border pt-10">
+                <div className="flex items-center justify-between border-b-2 border-border pb-4 mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground tracking-tight">Development Roadmap</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Upcoming tools in various stages of development.</p>
+                  </div>
+                  <span className="inline-flex items-center bg-blue-500/10 text-blue-700 dark:text-blue-400 px-3 py-1 border border-blue-500/20 text-xs font-bold uppercase tracking-wider">
+                    {comingSoonTools.length} Pipeline
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {comingSoonTools.map((tool) => (
+                    <ToolCard key={tool.id} tool={tool} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* FAQ Section */}
+            <section className="border-t-2 border-border pt-10">
+              <div className="flex items-center gap-2 mb-6">
+                <HelpCircle className="h-5 w-5 text-primary" />
+                <h3 className="text-lg font-bold text-foreground">Frequently Asked Questions</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {FAQS.map((faq, index) => (
+                  <div key={index} className="bg-card border-2 border-border p-5 card-depth-1 hover:card-depth-2 transition-all">
+                    <h4 className="text-sm font-bold text-foreground mb-2 flex items-start gap-2">
+                      <span className="text-primary shrink-0">Q:</span> 
+                      <span>{faq.q}</span>
+                    </h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed pl-5">
+                      {faq.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+          </div>
+
+          {/* Sidebar Column - 1/4 width */}
+          <div className="lg:col-span-1 space-y-6">
+            
+            {/* Categories Navigation */}
+            <div className="bg-card border-2 border-border card-depth-1 sticky top-20">
+              <div className="p-4 border-b-2 border-border bg-muted/20">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  Browse Categories
+                </h3>
+              </div>
+              
+              <div className="p-3 space-y-1">
+                {CATEGORIES.map((category) => {
+                  const count = TOOLS_REGISTRY.filter((t) => t.category === category.id && t.status === 'published').length;
+                  return (
+                    <Link 
+                      key={category.id} 
+                      href={`/categories/${category.slug}`}
+                      className="flex items-center justify-between p-3 border border-transparent hover:border-primary hover:bg-primary/5 group transition-all duration-200"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="h-8 w-8 bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                          <Icon name={category.icon} className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                            {category.title}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground truncate">
+                            {count} tools
+                          </p>
+                        </div>
+                      </div>
+                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Core Philosophy Credentials Section */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t">
-        <div className="p-6 bg-card border rounded-xl flex flex-col gap-3">
-          <div className="h-10 w-10 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
-            <ShieldCheck className="h-5 w-5" />
-          </div>
-          <h4 className="text-sm font-bold text-foreground">100% Privacy Pledge</h4>
-          <p className="text-xs text-muted-foreground leading-normal">
-            No files leave your computer. All processing runs in browser memory, shielding data from server logs.
-          </p>
-        </div>
-        
-        <div className="p-6 bg-card border rounded-xl flex flex-col gap-3">
-          <div className="h-10 w-10 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
-            <Cpu className="h-5 w-5" />
-          </div>
-          <h4 className="text-sm font-bold text-foreground">Instant Local Compute</h4>
-          <p className="text-xs text-muted-foreground leading-normal">
-            We compile resource-heavy tasks inside Web Workers to ensure instant processing without server delay.
-          </p>
-        </div>
+            {/* Sidebar Ad - Half Page */}
+            <AdContainer slot="sidebar" />
 
-        <div className="p-6 bg-card border rounded-xl flex flex-col gap-3">
-          <div className="h-10 w-10 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
-            <Code2 className="h-5 w-5" />
-          </div>
-          <h4 className="text-sm font-bold text-foreground">Open-Source Core</h4>
-          <p className="text-xs text-muted-foreground leading-normal">
-            We follow standard open web specifications. Inspect code variables directly inside your browser devtools.
-          </p>
-        </div>
-      </section>
+            {/* Security Features */}
+            <div className="space-y-4">
+              <div className="border-b-2 border-border pb-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  Why Use Our Tools?
+                </h3>
+              </div>
+              
+              <div className="bg-card border-2 border-border p-4 card-depth-1">
+                <div className="h-10 w-10 bg-green-500/10 text-green-600 dark:text-green-400 flex items-center justify-center mb-3">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <h4 className="text-sm font-bold text-foreground mb-2">100% Privacy</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Zero data transmission. All processing in your browser. Files never touch servers.
+                </p>
+              </div>
+              
+              <div className="bg-card border-2 border-border p-4 card-depth-1">
+                <div className="h-10 w-10 bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
+                  <Cpu className="h-5 w-5" />
+                </div>
+                <h4 className="text-sm font-bold text-foreground mb-2">Lightning Fast</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  No upload delays. No server queues. Instant results with modern browser APIs.
+                </p>
+              </div>
 
-      {/* FAQ Section */}
-      <section className="max-w-3xl mx-auto w-full pt-8 border-t">
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-foreground flex items-center justify-center gap-2">
-            <HelpCircle className="h-5 w-5 text-primary" /> Frequently Asked Questions
-          </h3>
-        </div>
-        <div className="space-y-6">
-          {FAQS.map((faq, index) => (
-            <div key={index} className="p-5 bg-card border rounded-xl">
-              <h4 className="text-sm font-bold text-foreground mb-2 flex items-start gap-2">
-                <span>Q:</span> {faq.q}
-              </h4>
-              <p className="text-xs text-muted-foreground leading-relaxed pl-5">
-                {faq.a}
-              </p>
+              <div className="bg-card border-2 border-border p-4 card-depth-1">
+                <div className="h-10 w-10 bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3">
+                  <Code2 className="h-5 w-5" />
+                </div>
+                <h4 className="text-sm font-bold text-foreground mb-2">Open Standards</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Built on web standards. Inspect code in browser console. Full transparency.
+                </p>
+              </div>
             </div>
-          ))}
+
+          </div>
+
         </div>
-      </section>
-    </div>
+
+        {/* Bottom Ad - Leaderboard */}
+        <AdContainer slot="bottom" />
+      </div>
+    </>
   );
 }

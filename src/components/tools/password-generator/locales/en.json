@@ -1,0 +1,23 @@
+{
+  "title": "Password Generator",
+  "description": "Create highly secure custom passwords locally in your browser. Fully adjust character filters, string sizes, and generation amounts.",
+  "lengthLabel": "Length",
+  "quantityLabel": "Quantity",
+  "uppercaseLabel": "Include Uppercase (A-Z)",
+  "lowercaseLabel": "Include Lowercase (a-z)",
+  "numbersLabel": "Include Numbers (0-9)",
+  "symbolsLabel": "Include Symbols (!@#$%)",
+  "similarLabel": "Exclude Similar (i, l, 1, o, 0, O)",
+  "ambiguousLabel": "Exclude Ambiguous ({ }, [ ], ( ), / \\ ' \" `)",
+  "strengthLabel": "Password Strength",
+  "strengthWeak": "Weak",
+  "strengthMedium": "Medium",
+  "strengthStrong": "Strong",
+  "strengthVeryStrong": "Very Strong",
+  "generateButton": "Generate Passwords",
+  "copyButton": "Copy",
+  "copiedFeedback": "Copied!",
+  "clearButton": "Clear",
+  "placeholder": "Generated passwords will appear here...",
+  "outputLabel": "Generated Passwords"
+}

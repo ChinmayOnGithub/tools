@@ -46,12 +46,12 @@ export default async function ToolWrapperPage({ params }: PageProps) {
 
   const isPublished = tool.status === 'published';
 
-  if (!isPublished) {
-    // Filter related tools that are published and active
-    const relatedPublished = TOOLS_REGISTRY.filter(
-      (t) => tool.relatedTools.includes(t.id) && t.status === 'published'
-    );
+  // Filter related tools that are published and active
+  const relatedPublished = TOOLS_REGISTRY.filter(
+    (t) => tool.relatedTools.includes(t.id) && t.status === 'published'
+  );
 
+  if (!isPublished) {
     const getLifecycleLabel = (status: typeof tool.status) => {
       switch (status) {
         case 'planned': return 'Planned';
@@ -68,26 +68,26 @@ export default async function ToolWrapperPage({ params }: PageProps) {
         <nav className="text-xs text-muted-foreground flex gap-2 items-center mb-2" aria-label="Breadcrumb">
           <Link href="/" className="hover:underline">Home</Link>
           <span>/</span>
-          <Link href="/#categories" className="hover:underline capitalize">{tool.category}</Link>
+          <Link href={`/categories/${tool.category}`} className="hover:underline capitalize">{tool.category}</Link>
           <span>/</span>
           <span className="font-semibold text-foreground">{tool.name}</span>
         </nav>
 
         {/* Coming Soon Hero */}
-        <div className="text-center py-16 px-6 bg-muted/10 border border-dashed rounded-2xl flex flex-col items-center gap-4">
-          <span className="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full font-semibold border border-amber-500/20 select-none">
+        <div className="text-center py-12 px-6 bg-muted/10 border border-dashed rounded-xl flex flex-col items-center gap-4">
+          <span className="text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1 rounded font-semibold border border-amber-500/20 select-none">
             {getLifecycleLabel(tool.status)}
           </span>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             {tool.name} is Coming Soon
           </h1>
-          <p className="mt-2 text-base text-muted-foreground max-w-md leading-relaxed">
+          <p className="mt-1 text-xs text-muted-foreground max-w-sm leading-relaxed">
             This utility is currently under active planning or development. Like all our tools, it will process data 100% locally in your browser.
           </p>
-          <div className="mt-4 flex flex-col sm:flex-row gap-4">
+          <div className="mt-2 flex flex-col sm:flex-row gap-4">
             <Link
               href="/"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="inline-flex h-9 items-center justify-center rounded bg-primary px-4 text-xs font-semibold text-primary-foreground shadow hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               Explore Available Tools
             </Link>
@@ -96,11 +96,11 @@ export default async function ToolWrapperPage({ params }: PageProps) {
 
         {/* Related Published Recommendations */}
         {relatedPublished.length > 0 && (
-          <div className="space-y-6">
-            <h2 className="text-lg font-bold tracking-tight text-foreground">
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold tracking-tight text-foreground">
               Working Alternatives Available Today:
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {relatedPublished.map((relTool) => (
                 <div key={relTool.id}>
                   <ToolCard tool={relTool} />
@@ -115,33 +115,67 @@ export default async function ToolWrapperPage({ params }: PageProps) {
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto w-full">
-      <nav className="text-xs text-muted-foreground flex gap-2 items-center mb-2" aria-label="Breadcrumb">
+      {/* Breadcrumb - Fixed categories mapping slug bug */}
+      <nav className="text-xs text-muted-foreground flex gap-2 items-center mb-1" aria-label="Breadcrumb">
         <Link href="/" className="hover:underline">Home</Link>
         <span>/</span>
-        <Link href="/#categories" className="hover:underline capitalize">{tool.category}</Link>
+        <Link href={`/categories/${tool.category}`} className="hover:underline capitalize">{tool.category}</Link>
         <span>/</span>
         <span className="font-semibold text-foreground">{tool.name}</span>
       </nav>
 
-      <section className="mb-4">
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+      <section>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
           {tool.name}
         </h1>
-        <p className="mt-2 text-base text-muted-foreground leading-relaxed">
+        <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed max-w-2xl">
           {tool.description}
         </p>
       </section>
 
-      {/* Top Tool Ad Placement */}
-      <AdContainer />
+      {/* Trust Badges - Pure CSS HSL styles */}
+      <div className="flex flex-wrap gap-2 select-none">
+        <span className="inline-flex items-center rounded bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          Local Processing
+        </span>
+        <span className="inline-flex items-center rounded bg-blue-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400 border border-blue-500/20">
+          Privacy Safe
+        </span>
+        <span className="inline-flex items-center rounded bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+          No Uploads
+        </span>
+        <span className="inline-flex items-center rounded bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-purple-600 dark:text-purple-400 border border-purple-500/20">
+          100% Free
+        </span>
+        <span className="inline-flex items-center rounded bg-pink-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-pink-600 dark:text-pink-400 border border-pink-500/20">
+          Instant
+        </span>
+      </div>
 
+      {/* Tool Container - Immediate placement for UX purity */}
       <main className="min-h-[300px]">
         <ErrorBoundary>
           <ToolContainer slug={slug} />
         </ErrorBoundary>
       </main>
 
-      {/* Bottom Tool Ad Placement */}
+      {/* Related Utilities Showcase */}
+      {relatedPublished.length > 0 && (
+        <section className="border-t pt-6 mt-4">
+          <h3 className="text-sm font-bold tracking-tight text-foreground mb-4">
+            Related Tools
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {relatedPublished.map((relTool) => (
+              <div key={relTool.id}>
+                <ToolCard tool={relTool} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Ad Container strictly at the bottom */}
       <AdContainer />
     </div>
   );

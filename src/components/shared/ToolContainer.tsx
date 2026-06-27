@@ -17,6 +17,22 @@ const TOOLS_COMPONENTS: Record<string, ComponentType> = {
     loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
     ssr: false,
   }),
+  'json-formatter': dynamic(() => import('@/components/tools/json-formatter'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'url-encoder': dynamic(() => import('@/components/tools/url-encoder'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'base64-converter': dynamic(() => import('@/components/tools/base64-converter'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'password-generator': dynamic(() => import('@/components/tools/password-generator'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
 };
 
 interface ToolContainerProps {

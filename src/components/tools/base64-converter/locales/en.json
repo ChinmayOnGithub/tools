@@ -1,0 +1,19 @@
+{
+  "title": "Base64 Encoder / Decoder",
+  "description": "Convert text or files to Base64 format and unescape Base64 code back to original outputs locally in your browser tab.",
+  "inputLabel": "Input Data",
+  "outputLabel": "Output",
+  "encodeButton": "Encode",
+  "decodeButton": "Decode",
+  "uploadButton": "Upload File",
+  "downloadButton": "Download File",
+  "copyButton": "Copy All",
+  "clearButton": "Clear",
+  "copiedFeedback": "Copied!",
+  "validationValid": "Conversion complete",
+  "validationError": "Decoding Error: {message}",
+  "placeholder": "Enter raw text or paste Base64 string here...",
+  "outputPlaceholder": "Output string will appear here...",
+  "fileNameLabel": "Download File Name",
+  "fileNamePlaceholder": "download.txt"
+}

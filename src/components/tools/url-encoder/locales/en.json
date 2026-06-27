@@ -1,0 +1,15 @@
+{
+  "title": "URL Encoder / Decoder",
+  "description": "Encode or decode URL characters safely in your browser. Instantly escape or unescape URL strings locally.",
+  "inputLabel": "Input String",
+  "outputLabel": "Output",
+  "encodeButton": "Encode",
+  "decodeButton": "Decode",
+  "copyButton": "Copy All",
+  "clearButton": "Clear",
+  "copiedFeedback": "Copied!",
+  "validationValid": "Conversion complete",
+  "validationError": "Decoding Error: {message}",
+  "placeholder": "Enter text or URL parameter string here...",
+  "outputPlaceholder": "Output string will appear here..."
+}

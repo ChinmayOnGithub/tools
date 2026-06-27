@@ -71,8 +71,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       <main id="content" className="min-h-[40vh] space-y-12">
         {/* Available Tools */}
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
-            <span>✅</span> Available Tools ({availableTools.length})
+          <h2 className="text-base font-bold tracking-tight text-foreground mb-4">
+            Available Tools ({availableTools.length})
           </h2>
           {availableTools.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -93,8 +93,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         {/* Upcoming Tools */}
         {upcomingTools.length > 0 && (
           <div className="border-t pt-8">
-            <h2 className="text-xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
-              <span>⏳</span> Coming Soon ({upcomingTools.length})
+            <h2 className="text-base font-bold tracking-tight text-foreground mb-4">
+              Coming Soon ({upcomingTools.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcomingTools.map((tool) => (
