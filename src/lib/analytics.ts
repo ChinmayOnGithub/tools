@@ -29,7 +29,7 @@ export function event(action: string, category: string, label?: string, value?: 
 }
 
 export function trackToolLaunch(toolId: string) {
-  event('launch', 'tool', toolId);
+  event('tool_open', 'tool', toolId);
 }
 
 export function trackCopyAction(toolId: string) {
@@ -41,11 +41,19 @@ export function trackDownloadAction(toolId: string) {
 }
 
 export function trackValidationError(toolId: string, errorType: string) {
-  event('validation_error', 'tool', `${toolId}: ${errorType}`);
+  event('tool_error', 'tool', `${toolId}: ${errorType}`);
 }
 
 export function trackToolCompletion(toolId: string) {
-  event('completion', 'tool', toolId);
+  event('tool_complete', 'tool', toolId);
+}
+
+export function trackRelatedToolClick(fromTool: string, toTool: string) {
+  event('related_tool_click', 'tool', `${fromTool} -> ${toTool}`);
+}
+
+export function trackInternalSearch(query: string) {
+  event('internal_search', 'search', query);
 }
 
 const analytics = {
@@ -55,7 +63,9 @@ const analytics = {
   trackCopyAction,
   trackDownloadAction,
   trackValidationError,
-  trackToolCompletion
+  trackToolCompletion,
+  trackRelatedToolClick,
+  trackInternalSearch,
 };
 
 export default analytics;

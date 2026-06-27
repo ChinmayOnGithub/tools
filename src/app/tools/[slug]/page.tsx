@@ -310,7 +310,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {relatedPublished.map((relTool) => (
               <div key={relTool.id}>
-                <ToolCard tool={relTool} />
+                <ToolCard tool={relTool} trackingLabel={`${tool.id} -> ${relTool.id}`} />
               </div>
             ))}
           </div>

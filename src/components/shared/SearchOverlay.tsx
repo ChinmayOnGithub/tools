@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Search, X, CornerDownLeft } from 'lucide-react';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
+import { trackInternalSearch } from '@/lib/analytics';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -42,6 +43,17 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
+
+  // Debounce search query tracking
+  useEffect(() => {
+    if (query.trim() === '') return;
+
+    const timer = setTimeout(() => {
+      trackInternalSearch(query.trim());
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

@@ -1,13 +1,17 @@
+'use client';
+
 import Link from 'next/link';
 import { Icon } from './Icon';
 import { ArrowUpRight } from 'lucide-react';
 import { ToolEntry } from '@/config/tools-registry';
+import { trackRelatedToolClick } from '@/lib/analytics';
 
 interface ToolCardProps {
   tool: ToolEntry;
+  trackingLabel?: string;
 }
 
-export function ToolCard({ tool }: ToolCardProps) {
+export function ToolCard({ tool, trackingLabel }: ToolCardProps) {
   const isPublished = tool.status === 'published';
 
   const getStatusBadge = (status: ToolEntry['status']) => {
@@ -24,8 +28,17 @@ export function ToolCard({ tool }: ToolCardProps) {
 
   const statusBadge = getStatusBadge(tool.status);
 
+  const handleClick = () => {
+    if (trackingLabel) {
+      const parts = trackingLabel.split(' -> ');
+      if (parts.length === 2) {
+        trackRelatedToolClick(parts[0], parts[1]);
+      }
+    }
+  };
+
   return (
-    <Link href={`/tools/${tool.id}`} className="group block">
+    <Link href={`/tools/${tool.id}`} className="group block" onClick={handleClick}>
       <div className={`relative h-full bg-card border-2 transition-all duration-200 overflow-hidden ${
         isPublished 
           ? 'border-border hover:border-primary card-depth-1 hover:card-depth-2 hover:-translate-y-0.5' 
