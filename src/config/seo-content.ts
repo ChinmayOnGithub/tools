@@ -165,5 +165,31 @@ export const SEO_CONTENT_MAP: Record<string, SeoToolContent> = {
       { q: 'Are audio bell chimes safe to run in background?', a: 'Yes. Web Audio API synthesizers play bell double chimes even if your browser tab runs in the background.' },
       { q: 'What are the keyboard shortcuts?', a: 'Use Space to Play/Pause, R to Reset, S to Skip, and F to enter/exit Fullscreen mode.' }
     ]
+  },
+  'pdf-merge': {
+    heading: 'Secure PDF Document Merger',
+    explanation: 'A client-side browser-native tool to combine multiple PDF files into a single document. Reorder document pages easily before merging.',
+    whenToUse: 'Ideal for combining split reports, merging scanned pages, compiling legal forms, or consolidating project PDFs.',
+    howItWorks: 'Utilizes the pdf-lib library to load the binary arrays of selected files, copies all pages sequentially, and saves them into a new compiled PDF in local memory.',
+    privacyExplanation: 'Documents are processed strictly inside your browser sandbox. No PDF data leaves your machine or is uploaded to servers.',
+    exampleInput: 'Upload: report_p1.pdf (2 pages), report_p2.pdf (3 pages)',
+    exampleOutput: 'Download: merged_document.pdf (5 pages total)',
+    faqs: [
+      { q: 'Can I reorder PDF files before merging?', a: 'Yes. Drag and drop file items in the list to rearrange the merge order, or use the accessible Up/Down buttons.' },
+      { q: 'Is there a file count limit?', a: 'Since files compile locally, we recommend merging up to 15 PDFs at a time to prevent browser memory limit errors.' }
+    ]
+  },
+  'pdf-split': {
+    heading: 'Secure PDF Page Splitter & Extractor',
+    explanation: 'Split PDF files by individual pages, extract custom page ranges, or export specific pages as a sub-document.',
+    whenToUse: 'Perfect for extracting specific sheets from large reports, dividing documents for sharing, or cropping PDF pages.',
+    howItWorks: 'Parses range inputs (e.g. 1-3, 5), matches them to 0-indexed page keys, copies matching items into a new document buffer, and outputs downloadable PDFs.',
+    privacyExplanation: 'All splits run locally. No documents are uploaded or processed externally.',
+    exampleInput: 'File: invoice.pdf (5 pages), Range input: "1-2, 5"',
+    exampleOutput: 'Download: invoice_extracted.pdf (pages 1, 2, 5 only)',
+    faqs: [
+      { q: 'How do I specify range configurations?', a: 'Input single pages or hyphens for continuous page ranges (e.g. 1-4, 6), separated by commas.' },
+      { q: 'What happens if I split every page?', a: 'The tool splits the document page by page and displays separate download links for each page.' }
+    ]
   }
 };

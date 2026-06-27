@@ -1,0 +1,29 @@
+{
+  "title": "Split PDF Documents Locally",
+  "description": "Split PDF files by individual pages, extract specific pages, or set page ranges securely in your browser sandbox.",
+  "dragDropPlaceholder": "Drag & drop a PDF file here, or click to upload",
+  "dragDropActive": "Drop your PDF file now...",
+  "selectedFile": "Selected Document",
+  "totalPages": "Total Pages in Document",
+  "splitOptions": "Split Configurations",
+  "splitAllLabel": "Split every page into a separate document",
+  "splitRangeLabel": "Extract page ranges",
+  "rangeInputPlaceholder": "Example: 1-3, 5, 7-10",
+  "splitButton": "Split & Extract Pages",
+  "splittingStatus": "Splitting pages... Please wait.",
+  "invalidFileError": "File is corrupted or not a valid PDF document.",
+  "emptyFileError": "Please upload a PDF document first.",
+  "invalidRangeError": "Page range is invalid or exceeds the document's total pages.",
+  "successMessage": "PDF split successfully! Downloading extract archives.",
+  "downloadPrompt": "If download does not start automatically, click here.",
+  "faq": [
+    {
+      "q": "How does range parsing work?",
+      "a": "You can input single pages (e.g. 5) or page ranges (e.g. 1-3), separated by commas. Double spaces are automatically trimmed. Page numbers start at 1."
+    },
+    {
+      "q": "Is there a page limit for splits?",
+      "a": "All page extractions happen locally. For documents exceeding 100 pages, splitting all pages individually may cause a temporary browser delay. Extracting specific ranges is recommended for large files."
+    }
+  ]
+}

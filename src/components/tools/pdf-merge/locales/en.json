@@ -1,0 +1,25 @@
+{
+  "title": "Merge PDF Documents Locally",
+  "description": "Combine multiple PDF files into a single document. Drag to reorder pages and merge 100% locally in your browser sandbox.",
+  "dragDropPlaceholder": "Drag & drop PDF files here, or click to upload",
+  "dragDropActive": "Drop your PDF files now...",
+  "selectedFiles": "Selected Documents",
+  "reorderGuidance": "Drag items to rearrange the merge sequence order.",
+  "mergeButton": "Merge PDF Files",
+  "mergingStatus": "Merging PDF pages... Please wait.",
+  "clearButton": "Clear List",
+  "noFilesSelected": "Please select or drop at least two PDF documents to merge.",
+  "invalidFileError": "File is corrupted or not a valid PDF document.",
+  "successMessage": "PDF documents merged successfully! Downloading output file.",
+  "downloadPrompt": "If download does not start automatically, click here.",
+  "faq": [
+    {
+      "q": "Are my files uploaded to your servers to merge?",
+      "a": "No. CoolTools processes all document actions client-side. The file merger runs inside browser memory using the pdf-lib binary engine, protecting your secure information."
+    },
+    {
+      "q": "What is the maximum file size or quantity limit?",
+      "a": "Because calculations occur inside local browser memory, we recommend merging up to 15 files of under 20MB each to prevent browser tab crashes."
+    }
+  ]
+}

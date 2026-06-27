@@ -108,9 +108,12 @@ export default function RootLayout({
                   </span>
                   <span className="font-extrabold tracking-tight">TOOLS</span>
                 </div>
-                <div className="flex space-x-6 text-sm">
-                  <Link href="/#about" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Privacy Policy</Link>
-                  <Link href="/#terms" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Terms of Service</Link>
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm justify-center md:justify-end">
+                  <Link href="/about" className="text-muted-foreground hover:text-foreground font-medium transition-colors">About</Link>
+                  <Link href="/contact" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Contact</Link>
+                  <Link href="/privacy" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Privacy Policy</Link>
+                  <Link href="/terms" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Terms of Service</Link>
+                  <Link href="/cookies" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Cookie Policy</Link>
                   <a href="https://github.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground font-medium transition-colors">GitHub</a>
                 </div>
               </div>

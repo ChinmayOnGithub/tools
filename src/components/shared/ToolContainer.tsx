@@ -61,6 +61,14 @@ const TOOLS_COMPONENTS: Record<string, ComponentType> = {
     loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
     ssr: false,
   }),
+  'pdf-merge': dynamic(() => import('@/components/tools/pdf-merge'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'pdf-split': dynamic(() => import('@/components/tools/pdf-split'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
 };
 
 interface ToolContainerProps {
