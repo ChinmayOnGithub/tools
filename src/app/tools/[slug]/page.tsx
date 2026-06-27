@@ -256,22 +256,22 @@ export default async function ToolWrapperPage({ params }: PageProps) {
           {/* Explanation, How it Works, Privacy Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-semibold leading-relaxed">
             <div className="space-y-2">
-              <h3 className="text-sm font-bold text-foreground">What is this tool?</h3>
+              <h2 className="text-sm font-bold text-foreground">What is this tool?</h2>
               <p className="text-muted-foreground">{seoContent.explanation}</p>
             </div>
             <div className="space-y-2">
-              <h3 className="text-sm font-bold text-foreground">When to use it?</h3>
+              <h2 className="text-sm font-bold text-foreground">When to use it?</h2>
               <p className="text-muted-foreground">{seoContent.whenToUse}</p>
             </div>
             <div className="space-y-2">
-              <h3 className="text-sm font-bold text-foreground">How does it work?</h3>
+              <h2 className="text-sm font-bold text-foreground">How does it work?</h2>
               <p className="text-muted-foreground">{seoContent.howItWorks}</p>
             </div>
           </div>
 
           {/* Example Input / Output mockup */}
           <div className="bg-muted/30 border rounded-lg p-4 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Example Conversions</h3>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Example Conversions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
               <div className="space-y-1">
                 <span className="text-muted-foreground">Sample Input:</span>
@@ -287,11 +287,11 @@ export default async function ToolWrapperPage({ params }: PageProps) {
           {/* FAQs section */}
           {seoContent.faqs.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Frequently Asked Questions</h3>
+              <h2 className="text-sm font-bold tracking-tight text-foreground">Frequently Asked Questions</h2>
               <div className="space-y-3 text-xs font-semibold">
                 {seoContent.faqs.map((faq, index) => (
                   <div key={index} className="border rounded-lg p-3.5 bg-card">
-                    <h4 className="font-bold text-foreground mb-1">{faq.q}</h4>
+                    <h3 className="font-bold text-foreground mb-1">{faq.q}</h3>
                     <p className="text-muted-foreground leading-relaxed">{faq.a}</p>
                   </div>
                 ))}
@@ -304,9 +304,9 @@ export default async function ToolWrapperPage({ params }: PageProps) {
       {/* Related Utilities Showcase */}
       {relatedPublished.length > 0 && (
         <section className="border-t pt-6 mt-4">
-          <h3 className="text-sm font-bold tracking-tight text-foreground mb-4">
+          <h2 className="text-sm font-bold tracking-tight text-foreground mb-4">
             Related Tools
-          </h3>
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {relatedPublished.map((relTool) => (
               <div key={relTool.id}>

@@ -1,3 +1,5 @@
+import { logger } from '@/lib/logger';
+
 /**
  * Formats a duration in seconds to a human-readable mm:ss format.
  */
@@ -44,6 +46,6 @@ export function playAlarmSound(): void {
     playChime(now, 587.33); // D5
     playChime(now + 0.18, 880.00); // A5
   } catch (error) {
-    console.error('Failed to play synthesized alarm sound:', error);
+    logger.error('Failed to play synthesized alarm sound:', error);
   }
 }

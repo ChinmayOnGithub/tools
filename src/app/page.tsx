@@ -149,7 +149,7 @@ export default function Home() {
                 <div>
                   <div className="flex items-center gap-2 mb-5">
                     <Flame className="h-5 w-5 text-orange-500" />
-                    <h3 className="text-lg font-bold text-foreground">Most Popular</h3>
+                    <h2 className="text-lg font-bold text-foreground">Most Popular</h2>
                   </div>
                   {popularTools.length > 0 ? (
                     <div className="space-y-4">
@@ -168,7 +168,7 @@ export default function Home() {
                 <div>
                   <div className="flex items-center gap-2 mb-5">
                     <Calendar className="h-5 w-5 text-blue-500" />
-                    <h3 className="text-lg font-bold text-foreground">Recently Added</h3>
+                    <h2 className="text-lg font-bold text-foreground">Recently Added</h2>
                   </div>
                   {recentlyAddedTools.length > 0 ? (
                     <div className="space-y-4">
@@ -210,16 +210,16 @@ export default function Home() {
             <section className="border-t-2 border-border pt-10">
               <div className="flex items-center gap-2 mb-6">
                 <HelpCircle className="h-5 w-5 text-primary" />
-                <h3 className="text-lg font-bold text-foreground">Frequently Asked Questions</h3>
+                <h2 className="text-lg font-bold text-foreground">Frequently Asked Questions</h2>
               </div>
               
               <div className="space-y-4">
                 {FAQS.map((faq, index) => (
                   <div key={index} className="bg-card border-2 border-border p-5 card-depth-1 hover:card-depth-2 transition-all">
-                    <h4 className="text-sm font-bold text-foreground mb-2 flex items-start gap-2">
+                    <h3 className="text-sm font-bold text-foreground mb-2 flex items-start gap-2">
                       <span className="text-primary shrink-0">Q:</span> 
                       <span>{faq.q}</span>
-                    </h4>
+                    </h3>
                     <p className="text-sm text-muted-foreground leading-relaxed pl-5">
                       {faq.a}
                     </p>
@@ -236,9 +236,9 @@ export default function Home() {
             {/* Categories Navigation */}
             <div className="bg-card border-2 border-border card-depth-1 sticky top-20">
               <div className="p-4 border-b-2 border-border bg-muted/20">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
                   Browse Categories
-                </h3>
+                </h2>
               </div>
               
               <div className="p-3 space-y-1">
@@ -276,16 +276,16 @@ export default function Home() {
             {/* Security Features */}
             <div className="space-y-4">
               <div className="border-b-2 border-border pb-2">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
                   Why Use Our Tools?
-                </h3>
+                </h2>
               </div>
               
               <div className="bg-card border-2 border-border p-4 card-depth-1">
                 <div className="h-10 w-10 bg-green-500/10 text-green-600 dark:text-green-400 flex items-center justify-center mb-3">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
-                <h4 className="text-sm font-bold text-foreground mb-2">100% Privacy</h4>
+                <h3 className="text-sm font-bold text-foreground mb-2">100% Privacy</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   Zero data transmission. All processing in your browser. Files never touch servers.
                 </p>
@@ -295,7 +295,7 @@ export default function Home() {
                 <div className="h-10 w-10 bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
                   <Cpu className="h-5 w-5" />
                 </div>
-                <h4 className="text-sm font-bold text-foreground mb-2">Lightning Fast</h4>
+                <h3 className="text-sm font-bold text-foreground mb-2">Lightning Fast</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   No upload delays. No server queues. Instant results with modern browser APIs.
                 </p>
@@ -305,7 +305,7 @@ export default function Home() {
                 <div className="h-10 w-10 bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3">
                   <Code2 className="h-5 w-5" />
                 </div>
-                <h4 className="text-sm font-bold text-foreground mb-2">Open Standards</h4>
+                <h3 className="text-sm font-bold text-foreground mb-2">Open Standards</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   Built on web standards. Inspect code in browser console. Full transparency.
                 </p>

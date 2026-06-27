@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import t from './locales/en.json';
 import { formatTime, playAlarmSound } from './utils';
+import { logger } from '@/lib/logger';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -107,8 +108,9 @@ export default function PomodoroTimer() {
           }
         }
       } catch (error) {
-        console.error('Failed to load Pomodoro configuration from localStorage:', error);
+        logger.error('Failed to load Pomodoro configuration from localStorage:', error);
       }
+
     }, 0);
     return () => clearTimeout(timer);
   }, []);
@@ -224,7 +226,7 @@ export default function PomodoroTimer() {
 
     if (!document.fullscreenElement) {
       containerRef.current.requestFullscreen().catch((err) => {
-        console.error('Error attempting to enable fullscreen:', err);
+        logger.error('Error attempting to enable fullscreen:', err);
         trackValidationError('pomodoro-timer', 'fullscreen_failed');
       });
     } else {
@@ -278,7 +280,7 @@ export default function PomodoroTimer() {
       try {
         localStorage.setItem('pomodoro_notificationsEnabled', 'false');
       } catch (e) {
-        console.error(e);
+        logger.error('Failed to save notifications configuration:', e);
       }
     } else {
       if (typeof window !== 'undefined' && 'Notification' in window) {
@@ -288,7 +290,7 @@ export default function PomodoroTimer() {
           try {
             localStorage.setItem('pomodoro_notificationsEnabled', 'true');
           } catch (e) {
-            console.error(e);
+            logger.error('Failed to save notifications configuration:', e);
           }
         } else {
           alert(t.notificationPermissionDenied);
@@ -319,7 +321,7 @@ export default function PomodoroTimer() {
       localStorage.setItem('pomodoro_autoStartBreaks', String(editAutoStart));
       localStorage.setItem('pomodoro_soundEnabled', String(editSound));
     } catch (e) {
-      console.error(e);
+      logger.error('Failed to save settings configurations:', e);
     }
 
     const currentMins = mode === 'focus' ? boundFocus : mode === 'short' ? boundShort : boundLong;

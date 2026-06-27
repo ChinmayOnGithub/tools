@@ -17,10 +17,10 @@ export function AdContainer({ slot = 'middle', className = '' }: AdContainerProp
 
   // Different sizes based on slot position for optimal ad performance
   const sizeClasses = {
-    top: 'min-h-[90px] max-w-4xl mx-auto', // Leaderboard 728x90
-    middle: 'min-h-[250px]', // Medium Rectangle 300x250
-    sidebar: 'min-h-[600px]', // Half Page 300x600
-    bottom: 'min-h-[90px] max-w-4xl mx-auto', // Leaderboard 728x90
+    top: 'h-[90px] max-w-4xl mx-auto', // Leaderboard 728x90
+    middle: 'h-[250px]', // Medium Rectangle 300x250
+    sidebar: 'h-[600px]', // Half Page 300x600
+    bottom: 'h-[90px] max-w-4xl mx-auto', // Leaderboard 728x90
   };
 
   if (!mounted) {

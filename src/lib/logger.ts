@@ -1,12 +1,20 @@
+const isProd = process.env.NODE_ENV === 'production';
+
 export const logger = {
   error: (message: string, error?: unknown, info?: unknown) => {
-    console.error(`[CoolTools Error] ${message}`, error, info);
+    if (!isProd) {
+      console.error(`[CoolTools Error] ${message}`, error, info);
+    }
   },
   warn: (message: string, info?: unknown) => {
-    console.warn(`[CoolTools Warn] ${message}`, info);
+    if (!isProd) {
+      console.warn(`[CoolTools Warn] ${message}`, info);
+    }
   },
   info: (message: string, info?: unknown) => {
-    console.info(`[CoolTools Info] ${message}`, info);
+    if (!isProd) {
+      console.info(`[CoolTools Info] ${message}`, info);
+    }
   }
 };
 

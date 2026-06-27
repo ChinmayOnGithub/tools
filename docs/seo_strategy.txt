@@ -1,0 +1,405 @@
+# Production Deployment & SEO Checklist
+
+This document defines the complete production deployment workflow for the Tools Platform.
+
+Follow every step before announcing a public release.
+
+---
+
+# 1. Local Validation
+
+Run every quality gate.
+
+```bash
+node scripts/validate-tools.js
+
+pnpm lint
+
+pnpm typecheck
+
+pnpm test
+
+pnpm build
+```
+
+Expected result:
+
+* 0 lint errors
+* 0 type errors
+* All tests passing
+* Successful production build
+
+---
+
+# 2. Deploy
+
+Deploy the latest commit to Vercel.
+
+Verify:
+
+* Production deployment succeeds
+* No build warnings
+* No runtime errors
+
+---
+
+# 3. Domain
+
+Verify
+
+```
+https://tools.chinmaypatil.com
+```
+
+Check:
+
+* HTTPS
+* SSL certificate
+* DNS propagation
+* Redirects
+
+---
+
+# 4. robots.txt
+
+Verify
+
+```
+https://tools.chinmaypatil.com/robots.txt
+```
+
+Ensure:
+
+* Returns HTTP 200
+* References sitemap.xml
+* No accidental disallow rules
+
+---
+
+# 5. sitemap.xml
+
+Verify
+
+```
+https://tools.chinmaypatil.com/sitemap.xml
+```
+
+Ensure:
+
+* No empty URLs
+* Every published tool exists
+* Categories are included
+* Homepage is included
+
+---
+
+# 6. Google Search Console
+
+Add property.
+
+Prefer Domain Property.
+
+Submit:
+
+```
+https://tools.chinmaypatil.com/sitemap.xml
+```
+
+Request indexing for:
+
+* Homepage
+* Categories
+* Every newly published tool
+
+Monitor:
+
+* Index Coverage
+* Crawl Status
+* Core Web Vitals
+* Mobile Usability
+
+---
+
+# 7. Bing Webmaster Tools
+
+Import from Google Search Console.
+
+Or manually:
+
+Submit
+
+```
+https://tools.chinmaypatil.com/sitemap.xml
+```
+
+Monitor:
+
+* Indexed Pages
+* Crawl Errors
+* SEO Reports
+
+---
+
+# 8. Google Analytics 4
+
+Verify:
+
+Realtime
+
+Confirm:
+
+* Active Users
+* page_view
+* tool_open
+* tool_complete
+* copy
+* search
+* download
+
+Ensure duplicate events never occur.
+
+---
+
+# 9. Microsoft Clarity
+
+Verify:
+
+* Session recordings
+* Heatmaps
+* Scroll maps
+* Dead clicks
+* Rage clicks
+
+Review recordings weekly to identify UX improvements.
+
+---
+
+# 10. Google Rich Results Test
+
+Test:
+
+Homepage
+
+Major tool pages
+
+Verify:
+
+* Breadcrumb schema
+* FAQ schema
+* SoftwareApplication schema
+* Organization schema
+
+No errors.
+
+---
+
+# 11. Google PageSpeed Insights
+
+Run:
+
+Homepage
+
+Major tool pages
+
+Verify:
+
+Desktop
+
+Mobile
+
+Monitor:
+
+* Core Web Vitals
+* LCP
+* CLS
+* INP
+
+---
+
+# 12. Chrome Lighthouse
+
+Run Desktop.
+
+Run Mobile.
+
+Target:
+
+Performance ≥ 90
+
+Accessibility ≥ 95
+
+Best Practices ≥ 95
+
+SEO = 100
+
+Review:
+
+* Render blocking
+* Bundle size
+* Unused JavaScript
+* Accessibility findings
+
+---
+
+# 13. Accessibility Review
+
+Verify:
+
+Keyboard navigation
+
+Focus order
+
+ARIA labels
+
+Heading hierarchy
+
+Color contrast
+
+Screen reader compatibility
+
+---
+
+# 14. Browser Testing
+
+Verify:
+
+Chrome
+
+Firefox
+
+Edge
+
+Safari (if available)
+
+Android
+
+iPhone (if available)
+
+---
+
+# 15. Manual Functional Testing
+
+Verify every published tool.
+
+Test:
+
+* Inputs
+* Outputs
+* Copy
+* Download
+* Error handling
+* Mobile layout
+* Dark mode
+* Light mode
+
+---
+
+# 16. Security Review
+
+Verify:
+
+Security Headers
+
+Content Security Policy
+
+HSTS
+
+X-Frame-Options
+
+Permissions Policy
+
+No console errors.
+
+---
+
+# 17. SEO Review
+
+Verify:
+
+Unique Titles
+
+Unique Descriptions
+
+Canonical URLs
+
+Open Graph
+
+Twitter Cards
+
+Structured Data
+
+Internal Links
+
+Related Tools
+
+Breadcrumbs
+
+---
+
+# 18. Performance Targets
+
+Homepage
+
+Performance: 90+
+
+CLS: < 0.1
+
+LCP: < 2.5 s
+
+INP: < 200 ms
+
+TBT: < 200 ms
+
+---
+
+# 19. Weekly Monitoring
+
+Every Sunday review:
+
+Google Search Console
+
+Google Analytics
+
+Microsoft Clarity
+
+Bing Webmaster
+
+Lighthouse
+
+Open GitHub Issues
+
+Fix regressions before building new features.
+
+---
+
+# 20. AdSense Readiness
+
+Before applying:
+
+* 30–50 production tools
+* About page
+* Contact page
+* Privacy Policy
+* Terms of Service
+* Cookie Policy
+* Sitemap
+* robots.txt
+* Analytics working
+* Search Console working
+* Fast performance
+* Mobile friendly
+
+---
+
+# Release Checklist
+
+* Build passes
+* Tests pass
+* Analytics verified
+* Clarity verified
+* Sitemap submitted
+* Search Console verified
+* Bing verified
+* Lighthouse completed
+* Manual QA completed
+* Ready for production
