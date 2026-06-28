@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import SkipNavLink from '@/components/shared/SkipNavLink';
 import Navigation from '@/components/shared/Navigation';
 import AnalyticsTracker from '@/components/shared/AnalyticsTracker';
+import CookieConsent from '@/components/shared/CookieConsent';
 import './globals.css';
 
 const geistSans = Geist({
@@ -74,8 +75,29 @@ export default function RootLayout({
               <Script id="google-analytics" strategy="afterInteractive">
                 {`
                   window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
+                  window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
+                  
+                  // Read local storage to determine initial consent state
+                  var consentState = 'denied';
+                  try {
+                    if (localStorage.getItem('cookie_consent') === 'granted') {
+                      consentState = 'granted';
+                    }
+                  } catch (e) {}
+
+                  window.gtag('consent', 'default', {
+                    'ad_storage': consentState,
+                    'ad_user_data': consentState,
+                    'ad_personalization': consentState,
+                    'analytics_storage': consentState
+                  });
+
+                  // Configure advanced URL passthrough and ads redaction rules
+                  window.gtag('set', 'ads_data_redaction', consentState === 'denied');
+                  window.gtag('set', 'url_passthrough', true);
+
+                  window.gtag('js', new Date());
+                  window.gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
                 `}
               </Script>
               <AnalyticsTracker />
@@ -122,6 +144,7 @@ export default function RootLayout({
               </p>
             </div>
           </footer>
+          <CookieConsent />
         </ThemeProvider>
       </body>
     </html>

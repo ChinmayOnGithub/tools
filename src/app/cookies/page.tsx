@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import ResetConsentButton from '@/components/shared/ResetConsentButton';
 
 export const metadata: Metadata = {
   title: 'Cookie Policy - CoolTools',
@@ -55,6 +56,7 @@ export default function CookiesPage() {
             These modules may utilize cookie IDs to track navigation sequences anonymously. 
             You can block these third-party scripts easily by using ad-blocker extensions or turning off cookies in browser options.
           </p>
+          <ResetConsentButton />
         </div>
       </section>
     </div>

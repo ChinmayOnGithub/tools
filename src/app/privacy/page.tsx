@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import ResetConsentButton from '@/components/shared/ResetConsentButton';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - Privacy-First Browser Tools',
@@ -56,6 +57,7 @@ export default function PrivacyPage() {
             To monitor site load speeds, errors, and tool usage frequencies, we load basic telemetry analytics (Google Analytics 4 and Microsoft Clarity) only in production builds. 
             No personal data, user documents, inputs, or generated outputs are recorded or shared with these metrics.
           </p>
+          <ResetConsentButton />
         </div>
 
         <div className="space-y-3">
