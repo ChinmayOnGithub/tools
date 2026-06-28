@@ -1,0 +1,110 @@
+name: Weekly Repository Audit
+
+on:
+  schedule:
+    - cron: '30 0 * * 0' # Every Sunday at 12:30 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  development-audit:
+    name: Development Quality Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Linter Audit
+        run: pnpm run lint > lint-output.txt 2>&1 || true
+
+      - name: Type Check TypeScript Audit
+        run: pnpm run typecheck > typecheck-output.txt 2>&1 || true
+
+      - name: Run Unit Tests Audit
+        run: pnpm test run > test-output.txt 2>&1 || true
+
+      - name: Static Next.js Build Audit
+        run: pnpm run build > build-output.txt 2>&1 || true
+
+      - name: Compile Repository Quality Report
+        run: node scripts/generate-audit-report.js
+        env:
+          GITHUB_STEP_SUMMARY: ${{ github.step_summary }}
+
+      - name: Archive Log Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-audit-logs
+          path: |
+            lint-output.txt
+            typecheck-output.txt
+            test-output.txt
+            build-output.txt
+          retention-days: 7
+
+  security-audit:
+    name: Security Scanners Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2.3.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Run Semgrep scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/javascript
+            p/typescript
+            p/react
+            p/nextjs
+            p/owasp-top-10
+          generateSarif: '1'
+        continue-on-error: true
+
+      - name: Run Trivy Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+        continue-on-error: true
+
+      - name: Run Scorecard analysis
+        uses: ossf/scorecard-action@v2.4.0
+        with:
+          results_file: scorecard.sarif
+          results_format: sarif
+          publish_results: true
+        continue-on-error: true
