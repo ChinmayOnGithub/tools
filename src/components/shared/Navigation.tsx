@@ -4,14 +4,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, Menu, X } from 'lucide-react';
 import { CATEGORIES } from '@/config/categories';
-import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import ThemeToggle from './ThemeToggle';
 import SearchOverlay from './SearchOverlay';
 
 export function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const availableToolsCount = TOOLS_REGISTRY.filter((t) => t.status === 'published').length;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -46,22 +44,19 @@ export function Navigation() {
                 </span>
                 <span className="font-extrabold tracking-tight">TOOLS</span>
               </Link>
-              <span className="hidden sm:inline-flex items-center bg-green-500/10 px-2.5 py-1 text-[10px] font-bold text-green-700 dark:text-green-400 border border-green-500/20 uppercase tracking-wider select-none">
-                {availableToolsCount} Live
-              </span>
             </div>
             
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1 text-sm font-medium">
-              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50" href="/#categories">
-                Categories
+              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50" href="/contact">
+                Contact & Feedback
               </Link>
-              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50" href="/#about">
-                Privacy
+              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50" href="/privacy">
+                Privacy Policy
               </Link>
             </nav>
           </div>
-
+ 
           <div className="flex items-center space-x-3">
             {/* Search Trigger Button */}
             <button
@@ -71,7 +66,7 @@ export function Navigation() {
             >
               <Search className="h-4 w-4" />
               <span className="font-medium">Search tools...</span>
-              <kbd className="absolute right-2 top-3 pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-0.5 border border-border bg-background px-1.5 font-mono text-[10px] font-bold text-muted-foreground">
+              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none hidden sm:inline-flex h-5 select-none items-center justify-center gap-0.5 border border-border bg-background px-1.5 font-mono text-[10px] font-bold text-muted-foreground">
                 /
               </kbd>
             </button>

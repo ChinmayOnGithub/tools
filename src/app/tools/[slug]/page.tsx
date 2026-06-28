@@ -223,21 +223,14 @@ export default async function ToolWrapperPage({ params }: PageProps) {
 
       {/* Local trust indicators */}
       <div className="flex flex-wrap gap-2 select-none">
-        <span className="inline-flex items-center bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-          Local Processing
-        </span>
-        <span className="inline-flex items-center bg-blue-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 border border-blue-500/20">
-          Privacy Safe
-        </span>
-        <span className="inline-flex items-center bg-indigo-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 border border-indigo-500/20">
-          No Uploads
-        </span>
-        <span className="inline-flex items-center bg-purple-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 border border-purple-500/20">
-          100% Free
-        </span>
-        <span className="inline-flex items-center bg-pink-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-pink-700 dark:text-pink-400 border border-pink-500/20">
-          Instant
-        </span>
+        {['Local Processing', 'Privacy Safe', 'No Uploads', '100% Free', 'Instant'].map((text) => (
+          <span 
+            key={text} 
+            className="inline-flex items-center bg-muted/30 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground border border-border"
+          >
+            {text}
+          </span>
+        ))}
       </div>
 
       {/* Dynamic Client Tool component */}

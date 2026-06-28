@@ -15,7 +15,7 @@ export function HomeSearchTrigger() {
     >
       <Search className="h-5 w-5 text-primary" />
       <span className="flex-1 font-medium">Search professional browser tools...</span>
-      <kbd className="hidden sm:inline-flex h-6 select-none items-center gap-0.5 border-2 border-border bg-muted px-2 font-mono text-[11px] font-bold text-muted-foreground">
+      <kbd className="hidden sm:inline-flex h-6 select-none items-center justify-center gap-0.5 border-2 border-border bg-muted px-2 font-mono text-[11px] font-bold text-muted-foreground">
         /
       </kbd>
     </button>

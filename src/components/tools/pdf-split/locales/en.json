@@ -16,6 +16,8 @@
   "invalidRangeError": "Page range is invalid or exceeds the document's total pages.",
   "successMessage": "PDF split successfully! Downloading extract archives.",
   "downloadPrompt": "If download does not start automatically, click here.",
+  "visualSelection": "Visual Page Selector",
+  "visualSelectionDesc": "Select pages directly from the grid below to compile your range extraction automatically.",
   "faq": [
     {
       "q": "How does range parsing work?",

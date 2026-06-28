@@ -63,11 +63,7 @@ export default function PrivacyPage() {
         <div className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">5. Contact Information</h2>
           <p>
-            For privacy questions or repository feedback, contact us directly at{' '}
-            <a href="mailto:contact@chinmaypatil.com" className="text-primary hover:underline font-semibold">
-              contact@chinmaypatil.com
-            </a>
-            .
+            For privacy questions or repository feedback, please open an issue directly on our GitHub repository.
           </p>
         </div>
       </section>

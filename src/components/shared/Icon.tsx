@@ -11,6 +11,23 @@ import {
   Key, 
   Calendar, 
   Scale,
+  Braces,
+  Barcode,
+  QrCode,
+  Lock,
+  Type,
+  CaseSensitive,
+  Binary,
+  Fingerprint,
+  Scissors,
+  Combine,
+  FileImage,
+  Crop,
+  Timer,
+  Clock,
+  Hourglass,
+  Ruler,
+  Layers,
   LucideProps 
 } from 'lucide-react';
 
@@ -26,7 +43,25 @@ const ICON_MAP = {
   List,
   Key,
   Calendar,
-  Scale
+  Scale,
+  Braces,
+  Barcode,
+  QrCode,
+  Lock,
+  Type,
+  CaseSensitive,
+  Binary,
+  Fingerprint,
+  Scissors,
+  Combine,
+  FileImage,
+  Crop,
+  Stopwatch: Timer,
+  Timer,
+  Clock,
+  Hourglass,
+  Ruler,
+  Layers
 };
 
 export type IconName = keyof typeof ICON_MAP;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
   FileText, 
   Upload, 
@@ -14,14 +14,21 @@ import {
 } from 'lucide-react';
 import t from './locales/en.json';
 import { mergePdfBuffers } from './utils';
+import { getPdfPageThumbnail } from '@/lib/pdf-core';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
-import { useEffect } from 'react';
+import { PDFDocument } from 'pdf-lib';
+
+interface MergeFileItem {
+  file: File;
+  thumbnail?: string;
+  totalPages?: number;
+}
 
 export default function PdfMergeComponent() {
   const [mounted, setMounted] = useState(false);
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<MergeFileItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -39,16 +46,67 @@ export default function PdfMergeComponent() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Process thumbnails for newly added files in the background
+  useEffect(() => {
+    let active = true;
+
+    const loadThumbnails = async () => {
+      const updatedFiles = [...files];
+      let changed = false;
+
+      for (let i = 0; i < updatedFiles.length; i++) {
+        const item = updatedFiles[i];
+        if (!item.thumbnail) {
+          try {
+            const buffer = new Uint8Array(await item.file.arrayBuffer());
+            const thumb = await getPdfPageThumbnail(buffer, 1, 0.2);
+            const doc = await PDFDocument.load(buffer, { updateMetadata: false });
+            
+            if (!active) return;
+            
+            updatedFiles[i] = {
+              ...item,
+              thumbnail: thumb,
+              totalPages: doc.getPageCount(),
+            };
+            changed = true;
+          } catch (err) {
+            console.warn('Failed to render page preview for file:', item.file.name, err);
+            // set a placeholder to avoid re-rendering loop
+            updatedFiles[i] = {
+              ...item,
+              thumbnail: 'failed',
+              totalPages: 0,
+            };
+            changed = true;
+          }
+        }
+      }
+
+      if (changed && active) {
+        setFiles(updatedFiles);
+      }
+    };
+
+    if (files.some(f => !f.thumbnail)) {
+      loadThumbnails();
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [files]);
+
   const handleFiles = (incomingFiles: FileList | null) => {
     if (!incomingFiles) return;
     setError(null);
     setSuccess(false);
 
-    const validPdfs: File[] = [];
+    const validPdfs: MergeFileItem[] = [];
     for (let i = 0; i < incomingFiles.length; i++) {
       const file = incomingFiles[i];
       if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-        validPdfs.push(file);
+        validPdfs.push({ file });
       } else {
         trackValidationError('pdf-merge', 'invalid_file_type');
         setError(t.invalidFileError);
@@ -77,7 +135,6 @@ export default function PdfMergeComponent() {
     handleFiles(e.dataTransfer.files);
   };
 
-  // Reordering functions
   const moveItem = (index: number, direction: 'up' | 'down') => {
     const nextIndex = direction === 'up' ? index - 1 : index + 1;
     if (nextIndex < 0 || nextIndex >= files.length) return;
@@ -105,7 +162,6 @@ export default function PdfMergeComponent() {
     }
   };
 
-  // HTML5 Drag-and-Drop List item handlers
   const onDragStart = (index: number) => {
     setDraggingIndex(index);
   };
@@ -148,7 +204,7 @@ export default function PdfMergeComponent() {
 
     try {
       const buffers = await Promise.all(
-        files.map(async (file) => new Uint8Array(await file.arrayBuffer()))
+        files.map(async (item) => new Uint8Array(await item.file.arrayBuffer()))
       );
       
       const mergedBytes = await mergePdfBuffers(buffers);
@@ -216,13 +272,13 @@ export default function PdfMergeComponent() {
               <p className="text-sm font-semibold text-foreground">
                 {dragActive ? t.dragDropActive : t.dragDropPlaceholder}
               </p>
-              <p className="text-xs text-muted-foreground">PDF files only (under 20MB recommended)</p>
+              <p className="text-xs text-muted-foreground">Select multiple PDFs to merge locally</p>
             </div>
           </div>
 
           {/* Error Message Card */}
           {error && (
-            <div className="bg-destructive/10 border-2 border-destructive/20 text-destructive p-4 flex gap-3 text-xs font-semibold leading-relaxed">
+            <div className="bg-destructive/10 border-2 border-destructive/20 text-destructive p-4 flex gap-3 text-xs font-semibold leading-relaxed rounded-lg">
               <AlertTriangle className="h-5 w-5 shrink-0" />
               <span>{error}</span>
             </div>
@@ -239,7 +295,7 @@ export default function PdfMergeComponent() {
                   variant="outline" 
                   size="sm" 
                   onClick={clearList}
-                  className="text-xs font-bold"
+                  className="text-xs font-bold text-destructive hover:bg-destructive/5"
                 >
                   {t.clearButton}
                 </Button>
@@ -247,8 +303,8 @@ export default function PdfMergeComponent() {
               
               <p className="text-[10px] text-muted-foreground font-semibold">{t.reorderGuidance}</p>
 
-              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                {files.map((file, index) => (
+              <div className="space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
+                {files.map((item, index) => (
                   <div
                     key={index}
                     draggable
@@ -261,21 +317,39 @@ export default function PdfMergeComponent() {
                         : 'border-border hover:border-muted-foreground/30'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0">
                       <div className="cursor-grab text-muted-foreground hover:text-foreground p-1">
                         <GripVertical className="h-4 w-4" />
                       </div>
-                      <FileText className="h-4 w-4 text-red-500 shrink-0" />
+                      
+                      {/* Document Preview Thumbnail */}
+                      <div className="h-12 w-9 border rounded bg-muted/20 shrink-0 overflow-hidden flex items-center justify-center">
+                        {item.thumbnail && item.thumbnail !== 'failed' ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img 
+                            src={item.thumbnail} 
+                            alt={`Page 1 of ${item.file.name}`} 
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <FileText className="h-5 w-5 text-red-500" />
+                        )}
+                      </div>
+
                       <div className="flex flex-col min-w-0">
-                        <span className="text-xs font-bold text-foreground truncate max-w-[240px] md:max-w-[320px]">
-                          {file.name}
+                        <span className="text-xs font-bold text-foreground truncate max-w-[200px] md:max-w-[300px]">
+                          {item.file.name}
                         </span>
-                        <span className="text-[10px] text-muted-foreground">{formatSize(file.size)}</span>
+                        <span className="text-[10px] text-muted-foreground flex gap-2">
+                          <span>{formatSize(item.file.size)}</span>
+                          {item.totalPages !== undefined && (
+                            <span className="text-primary font-semibold">({item.totalPages} pages)</span>
+                          )}
+                        </span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
-                      {/* Reordering Controls (Keyboard Friendly) */}
                       <Button
                         variant="outline"
                         size="icon"
@@ -296,7 +370,6 @@ export default function PdfMergeComponent() {
                       >
                         <ArrowDown className="h-3 w-3" />
                       </Button>
-                      {/* Delete item */}
                       <Button
                         variant="outline"
                         size="icon"

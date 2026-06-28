@@ -192,19 +192,7 @@ export const SEO_CONTENT_MAP: Record<string, SeoToolContent> = {
       { q: 'What happens if I split every page?', a: 'The tool splits the document page by page and displays separate download links for each page.' }
     ]
   },
-  'pdf-compress': {
-    heading: 'Secure PDF Document Compressor & Optimizer',
-    explanation: 'Reduce the file size of your PDF documents locally using next-generation object stream serialization.',
-    whenToUse: 'Great for decreasing email attachments, cleaning duplicate stream blocks, or saving drive spaces.',
-    howItWorks: 'Uses pdf-lib to copy page trees to a new clean container, stripping redundant headers and metadata in local memory.',
-    privacyExplanation: 'All compression operations execute locally in your web browser. Zero server logs or file storage.',
-    exampleInput: 'Upload: document.pdf (4.5 MB)',
-    exampleOutput: 'Download: document_compressed.pdf (3.1 MB - 31% reduction)',
-    faqs: [
-      { q: 'Will my image resolutions be reduced?', a: 'No. The compressor cleans file structures rather than heavily compressing image layers, keeping document readability.' },
-      { q: 'Is there a file size limit?', a: 'We recommend uploading PDFs under 20MB for fast in-browser rendering.' }
-    ]
-  },
+
   'images-to-pdf': {
     heading: 'Secure Images to PDF Document Compiler',
     explanation: 'Compile PNG, JPG, or WebP images into a single PDF document locally. Arrange page order easily.',
@@ -218,6 +206,7 @@ export const SEO_CONTENT_MAP: Record<string, SeoToolContent> = {
       { q: 'Can I reorder the images?', a: 'Yes. Drag and drop items in the list to rearrange the page sequence.' }
     ]
   },
+
   'image-compressor': {
     heading: 'Secure Client-Side Image Compressor & Size Optimizer',
     explanation: 'Compress and optimize sizes of JPG, PNG, and WebP images client-side.',

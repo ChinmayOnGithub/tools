@@ -41,20 +41,22 @@ export default function ContactPage() {
 
       {/* Support Methods Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Email Box */}
+        {/* Issue Tracker Box */}
         <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-3">
           <div className="h-10 w-10 bg-primary/10 text-primary flex items-center justify-center">
             <Mail className="h-5 w-5" />
           </div>
-          <h2 className="text-base font-bold text-foreground">Email Support</h2>
+          <h2 className="text-base font-bold text-foreground">Bug Reports & Feedback</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            For general inquiries, partnership discussions, or billing questions (even though our tools are 100% free), send us an email.
+            Spotted a bug or have a feature idea? Please open a ticket on our GitHub Issue tracker to help us improve.
           </p>
           <a 
-            href="mailto:contact@chinmaypatil.com" 
+            href="https://github.com" 
+            target="_blank"
+            rel="noreferrer"
             className="text-xs font-bold text-primary hover:underline block pt-1"
           >
-            contact@chinmaypatil.com
+            Open GitHub Issue
           </a>
         </div>
 

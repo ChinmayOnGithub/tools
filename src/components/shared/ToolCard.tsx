@@ -69,16 +69,6 @@ export function ToolCard({ tool, trackingLabel }: ToolCardProps) {
             <span className="text-[10px] bg-muted text-muted-foreground px-2 py-1 border border-border uppercase tracking-wider font-bold">
               {tool.category}
             </span>
-            {tool.popular && (
-              <span className="text-[10px] bg-orange-500/10 text-orange-700 dark:text-orange-400 px-2 py-1 border border-orange-500/20 uppercase tracking-wider font-bold">
-                Popular
-              </span>
-            )}
-            {tool.featured && (
-              <span className="text-[10px] bg-blue-500/10 text-blue-700 dark:text-blue-400 px-2 py-1 border border-blue-500/20 uppercase tracking-wider font-bold">
-                Featured
-              </span>
-            )}
             {!isPublished && (
               <span className={`text-[10px] px-2 py-1 border uppercase tracking-wider font-bold ${statusBadge.color}`}>
                 {statusBadge.text}

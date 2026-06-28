@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import AdContainer from '@/components/shared/AdContainer';
-import ToolCard from '@/components/shared/ToolCard';
 import HomeSearchTrigger from '@/components/shared/HomeSearchTrigger';
 import Icon from '@/components/shared/Icon';
 import StatsCard from '@/components/shared/StatsCard';
@@ -12,8 +11,6 @@ import {
   Cpu, 
   Code2, 
   HelpCircle,
-  Flame,
-  Calendar,
   Wrench,
   TrendingUp,
   Clock,
@@ -37,12 +34,23 @@ const FAQS = [
 
 export default function Home() {
   const publishedTools = TOOLS_REGISTRY.filter((t) => t.status === 'published');
-  const comingSoonTools = TOOLS_REGISTRY.filter((t) => t.status !== 'published');
+  
 
-  const popularTools = publishedTools.filter((t) => t.popular).slice(0, 3);
-  const recentlyAddedTools = [...publishedTools]
-    .sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime())
-    .slice(0, 3);
+
+  const plannedTools = [
+    {
+      name: 'PDF Compress / Size Shrinker',
+      description: 'Compress and optimize PDF file sizes locally inside your browser memory using hybrid rasterization.',
+      category: 'pdf',
+      badge: 'Coming Soon',
+    },
+    {
+      name: 'OCR PDF / Scan to Text',
+      description: 'Convert scanned PDF documents or image-only PDFs into selectable, editable text locally using WebAssembly.',
+      category: 'pdf',
+      badge: 'Coming Soon',
+    }
+  ];
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tools.chinmaypatil.com';
   const websiteSchema = {
@@ -131,100 +139,101 @@ export default function Home() {
           {/* Main Column - 3/4 width */}
           <div className="lg:col-span-3 space-y-10">
             
-            {/* Available Tools */}
-            <section>
+            {/* Tools Directory grouped by Category */}
+            <section className="space-y-8">
+              <div className="border-b-2 border-border pb-4">
+                <h2 className="text-xl font-bold text-foreground tracking-tight">Tools Directory</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Offline-first browser tools grouped by category. Click any tool to launch.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {CATEGORIES.map((category) => {
+                  const catTools = publishedTools.filter((t) => t.category === category.id);
+                  if (catTools.length === 0) return null;
+
+                  return (
+                    <div 
+                      key={category.id}
+                      className="bg-card border-2 border-border p-5 card-depth-1 space-y-4"
+                    >
+                      <div className="flex items-center gap-3 pb-3 border-b border-border/60">
+                        <div className="h-9 w-9 bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                          <Icon name={category.icon} className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <Link 
+                            href={`/categories/${category.slug}`}
+                            className="text-sm font-extrabold text-foreground hover:text-primary transition-colors hover:underline"
+                          >
+                            {category.title}
+                          </Link>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            {category.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {catTools.map((tool) => (
+                          <Link 
+                            key={tool.id} 
+                            href={`/tools/${tool.id}`}
+                            className="flex items-center gap-2.5 p-2.5 border border-border bg-muted/10 hover:border-primary hover:bg-primary/5 transition-all group"
+                          >
+                            <div className="h-7 w-7 bg-muted text-muted-foreground flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                              <Icon name={tool.icon} className="h-4 w-4" />
+                            </div>
+                            <span className="text-[11px] font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                              {tool.name}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Development Roadmap (Planned Tools) */}
+            <section className="border-t-2 border-border pt-10">
               <div className="flex items-center justify-between border-b-2 border-border pb-4 mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground tracking-tight">Available Tools</h2>
-                  <p className="text-sm text-muted-foreground mt-1">Production-ready utilities. Click any tool to start.</p>
+                  <h2 className="text-xl font-bold text-foreground tracking-tight">Development Roadmap</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Upcoming tools in active architectural planning.</p>
                 </div>
-                <span className="inline-flex items-center bg-green-500/10 text-green-700 dark:text-green-400 px-3 py-1 border border-green-500/20 text-xs font-bold uppercase tracking-wider">
-                  {publishedTools.length} Live
+                <span className="inline-flex items-center bg-amber-500/10 text-amber-700 dark:text-amber-400 px-3 py-1 border border-amber-500/20 text-xs font-bold uppercase tracking-wider">
+                  Planned
                 </span>
               </div>
               
-              {publishedTools.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {publishedTools.map((tool) => (
-                    <ToolCard key={tool.id} tool={tool} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-16 border-2 border-dashed border-border bg-muted/20">
-                  <Wrench className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-sm font-bold text-foreground">No Tools Available</p>
-                  <p className="text-xs text-muted-foreground mt-1">Check back soon for new utilities.</p>
-                </div>
-              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {plannedTools.map((tool, idx) => (
+                  <div 
+                    key={idx}
+                    className="bg-card/40 border-2 border-border/50 p-5 opacity-60 flex flex-col justify-between h-36 cursor-not-allowed select-none"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="h-7 w-7 bg-muted text-muted-foreground flex items-center justify-center rounded">
+                          <Icon name="FileText" className="h-3.5 w-3.5" />
+                        </div>
+                        <span className="text-[9px] font-bold uppercase tracking-widest bg-muted text-muted-foreground px-2 py-0.5 rounded border border-border">
+                          {tool.badge}
+                        </span>
+                      </div>
+                      <h3 className="text-xs font-bold text-muted-foreground mb-1">{tool.name}</h3>
+                      <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">{tool.description}</p>
+                    </div>
+                    <div className="text-[9px] text-muted-foreground/80 pt-1.5 border-t border-border/20">
+                      Status: Local feasibility testing
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
-
-            {/* Middle Ad - Medium Rectangle */}
-            <AdContainer slot="middle" />
-
-            {/* Highlighted Sections */}
-            {publishedTools.length > 0 && (
-              <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                
-                {/* Popular Tools */}
-                <div>
-                  <div className="flex items-center gap-2 mb-5">
-                    <Flame className="h-5 w-5 text-orange-500" />
-                    <h2 className="text-lg font-bold text-foreground">Most Popular</h2>
-                  </div>
-                  {popularTools.length > 0 ? (
-                    <div className="space-y-4">
-                      {popularTools.map((tool) => (
-                        <ToolCard key={tool.id} tool={tool} />
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground italic border border-border p-4 bg-muted/10">
-                      No popular tools yet.
-                    </p>
-                  )}
-                </div>
-
-                {/* Recently Added */}
-                <div>
-                  <div className="flex items-center gap-2 mb-5">
-                    <Calendar className="h-5 w-5 text-blue-500" />
-                    <h2 className="text-lg font-bold text-foreground">Recently Added</h2>
-                  </div>
-                  {recentlyAddedTools.length > 0 ? (
-                    <div className="space-y-4">
-                      {recentlyAddedTools.map((tool) => (
-                        <ToolCard key={tool.id} tool={tool} />
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground italic border border-border p-4 bg-muted/10">
-                      No recent additions.
-                    </p>
-                  )}
-                </div>
-              </section>
-            )}
-
-            {/* Coming Soon Tools */}
-            {comingSoonTools.length > 0 && (
-              <section className="border-t-2 border-border pt-10">
-                <div className="flex items-center justify-between border-b-2 border-border pb-4 mb-6">
-                  <div>
-                    <h2 className="text-xl font-bold text-foreground tracking-tight">Development Roadmap</h2>
-                    <p className="text-sm text-muted-foreground mt-1">Upcoming tools in various stages of development.</p>
-                  </div>
-                  <span className="inline-flex items-center bg-blue-500/10 text-blue-700 dark:text-blue-400 px-3 py-1 border border-blue-500/20 text-xs font-bold uppercase tracking-wider">
-                    {comingSoonTools.length} Pipeline
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {comingSoonTools.map((tool) => (
-                    <ToolCard key={tool.id} tool={tool} />
-                  ))}
-                </div>
-              </section>
-            )}
 
             {/* FAQ Section */}
             <section className="border-t-2 border-border pt-10">
@@ -251,10 +260,10 @@ export default function Home() {
           </div>
 
           {/* Sidebar Column - 1/4 width */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-20 self-start">
             
             {/* Categories Navigation */}
-            <div className="bg-card border-2 border-border card-depth-1 sticky top-20">
+            <div className="bg-card border-2 border-border card-depth-1">
               <div className="p-4 border-b-2 border-border bg-muted/20">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
                   Browse Categories
