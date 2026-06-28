@@ -79,17 +79,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
+      - name: Install Semgrep
+        run: pip install semgrep
+
       - name: Run Semgrep scan
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: >-
-            p/javascript
-            p/typescript
-            p/react
-            p/nextjs
-            p/owasp-top-10
-          args: --sarif --output semgrep.sarif
-        continue-on-error: true
+        run: >
+          semgrep scan
+          --config p/javascript
+          --config p/typescript
+          --config p/react
+          --config p/nextjs
+          --config p/owasp-top-ten
+          --sarif
+          --output semgrep.sarif
+          || true
 
       - name: Run Trivy Scan
         uses: aquasecurity/trivy-action@v0.36.0

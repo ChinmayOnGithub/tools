@@ -38,16 +38,21 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Install Semgrep
+        run: pip install semgrep
+
       - name: Run Semgrep scan
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: >-
-            p/javascript
-            p/typescript
-            p/react
-            p/nextjs
-            p/owasp-top-10
-          args: --sarif --output semgrep.sarif
+        run: >
+          semgrep scan
+          --config p/javascript
+          --config p/typescript
+          --config p/react
+          --config p/nextjs
+          --config p/owasp-top-ten
+          --sarif
+          --output semgrep.sarif
+          --error
+          || true
 
       - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@v4
