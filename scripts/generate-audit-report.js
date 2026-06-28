@@ -92,7 +92,16 @@ const summaryFile = process.env.GITHUB_STEP_SUMMARY;
 if (summaryFile) {
   fs.writeFileSync(summaryFile, markdownReport);
   console.log('Markdown report appended to GITHUB_STEP_SUMMARY');
-} else {
-  fs.writeFileSync('quality-report.md', markdownReport);
-  console.log('Local report written to quality-report.md');
+}
+
+// Always generate a local file copy inside the docs folder for easy access
+try {
+  const docsDir = path.join(__dirname, '../docs');
+  if (!fs.existsSync(docsDir)) {
+    fs.mkdirSync(docsDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(docsDir, 'quality-report.md'), markdownReport);
+  console.log('Local report written to docs/quality-report.md');
+} catch (err) {
+  console.error('Failed to write local quality-report.md:', err);
 }
