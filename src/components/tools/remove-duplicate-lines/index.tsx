@@ -134,7 +134,7 @@ export default function RemoveDuplicateLines() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 w-full" />;
   }
 
   // Count lines removed
@@ -145,14 +145,14 @@ export default function RemoveDuplicateLines() {
   return (
     <div className="space-y-6 w-full">
       {/* Privacy pledge indicators banner */}
-      <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-3 rounded-lg text-[10px] sm:text-xs font-bold flex flex-wrap gap-x-4 gap-y-1">
+      <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-3 text-[10px] sm:text-xs font-bold flex flex-wrap gap-x-4 gap-y-1">
         <span>✓ Browser-Only Cleanups</span>
         <span>✓ Lists Never Uploaded</span>
         <span>✓ Free & Secure Forever</span>
       </div>
 
       {/* Action controls panel */}
-      <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 rounded-lg border">
+      <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 border-2 border-border">
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
             Upload List File
@@ -176,7 +176,7 @@ export default function RemoveDuplicateLines() {
 
       {/* File error notification */}
       {fileError && (
-        <div className="p-3 rounded-lg text-xs font-semibold border bg-destructive/10 text-destructive border-destructive/20">
+        <div className="p-3 text-xs font-semibold border-2 bg-destructive/10 text-destructive border-destructive/20">
           {fileError}
         </div>
       )}
@@ -216,7 +216,7 @@ export default function RemoveDuplicateLines() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as 'none' | 'asc' | 'desc')}
-              className="bg-background border border-input rounded-md px-2.5 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-ring"
+              className="bg-background border-2 border-input px-2.5 py-1 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary"
               aria-label="Output sorting options"
             >
               <option value="none">{t.sortNone}</option>
@@ -229,7 +229,7 @@ export default function RemoveDuplicateLines() {
 
       {/* Cleaned counts summary box */}
       {input && removedCount > 0 && (
-        <div className="p-3 rounded-lg text-xs font-bold border bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
+        <div className="p-3 text-xs font-bold border-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
           {t.summaryText.replace('{count}', String(removedCount))}
         </div>
       )}

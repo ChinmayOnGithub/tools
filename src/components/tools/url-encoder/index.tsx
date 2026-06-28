@@ -82,13 +82,13 @@ export default function URLEncoder() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 w-full" />;
   }
 
   return (
     <div className="space-y-6 w-full">
       {/* Controls panel */}
-      <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 rounded-lg border">
+      <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 border-2 border-border">
         <div className="flex flex-wrap gap-2">
           <Button
             variant={mode === 'encode' ? 'default' : 'outline'}
@@ -124,7 +124,7 @@ export default function URLEncoder() {
 
       {/* Validation Message Box */}
       {errorMsg && (
-        <div className="p-3 rounded-lg text-xs font-semibold border bg-destructive/10 text-destructive border-destructive/20">
+        <div className="p-3 text-xs font-semibold border-2 bg-destructive/10 text-destructive border-destructive/20">
           {errorMsg}
         </div>
       )}

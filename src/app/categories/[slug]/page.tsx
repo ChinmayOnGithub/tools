@@ -55,7 +55,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       </nav>
 
       {/* Header Panel */}
-      <section className="border-b pb-6">
+      <section className="border-b-2 border-border pb-6">
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
           {category.title}
         </h1>
@@ -65,42 +65,48 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       </section>
 
       {/* Ad slot */}
-      <AdContainer />
+      <AdContainer slot="top" />
 
       {/* Tools Loop Grid */}
       <main id="content" className="min-h-[40vh] space-y-12">
         {/* Available Tools */}
         <div>
-          <h2 className="text-base font-bold tracking-tight text-foreground mb-4">
-            Available Tools ({availableTools.length})
-          </h2>
+          <div className="flex items-center justify-between border-b-2 border-border pb-4 mb-6">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
+              Available Tools
+            </h2>
+            <span className="inline-flex items-center bg-green-500/10 text-green-700 dark:text-green-400 px-3 py-1 border border-green-500/20 text-xs font-bold uppercase tracking-wider">
+              {availableTools.length} Live
+            </span>
+          </div>
           {availableTools.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {availableTools.map((tool) => (
-                <div key={tool.id}>
-                  <ToolCard tool={tool} />
-                </div>
+                <ToolCard key={tool.id} tool={tool} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-10 border border-dashed rounded-xl max-w-md mx-auto">
-              <p className="text-sm font-semibold text-foreground">No active utilities ready yet</p>
-              <p className="text-xs text-muted-foreground mt-1">We are actively compiling tools for this section. Check out upcoming plans below.</p>
+            <div className="text-center py-16 border-2 border-dashed border-border bg-muted/20 max-w-lg mx-auto">
+              <p className="text-sm font-bold text-foreground">No Tools Available</p>
+              <p className="text-xs text-muted-foreground mt-1">Check upcoming tools below or explore other categories.</p>
             </div>
           )}
         </div>
 
         {/* Upcoming Tools */}
         {upcomingTools.length > 0 && (
-          <div className="border-t pt-8">
-            <h2 className="text-base font-bold tracking-tight text-foreground mb-4">
-              Coming Soon ({upcomingTools.length})
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="border-t-2 border-border pt-10">
+            <div className="flex items-center justify-between border-b-2 border-border pb-4 mb-6">
+              <h2 className="text-xl font-bold tracking-tight text-foreground">
+                Coming Soon
+              </h2>
+              <span className="inline-flex items-center bg-blue-500/10 text-blue-700 dark:text-blue-400 px-3 py-1 border border-blue-500/20 text-xs font-bold uppercase tracking-wider">
+                {upcomingTools.length} Pipeline
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {upcomingTools.map((tool) => (
-                <div key={tool.id} className="opacity-75 hover:opacity-100 transition-opacity">
-                  <ToolCard tool={tool} />
-                </div>
+                <ToolCard key={tool.id} tool={tool} />
               ))}
             </div>
           </div>
@@ -108,7 +114,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       </main>
 
       {/* Bottom Ad slot */}
-      <AdContainer />
+      <AdContainer slot="bottom" />
     </div>
   );
 }

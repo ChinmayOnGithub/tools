@@ -76,7 +76,7 @@ export default function StopwatchComponent() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 w-full" />;
   }
 
   return (
@@ -90,7 +90,7 @@ export default function StopwatchComponent() {
         
         <CardContent className="space-y-8">
           {/* Large timer display */}
-          <div className="flex flex-col items-center justify-center p-6 border rounded-xl bg-muted/10">
+          <div className="flex flex-col items-center justify-center p-6 border-2 border-border bg-muted/10">
             <span 
               className="font-mono text-4xl sm:text-5xl font-extrabold tracking-widest text-primary"
               aria-live="polite"
@@ -147,7 +147,7 @@ export default function StopwatchComponent() {
                 {t.lapListHeader} ({laps.length})
               </span>
 
-              <div className="border rounded-lg overflow-hidden max-h-[220px] overflow-y-auto pr-1">
+              <div className="border-2 border-border overflow-hidden max-h-[220px] overflow-y-auto pr-1">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-muted/30 border-b font-bold text-muted-foreground">

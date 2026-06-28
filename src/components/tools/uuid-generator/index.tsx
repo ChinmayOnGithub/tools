@@ -47,7 +47,7 @@ export default function UUIDGenerator() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 w-full" />;
   }
 
   return (
@@ -119,7 +119,7 @@ export default function UUIDGenerator() {
             value={output.join('\n')}
             placeholder={t.placeholder}
             rows={10}
-            className="w-full rounded-md border border-input bg-muted/40 p-3 font-mono text-xs shadow-sm focus:outline-none focus:ring-1 focus:ring-ring focus:ring-offset-1 resize-y"
+            className="w-full border-2 border-input bg-muted/40 p-3 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-primary resize-y"
             aria-label="Generated UUID outputs"
           />
         </div>

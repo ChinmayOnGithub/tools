@@ -78,7 +78,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       aria-modal="true"
       aria-label="Search tools"
     >
-      <div className="w-full max-w-2xl bg-card border rounded-xl shadow-lg flex flex-col max-h-[70vh] overflow-hidden">
+      <div className="w-full max-w-2xl bg-card border-2 border-border card-depth-2 flex flex-col max-h-[70vh] overflow-hidden">
         {/* Search Input Box */}
         <div className="flex items-center gap-3 px-4 border-b h-14 shrink-0">
           <Search className="h-5 w-5 text-muted-foreground" />
@@ -113,7 +113,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   <button 
                     key={s} 
                     onClick={() => setQuery(s)}
-                    className="text-xs bg-muted hover:bg-primary/10 hover:text-primary px-2.5 py-1 rounded transition-colors cursor-pointer"
+                    className="text-xs bg-muted hover:bg-primary hover:text-primary-foreground px-3 py-1.5 border-2 border-border hover:border-primary transition-all font-bold cursor-pointer"
                   >
                     {s}
                   </button>
@@ -130,7 +130,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   key={tool.id}
                   href={`/tools/${tool.id}`}
                   onClick={onClose}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-accent group transition-colors border border-transparent hover:border-border"
+                  className="flex items-center justify-between p-3 hover:bg-accent group transition-colors border-2 border-transparent hover:border-primary mb-2"
                 >
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-semibold group-hover:text-primary transition-colors">
@@ -142,11 +142,11 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     {tool.status !== 'published' && (
-                      <span className="text-[9px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded font-semibold border border-amber-500/20 select-none">
+                      <span className="text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 border border-amber-500/20 font-bold uppercase tracking-wider select-none">
                         Coming Soon
                       </span>
                     )}
-                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded capitalize font-medium">
+                    <span className="text-[10px] bg-primary/10 text-primary px-2.5 py-1 border border-primary/20 capitalize font-bold uppercase tracking-wider">
                       {tool.category}
                     </span>
                     <CornerDownLeft className="h-4 w-4 text-muted-foreground/0 group-hover:text-muted-foreground/80 transition-colors" />

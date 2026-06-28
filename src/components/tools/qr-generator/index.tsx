@@ -98,7 +98,7 @@ export default function QrGeneratorComponent() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 w-full" />;
   }
 
   return (
@@ -126,10 +126,10 @@ export default function QrGeneratorComponent() {
             />
           </div>
 
-          <div className="flex flex-col md:flex-row gap-6 border-t pt-4">
+          <div className="flex flex-col md:flex-row gap-6 border-t-2 border-border pt-4">
             {/* Visual Canvas box */}
-            <div className="flex flex-col items-center justify-center p-4 border rounded-lg bg-muted/5 shrink-0 w-full md:w-auto">
-              <div className="border bg-white rounded p-2 overflow-hidden flex items-center justify-center min-h-[160px] min-w-[160px]">
+            <div className="flex flex-col items-center justify-center p-4 border-2 border-border bg-muted/5 shrink-0 w-full md:w-auto">
+              <div className="border-2 border-border bg-white p-2 overflow-hidden flex items-center justify-center min-h-[160px] min-w-[160px]">
                 <canvas ref={canvasRef} style={{ width: '150px', height: '150px' }} />
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function QrGeneratorComponent() {
 
           {/* Success / Result details */}
           {success && downloadUrl && (
-            <div className="bg-emerald-500/10 border-2 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-lg flex flex-col gap-2 text-xs font-semibold leading-relaxed">
+            <div className="bg-emerald-500/10 border-2 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-4 flex flex-col gap-2 text-xs font-semibold leading-relaxed">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5" />
                 <span>{t.successMessage}</span>

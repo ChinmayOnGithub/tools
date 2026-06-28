@@ -9,16 +9,14 @@ export function Badge({ className, variant = 'default', ...props }: BadgeProps) 
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 select-none",
-        variant === 'default' && "border-transparent bg-primary text-primary-foreground shadow",
-        variant === 'secondary' && "border-transparent bg-secondary text-secondary-foreground",
-        variant === 'destructive' && "border-transparent bg-destructive text-destructive-foreground shadow",
-        variant === 'outline' && "text-foreground",
+        "inline-flex items-center border-2 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-ring select-none",
+        variant === 'default' && "border-primary bg-primary text-primary-foreground",
+        variant === 'secondary' && "border-border bg-secondary text-secondary-foreground",
+        variant === 'destructive' && "border-destructive bg-destructive text-destructive-foreground",
+        variant === 'outline' && "border-border text-foreground",
         className
       )}
       {...props}
     />
   );
 }
-
-export default Badge;

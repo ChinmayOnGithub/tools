@@ -64,7 +64,7 @@ export default function UnitConverterComponent() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 w-full" />;
   }
 
   return (
@@ -84,7 +84,7 @@ export default function UnitConverterComponent() {
               id="category-select"
               value={category}
               onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full h-10 border border-input rounded-md px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="w-full h-10 border-2 border-input px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <option value="length">Length</option>
               <option value="weight">Weight & Mass</option>
@@ -121,7 +121,7 @@ export default function UnitConverterComponent() {
                   id="from-select"
                   value={fromUnit}
                   onChange={(e) => setFromUnit(e.target.value)}
-                  className="w-full h-10 border border-input rounded-md px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none"
+                  className="w-full h-10 border-2 border-input px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   {getUnitsForCategory().map((u) => (
                     <option key={u.val} value={u.val}>{u.label}</option>
@@ -154,7 +154,7 @@ export default function UnitConverterComponent() {
                   id="to-select"
                   value={toUnit}
                   onChange={(e) => setToUnit(e.target.value)}
-                  className="w-full h-10 border border-input rounded-md px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none"
+                  className="w-full h-10 border-2 border-input px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   {getUnitsForCategory().map((u) => (
                     <option key={u.val} value={u.val}>{u.label}</option>

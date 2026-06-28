@@ -126,7 +126,7 @@ export default function WordCounter() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 w-full" />;
   }
 
   const stats = calculateTextStats(input);
@@ -134,14 +134,14 @@ export default function WordCounter() {
   return (
     <div className="space-y-6 w-full">
       {/* Privacy pledge indicators banner */}
-      <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-3 rounded-lg text-[10px] sm:text-xs font-bold flex flex-wrap gap-x-4 gap-y-1">
+      <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-3 text-[10px] sm:text-xs font-bold flex flex-wrap gap-x-4 gap-y-1">
         <span>✓ 100% In-Browser Analysis</span>
         <span>✓ Text Never Leaves Your Device</span>
         <span>✓ Free & Secure Forever</span>
       </div>
 
       {/* Action controls */}
-      <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 rounded-lg border">
+      <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 border-2 border-border">
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
             Upload Text File
@@ -176,7 +176,7 @@ export default function WordCounter() {
 
       {/* File error notification */}
       {fileError && (
-        <div className="p-3 rounded-lg text-xs font-semibold border bg-destructive/10 text-destructive border-destructive/20">
+        <div className="p-3 text-xs font-semibold border-2 bg-destructive/10 text-destructive border-destructive/20">
           {fileError}
         </div>
       )}
@@ -228,28 +228,28 @@ export default function WordCounter() {
             <CardContent className="p-4 space-y-4">
               {/* Primary metrics boxes */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-primary/5 p-3 rounded-lg border border-primary/10 flex flex-col items-center justify-center text-center">
+                <div className="bg-primary/5 p-3 border-2 border-primary/10 flex flex-col items-center justify-center text-center">
                   <span className="text-2xl font-extrabold text-primary font-mono">{stats.words}</span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">
                     {t.words}
                   </span>
                 </div>
                 
-                <div className="bg-secondary/40 p-3 rounded-lg border flex flex-col items-center justify-center text-center">
+                <div className="bg-secondary/40 p-3 border-2 border-border flex flex-col items-center justify-center text-center">
                   <span className="text-2xl font-extrabold text-foreground font-mono">{stats.characters}</span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">
                     {t.characters}
                   </span>
                 </div>
 
-                <div className="bg-secondary/40 p-3 rounded-lg border flex flex-col items-center justify-center text-center">
+                <div className="bg-secondary/40 p-3 border-2 border-border flex flex-col items-center justify-center text-center">
                   <span className="text-xl font-extrabold text-foreground font-mono">{stats.sentences}</span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">
                     {t.sentences}
                   </span>
                 </div>
 
-                <div className="bg-secondary/40 p-3 rounded-lg border flex flex-col items-center justify-center text-center">
+                <div className="bg-secondary/40 p-3 border-2 border-border flex flex-col items-center justify-center text-center">
                   <span className="text-xl font-extrabold text-foreground font-mono">{stats.paragraphs}</span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">
                     {t.paragraphs}

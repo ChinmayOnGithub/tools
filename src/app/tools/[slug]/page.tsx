@@ -147,8 +147,8 @@ export default async function ToolWrapperPage({ params }: PageProps) {
         </nav>
 
         {/* Coming Soon Hero */}
-        <div className="text-center py-12 px-6 bg-muted/10 border border-dashed rounded-xl flex flex-col items-center gap-4">
-          <span className="text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1 rounded font-semibold border border-amber-500/20 select-none">
+        <div className="text-center py-12 px-6 bg-muted/10 border-2 border-dashed border-border flex flex-col items-center gap-4">
+          <span className="text-[10px] bg-amber-500/10 text-amber-700 dark:text-amber-400 px-3 py-1 border border-amber-500/20 font-bold uppercase tracking-wider select-none">
             {getLifecycleLabel(tool.status)}
           </span>
           <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
@@ -160,7 +160,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
           <div className="mt-2 flex flex-col sm:flex-row gap-4">
             <Link
               href="/"
-              className="inline-flex h-9 items-center justify-center rounded bg-primary px-4 text-xs font-semibold text-primary-foreground shadow hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="inline-flex h-10 items-center justify-center border-2 border-primary bg-primary px-6 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               Explore Available Tools
             </Link>
@@ -170,14 +170,12 @@ export default async function ToolWrapperPage({ params }: PageProps) {
         {/* Related Published Recommendations */}
         {relatedPublished.length > 0 && (
           <div className="space-y-4">
-            <h2 className="text-sm font-bold tracking-tight text-foreground">
+            <h2 className="text-lg font-bold tracking-tight text-foreground">
               Working Alternatives Available Today:
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {relatedPublished.map((relTool) => (
-                <div key={relTool.id}>
-                  <ToolCard tool={relTool} />
-                </div>
+                <ToolCard key={relTool.id} tool={relTool} />
               ))}
             </div>
           </div>
@@ -225,19 +223,19 @@ export default async function ToolWrapperPage({ params }: PageProps) {
 
       {/* Local trust indicators */}
       <div className="flex flex-wrap gap-2 select-none">
-        <span className="inline-flex items-center rounded bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+        <span className="inline-flex items-center bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
           Local Processing
         </span>
-        <span className="inline-flex items-center rounded bg-blue-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400 border border-blue-500/20">
+        <span className="inline-flex items-center bg-blue-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 border border-blue-500/20">
           Privacy Safe
         </span>
-        <span className="inline-flex items-center rounded bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+        <span className="inline-flex items-center bg-indigo-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 border border-indigo-500/20">
           No Uploads
         </span>
-        <span className="inline-flex items-center rounded bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-purple-600 dark:text-purple-400 border border-purple-500/20">
+        <span className="inline-flex items-center bg-purple-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 border border-purple-500/20">
           100% Free
         </span>
-        <span className="inline-flex items-center rounded bg-pink-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-pink-600 dark:text-pink-400 border border-pink-500/20">
+        <span className="inline-flex items-center bg-pink-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-pink-700 dark:text-pink-400 border border-pink-500/20">
           Instant
         </span>
       </div>
@@ -270,16 +268,16 @@ export default async function ToolWrapperPage({ params }: PageProps) {
           </div>
 
           {/* Example Input / Output mockup */}
-          <div className="bg-muted/30 border rounded-lg p-4 space-y-3">
+          <div className="bg-muted/30 border-2 border-border p-4 space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Example Conversions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
               <div className="space-y-1">
                 <span className="text-muted-foreground">Sample Input:</span>
-                <pre className="p-2.5 bg-background border rounded font-mono text-[11px] overflow-auto max-h-32 whitespace-pre-wrap">{seoContent.exampleInput}</pre>
+                <pre className="p-2.5 bg-background border-2 border-border font-mono text-[11px] overflow-auto max-h-32 whitespace-pre-wrap">{seoContent.exampleInput}</pre>
               </div>
               <div className="space-y-1">
                 <span className="text-muted-foreground">Sample Output:</span>
-                <pre className="p-2.5 bg-background border rounded font-mono text-[11px] overflow-auto max-h-32 whitespace-pre-wrap">{seoContent.exampleOutput}</pre>
+                <pre className="p-2.5 bg-background border-2 border-border font-mono text-[11px] overflow-auto max-h-32 whitespace-pre-wrap">{seoContent.exampleOutput}</pre>
               </div>
             </div>
           </div>
@@ -290,7 +288,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
               <h2 className="text-sm font-bold tracking-tight text-foreground">Frequently Asked Questions</h2>
               <div className="space-y-3 text-xs font-semibold">
                 {seoContent.faqs.map((faq, index) => (
-                  <div key={index} className="border rounded-lg p-3.5 bg-card">
+                  <div key={index} className="border-2 border-border p-3.5 bg-card card-depth-1">
                     <h3 className="font-bold text-foreground mb-1">{faq.q}</h3>
                     <p className="text-muted-foreground leading-relaxed">{faq.a}</p>
                   </div>
@@ -303,22 +301,20 @@ export default async function ToolWrapperPage({ params }: PageProps) {
 
       {/* Related Utilities Showcase */}
       {relatedPublished.length > 0 && (
-        <section className="border-t pt-6 mt-4">
-          <h2 className="text-sm font-bold tracking-tight text-foreground mb-4">
+        <section className="border-t-2 border-border pt-6 mt-4">
+          <h2 className="text-lg font-bold tracking-tight text-foreground mb-4">
             Related Tools
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {relatedPublished.map((relTool) => (
-              <div key={relTool.id}>
-                <ToolCard tool={relTool} trackingLabel={`${tool.id} -> ${relTool.id}`} />
-              </div>
+              <ToolCard key={relTool.id} tool={relTool} trackingLabel={`${tool.id} -> ${relTool.id}`} />
             ))}
           </div>
         </section>
       )}
 
       {/* Ad Container strictly at the bottom */}
-      <AdContainer />
+      <AdContainer slot="bottom" />
     </div>
   );
 }
