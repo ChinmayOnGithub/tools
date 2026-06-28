@@ -1,0 +1,25 @@
+{
+  "title": "Convert Image Format Locally",
+  "description": "Convert PNG, JPG, WebP, SVG, or GIF images into PNG, JPEG, or WebP target formats locally in your browser memory.",
+  "dragDropPlaceholder": "Drag & drop one or more images here, or click to upload",
+  "dragDropActive": "Drop your images now...",
+  "selectedImages": "Selected Images",
+  "targetFormatLabel": "Select Target Format",
+  "convertButton": "Convert Images",
+  "convertingStatus": "Converting images... Please wait.",
+  "clearButton": "Clear List",
+  "invalidFileError": "File format is not supported or image is corrupted.",
+  "emptyFileError": "Please upload an image first.",
+  "successMessage": "Image format conversion successful! Downloading output files.",
+  "downloadPrompt": "If download does not start automatically, click here.",
+  "faq": [
+    {
+      "q": "How does local image format conversion work?",
+      "a": "CoolTools parses your image file locally and draws it onto an HTML5 Canvas container, serializing the data to your chosen output MIME type using in-browser native encoders."
+    },
+    {
+      "q": "Does WebP conversion preserve transparency?",
+      "a": "Yes! WebP (and PNG) support transparency, meaning background alpha channels are preserved, while JPEGs automatically default transparent pixels to solid black or white backgrounds."
+    }
+  ]
+}

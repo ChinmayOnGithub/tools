@@ -1,0 +1,19 @@
+{
+  "title": "Universal Unit Converter",
+  "description": "Convert metric and imperial units locally for Length, Weight, Temperature, Area, Volume, Time, and Speed.",
+  "categoryLabel": "Select Conversion Type",
+  "fromLabel": "From Unit",
+  "toLabel": "To Unit",
+  "inputValueLabel": "Enter Value",
+  "outputValueLabel": "Conversion Result",
+  "faq": [
+    {
+      "q": "How does local unit conversion work?",
+      "a": "CoolTools processes mathematical formulas and conversion factor constants entirely locally in your browser memory."
+    },
+    {
+      "q": "Which conversion categories are supported?",
+      "a": "We support Length (meters, feet, etc.), Weight (kilograms, pounds, etc.), Temperature (Celsius, Fahrenheit, Kelvin), Area, Volume, Time, and Speed."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Stopwatch Utility",
+  "description": "A high-precision stopwatch with millisecond accuracy and lap recording capability.",
+  "startButton": "Start",
+  "pauseButton": "Pause",
+  "lapButton": "Lap",
+  "resetButton": "Reset",
+  "lapListHeader": "Recorded Laps",
+  "lapNumber": "Lap",
+  "lapTime": "Lap Time",
+  "overallTime": "Total Time",
+  "faq": [
+    {
+      "q": "How accurate is the stopwatch?",
+      "a": "The stopwatch connects directly to the browser's performance.now() clock, giving high-resolution accuracy matching sub-millisecond ranges."
+    },
+    {
+      "q": "Can I copy my recorded laps?",
+      "a": "Yes! We keep recorded laps in a simple local table interface so you can copy or print the list easily."
+    }
+  ]
+}

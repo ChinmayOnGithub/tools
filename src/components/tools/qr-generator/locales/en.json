@@ -1,0 +1,24 @@
+{
+  "title": "QR Code Generator",
+  "description": "Create customizable QR codes instantly from URLs, text, or contact information. Processed 100% locally.",
+  "inputPlaceholder": "Enter text or URL to encode",
+  "settingsHeader": "QR Customization",
+  "sizeLabel": "Size (px)",
+  "fgColorLabel": "Foreground Color",
+  "bgColorLabel": "Background Color",
+  "generateButton": "Generate QR Code",
+  "emptyInputError": "Please enter some text or URL to generate a QR code.",
+  "generationFailedError": "Failed to generate QR code. Please try again.",
+  "successMessage": "QR code generated successfully! Downloading file.",
+  "downloadPrompt": "If download does not start automatically, click here.",
+  "faq": [
+    {
+      "q": "Are my QR codes private?",
+      "a": "Yes. Generation runs entirely inside your browser sandbox using the qrcode library. Your input text is never uploaded to remote servers."
+    },
+    {
+      "q": "What data can be encoded?",
+      "a": "You can encode website links (URLs), text messages, emails, Wi-Fi details, or phone numbers. Any alphanumeric string is supported."
+    }
+  ]
+}

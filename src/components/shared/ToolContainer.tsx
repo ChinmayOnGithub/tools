@@ -69,6 +69,58 @@ const TOOLS_COMPONENTS: Record<string, ComponentType> = {
     loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
     ssr: false,
   }),
+  'pdf-compress': dynamic(() => import('@/components/tools/pdf-compress'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'images-to-pdf': dynamic(() => import('@/components/tools/images-to-pdf'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'image-compressor': dynamic(() => import('@/components/tools/image-compressor'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'image-resizer': dynamic(() => import('@/components/tools/image-resizer'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'image-format-converter': dynamic(() => import('@/components/tools/image-format-converter'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'image-cropper': dynamic(() => import('@/components/tools/image-cropper'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'fullscreen-clock': dynamic(() => import('@/components/tools/fullscreen-clock'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'stopwatch': dynamic(() => import('@/components/tools/stopwatch'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'countdown-timer': dynamic(() => import('@/components/tools/countdown-timer'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'qr-generator': dynamic(() => import('@/components/tools/qr-generator'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'barcode-generator': dynamic(() => import('@/components/tools/barcode-generator'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'color-picker': dynamic(() => import('@/components/tools/color-picker'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
+  'unit-converter': dynamic(() => import('@/components/tools/unit-converter'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
 };
 
 interface ToolContainerProps {

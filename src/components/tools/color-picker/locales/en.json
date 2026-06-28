@@ -1,0 +1,20 @@
+{
+  "title": "Color Picker & Palette Generator",
+  "description": "Select colors, inspect HEX/RGB/HSL values, and generate harmonious analogous, complementary, and triadic color palettes.",
+  "settingsHeader": "Selected Color Codes",
+  "paletteComplementary": "Complementary Palette",
+  "paletteAnalogous": "Analogous Palette",
+  "paletteTriadic": "Triadic Palette",
+  "paletteMonochromatic": "Monochromatic Palette",
+  "copiedMessage": "Copied hex value to clipboard!",
+  "faq": [
+    {
+      "q": "How do I choose a color?",
+      "a": "Click the central color swapper icon to open your operating system's native color picker panel, or enter a custom hex code directly into the input fields."
+    },
+    {
+      "q": "What do complementary and triadic palettes mean?",
+      "a": "Complementary colors are opposites on the color wheel (perfect for high-contrast accents). Triadic colors are three colors spaced evenly, yielding balanced palettes."
+    }
+  ]
+}

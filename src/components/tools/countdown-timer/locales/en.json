@@ -1,0 +1,20 @@
+{
+  "title": "Countdown Timer",
+  "description": "A customizable local countdown timer with Web Audio alarm notifications when complete.",
+  "startButton": "Start Timer",
+  "pauseButton": "Pause",
+  "resetButton": "Reset",
+  "hourLabel": "Hours",
+  "minuteLabel": "Minutes",
+  "secondLabel": "Seconds",
+  "faq": [
+    {
+      "q": "How does the countdown alarm work?",
+      "a": "When the timer hits zero, CoolTools uses the browser's Web Audio API to synthesize a pleasant electronic alarm chime. No remote audio assets are loaded."
+    },
+    {
+      "q": "Will the timer work if I switch tabs?",
+      "a": "Yes. The timer updates by computing timestamps relative to system performance time, ensuring precision even when the tab is backgrounded."
+    }
+  ]
+}

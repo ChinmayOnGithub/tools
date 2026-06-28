@@ -1,0 +1,18 @@
+{
+  "title": "Fullscreen Digital Clock",
+  "description": "A beautiful, customizable fullscreen digital clock for productivity, studying, and desk display.",
+  "timeFormatLabel": "24-Hour Format",
+  "showSecondsLabel": "Show Seconds",
+  "showDateLabel": "Show Date",
+  "fullscreenButton": "Toggle Fullscreen Mode",
+  "faq": [
+    {
+      "q": "How do I toggle fullscreen mode?",
+      "a": "Click the 'Toggle Fullscreen Mode' button, or press the 'F11' key on your keyboard. Press 'Escape' to exit fullscreen at any time."
+    },
+    {
+      "q": "Is the clock synchronized automatically?",
+      "a": "Yes. The clock hooks directly into your system time and uses high-precision requestAnimationFrame animations to render frame changes instantly."
+    }
+  ]
+}

@@ -44,8 +44,28 @@ export default function Home() {
     .sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime())
     .slice(0, 3);
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tools.chinmaypatil.com';
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    'name': 'CoolTools',
+    'url': siteUrl,
+    'potentialAction': {
+      '@type': 'SearchAction',
+      'target': {
+        '@type': 'EntryPoint',
+        'urlTemplate': `${siteUrl}/?q={search_term_string}`
+      },
+      'query-input': 'required name=search_term_string'
+    }
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
       <ScrollControls />
       
       <div className="flex flex-col gap-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">

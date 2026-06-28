@@ -1,0 +1,26 @@
+{
+  "title": "Compress PDF Documents Locally",
+  "description": "Reduce the file size of your PDF files securely in your web browser. Zero server uploads.",
+  "dragDropPlaceholder": "Drag & drop a PDF file here, or click to upload",
+  "dragDropActive": "Drop your PDF file now...",
+  "selectedFile": "Selected Document",
+  "fileSize": "File Size",
+  "compressedSize": "Compressed Size",
+  "reduction": "Size Reduction",
+  "compressButton": "Compress PDF File",
+  "compressingStatus": "Optimizing PDF... Please wait.",
+  "invalidFileError": "File is corrupted or not a valid PDF document.",
+  "emptyFileError": "Please upload a PDF document first.",
+  "successMessage": "PDF compressed successfully! Downloading output file.",
+  "downloadPrompt": "If download does not start automatically, click here.",
+  "faq": [
+    {
+      "q": "How does offline PDF compression work?",
+      "a": "CoolTools uses pdf-lib to re-serialize page trees into next-generation PDF Object Streams. This removes redundant headers, metadata, and duplicate references directly in browser memory."
+    },
+    {
+      "q": "Will my PDF lose image quality?",
+      "a": "No. Our browser-based serializer strips metadata structure bloat rather than aggressively downsampling your images, preserving document readability."
+    }
+  ]
+}

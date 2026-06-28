@@ -1,0 +1,28 @@
+{
+  "title": "Compress Image Locally",
+  "description": "Reduce the file size of your JPEG, PNG, or WebP images completely locally in your browser sandbox.",
+  "dragDropPlaceholder": "Drag & drop an image here, or click to upload",
+  "dragDropActive": "Drop your image now...",
+  "selectedImage": "Selected Image",
+  "compressionSettings": "Compression Configurations",
+  "qualityLabel": "Compression Quality",
+  "originalSize": "Original Size",
+  "compressedSize": "Optimized Size",
+  "reduction": "Size Reduction",
+  "compressButton": "Compress Image",
+  "compressingStatus": "Optimizing image... Please wait.",
+  "invalidFileError": "File is corrupted or not a valid image.",
+  "emptyFileError": "Please upload an image first.",
+  "successMessage": "Image optimized successfully! Downloading output file.",
+  "downloadPrompt": "If download does not start automatically, click here.",
+  "faq": [
+    {
+      "q": "How does local image compression work?",
+      "a": "CoolTools leverages the browser's native HTML5 Canvas API to serialize image buffers at a customized quality level (0.01 to 1.00). Processing happens entirely in-browser sandbox."
+    },
+    {
+      "q": "Will my image format be changed?",
+      "a": "No. The compressor maintains your source format (PNG, JPEG, WebP) by default, though PNG files are compressed as JPEGs or optimized WebPs for maximum file size reduction."
+    }
+  ]
+}

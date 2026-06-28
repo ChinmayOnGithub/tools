@@ -1,0 +1,25 @@
+{
+  "title": "Barcode Generator",
+  "description": "Create standard commercial barcodes instantly (CODE128, EAN13, EAN8, etc.) 100% locally in your browser.",
+  "inputPlaceholder": "Enter code content to generate",
+  "settingsHeader": "Barcode Customization",
+  "formatLabel": "Barcode Format",
+  "sizeLabel": "Line Width",
+  "heightLabel": "Line Height",
+  "generateButton": "Generate Barcode",
+  "emptyInputError": "Please enter a valid string to encode.",
+  "invalidEanError": "EAN13 requires exactly 12 or 13 numeric digits.",
+  "invalidEan8Error": "EAN8 requires exactly 7 or 8 numeric digits.",
+  "successMessage": "Barcode generated successfully! Downloading file.",
+  "downloadPrompt": "If download does not start automatically, click here.",
+  "faq": [
+    {
+      "q": "What barcode standards are supported?",
+      "a": "We support CODE128 (default), EAN13, EAN8, EAN5, EAN2, UPC-A, ITF, MSI, Pharmacode, and Codabar."
+    },
+    {
+      "q": "Are the generated barcodes vector graphics?",
+      "a": "Yes! The barcode is generated as a vector SVG element, meaning it can scale infinitely without pixelating or losing print scan quality."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Convert Images to PDF Locally",
+  "description": "Convert PNG, JPG, or WebP images into a single PDF document. Drag to reorder pages and convert 100% locally.",
+  "dragDropPlaceholder": "Drag & drop images here, or click to upload",
+  "dragDropActive": "Drop your images now...",
+  "selectedImages": "Selected Images",
+  "reorderGuidance": "Drag items to rearrange the page sequence in the PDF.",
+  "convertButton": "Convert Images to PDF",
+  "convertingStatus": "Converting images... Please wait.",
+  "clearButton": "Clear List",
+  "noImagesSelected": "Please select or drop at least one image file to convert.",
+  "invalidFileError": "File format is not supported or image is corrupted.",
+  "successMessage": "PDF document compiled successfully! Downloading file.",
+  "downloadPrompt": "If download does not start automatically, click here.",
+  "faq": [
+    {
+      "q": "Which image formats are supported?",
+      "a": "We support JPEG, PNG, WebP, SVG, and GIF. Format conversion happens locally in your browser memory before compiling the PDF."
+    },
+    {
+      "q": "Will my images be compressed?",
+      "a": "No. The converter preserves your original image resolution and dimensions, embedding each image on a separate page of matching size."
+    }
+  ]
+}

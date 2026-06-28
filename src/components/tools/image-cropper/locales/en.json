@@ -1,0 +1,23 @@
+{
+  "title": "Crop Image Locally",
+  "description": "Cut and crop images to your desired area completely in your browser. Zero server uploads.",
+  "dragDropPlaceholder": "Drag & drop an image here, or click to upload",
+  "dragDropActive": "Drop your image now...",
+  "selectedImage": "Selected Image",
+  "cropButton": "Crop & Download",
+  "croppingStatus": "Cropping image... Please wait.",
+  "invalidFileError": "File is corrupted or not a valid image.",
+  "emptyFileError": "Please upload an image first.",
+  "successMessage": "Image cropped successfully! Downloading output file.",
+  "downloadPrompt": "If download does not start automatically, click here.",
+  "faq": [
+    {
+      "q": "How does local image cropping work?",
+      "a": "CoolTools renders a draggable boundary frame overlay. The selected boundaries are mapped to natural source dimensions and painted onto Canvas for a lossless cut."
+    },
+    {
+      "q": "Is the original image quality preserved?",
+      "a": "Yes. We scale your screen crop frame to the natural pixel boundaries of the file, meaning no pixel compression or quality degradation is introduced."
+    }
+  ]
+}

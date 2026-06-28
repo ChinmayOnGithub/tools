@@ -191,5 +191,174 @@ export const SEO_CONTENT_MAP: Record<string, SeoToolContent> = {
       { q: 'How do I specify range configurations?', a: 'Input single pages or hyphens for continuous page ranges (e.g. 1-4, 6), separated by commas.' },
       { q: 'What happens if I split every page?', a: 'The tool splits the document page by page and displays separate download links for each page.' }
     ]
+  },
+  'pdf-compress': {
+    heading: 'Secure PDF Document Compressor & Optimizer',
+    explanation: 'Reduce the file size of your PDF documents locally using next-generation object stream serialization.',
+    whenToUse: 'Great for decreasing email attachments, cleaning duplicate stream blocks, or saving drive spaces.',
+    howItWorks: 'Uses pdf-lib to copy page trees to a new clean container, stripping redundant headers and metadata in local memory.',
+    privacyExplanation: 'All compression operations execute locally in your web browser. Zero server logs or file storage.',
+    exampleInput: 'Upload: document.pdf (4.5 MB)',
+    exampleOutput: 'Download: document_compressed.pdf (3.1 MB - 31% reduction)',
+    faqs: [
+      { q: 'Will my image resolutions be reduced?', a: 'No. The compressor cleans file structures rather than heavily compressing image layers, keeping document readability.' },
+      { q: 'Is there a file size limit?', a: 'We recommend uploading PDFs under 20MB for fast in-browser rendering.' }
+    ]
+  },
+  'images-to-pdf': {
+    heading: 'Secure Images to PDF Document Compiler',
+    explanation: 'Compile PNG, JPG, or WebP images into a single PDF document locally. Arrange page order easily.',
+    whenToUse: 'Perfect for compiling photo slides, scanning paperwork, or joining multiple receipts into one PDF.',
+    howItWorks: 'Draws incompatible image formats to Canvas to serialize as JPEGs/PNGs, then embeds them on PDF pages.',
+    privacyExplanation: 'Everything compiles locally in your web browser sandbox. No file uploads.',
+    exampleInput: 'Upload: slide1.png, slide2.jpg (arranged)',
+    exampleOutput: 'Download: images_compiled.pdf (2 pages)',
+    faqs: [
+      { q: 'Are all image formats supported?', a: 'Yes. PNG, JPEG, WebP, SVG, and GIF are supported and auto-converted if necessary.' },
+      { q: 'Can I reorder the images?', a: 'Yes. Drag and drop items in the list to rearrange the page sequence.' }
+    ]
+  },
+  'image-compressor': {
+    heading: 'Secure Client-Side Image Compressor & Size Optimizer',
+    explanation: 'Compress and optimize sizes of JPG, PNG, and WebP images client-side.',
+    whenToUse: 'Great for web assets, email attachments, and profile picture optimization.',
+    howItWorks: 'Uses Canvas API to serialize image arrays at custom quality levels and max dimensions.',
+    privacyExplanation: 'Processed entirely locally. Your images never leave your system.',
+    exampleInput: 'Upload: photo.jpg (2.8 MB) at 80% quality',
+    exampleOutput: 'Download: photo_compressed.jpg (650 KB - 76% reduction)',
+    faqs: [
+      { q: 'How does it compress PNGs?', a: 'PNGs can be converted to JPEGs or compressed at custom scales to significantly reduce sizes.' },
+      { q: 'Is there a processing limit?', a: 'No, you can compress as many images as you like offline.' }
+    ]
+  },
+  'image-resizer': {
+    heading: 'Secure Client-Side Image Resizer',
+    explanation: 'Adjust dimensions of PNG, JPG, and WebP images maintaining aspect ratios.',
+    whenToUse: 'Ideal for resizing banners, icons, or photo prints to exact pixel widths.',
+    howItWorks: 'Draws images on Canvas contexts set to your custom dimensions and downloads the output.',
+    privacyExplanation: 'Dimensions are adjusted in your browser. Complete data privacy.',
+    exampleInput: 'Dimensions: 1920x1080 -> 1280x720 (aspect locked)',
+    exampleOutput: 'Download: photo_resized.png (1280x720px)',
+    faqs: [
+      { q: 'How does aspect ratio locking work?', a: 'When locked, changing the width automatically recalculates the height proportionally.' },
+      { q: 'Does resizing degrade quality?', a: 'Resizing down scales cleanly, while scaling up can result in pixelation.' }
+    ]
+  },
+  'image-format-converter': {
+    heading: 'Secure Client-Side Image Format Converter',
+    explanation: 'Convert images between PNG, JPEG, and WebP formats instantly.',
+    whenToUse: 'Great for Web development, converting Apple HEIC/PNG snapshots to WebP, or JPGs to PNGs.',
+    howItWorks: 'Canvas context draws the image buffer and outputs a blob in the selected target format.',
+    privacyExplanation: 'No format data is sent to external servers. Safe, fast, and local.',
+    exampleInput: 'Convert: screenshot.png -> Target: WEBP',
+    exampleOutput: 'Download: screenshot_converted.webp',
+    faqs: [
+      { q: 'Does WebP conversion save space?', a: 'Yes. WebP format yields 25%-30% smaller files than JPEGs while keeping high quality.' },
+      { q: 'Can I batch convert images?', a: 'Yes. Select multiple files and convert them all to your target format in one click.' }
+    ]
+  },
+  'image-cropper': {
+    heading: 'Secure Client-Side Image Cropping Utility',
+    explanation: 'Crop image files to custom rectangular areas securely.',
+    whenToUse: 'Perfect for cropping faces, removing borders, or focusing on image details.',
+    howItWorks: 'Calculates scaled offsets from sliders and crops natural pixel boundaries using Canvas.',
+    privacyExplanation: 'Cropping runs offline in your web browser. No data leaves your machine.',
+    exampleInput: 'Input: photo.png, Sliders: Crop X offset, custom widths',
+    exampleOutput: 'Download: photo_cropped.png',
+    faqs: [
+      { q: 'Is this mobile friendly?', a: 'Yes. The slider controls work perfectly on mobile touchscreens without drag issues.' },
+      { q: 'Is original quality preserved?', a: 'Yes. Coordinates scale to natural pixels for a lossless crop.' }
+    ]
+  },
+  'fullscreen-clock': {
+    heading: 'Fullscreen Digital Clock & Study workstation',
+    explanation: 'A beautiful digital clock for study desks, focus spaces, and fullscreens.',
+    whenToUse: 'Perfect for desk monitors, library study sessions, and workspace clocks.',
+    howItWorks: 'Runs an update cycle using requestAnimationFrame synchronized with system time.',
+    privacyExplanation: 'System time is checked locally in-browser. No tracking logs.',
+    exampleInput: 'Settings: 24-hour, show seconds, show date',
+    exampleOutput: '[14:05:09] Displayed Fullscreen',
+    faqs: [
+      { q: 'How do I toggle fullscreen?', a: 'Click the button or press F11. Press Escape to exit.' },
+      { q: 'Does it support dark themes?', a: 'Yes. The clock inherits your platform theme settings automatically.' }
+    ]
+  },
+  'stopwatch': {
+    heading: 'High-Precision Stopwatch & Lap Timer',
+    explanation: 'Track elapsed duration with sub-millisecond precision and lap splits.',
+    whenToUse: 'Ideal for workout timing, code performance audits, or event tracking.',
+    howItWorks: 'Measures high-resolution intervals using performance.now() and logs lap results.',
+    privacyExplanation: 'Laps and times are kept in transient React states. No data is stored or uploaded.',
+    exampleInput: 'Click Start, Lap, Lap, Stop',
+    exampleOutput: 'List: Lap #1 00:04.12, Total 00:08.24',
+    faqs: [
+      { q: 'How accurate is the stopwatch?', a: 'It utilizes performance.now() to measure intervals with microsecond resolution.' },
+      { q: 'Can I export lap tables?', a: 'Yes. You can copy the clean HTML table entries directly.' }
+    ]
+  },
+  'countdown-timer': {
+    heading: 'Countdown Timer & Audio Alarm Chime',
+    explanation: 'Configure countdown timers with custom hours, minutes, and alarm notifications.',
+    whenToUse: 'Great for cooking, study blocks, presentation timings, or focus slots.',
+    howItWorks: 'Decrements counts relative to system timestamps and plays synthesized sound bells.',
+    privacyExplanation: 'Audios are generated on-the-fly via Web Audio API. No external fetches.',
+    exampleInput: 'Timer values: 1 Hour, 15 Minutes',
+    exampleOutput: '[01:15:00] Countdown with double bells at zero',
+    faqs: [
+      { q: 'Will the alarm play in background tabs?', a: 'Yes. Web Audio API plays chimes even when the tab is backgrounded.' },
+      { q: 'Are cookies used for settings?', a: 'No, everything is transient client-side states.' }
+    ]
+  },
+  'qr-generator': {
+    heading: 'Secure Client-Side QR Code Generator',
+    explanation: 'Create customizable QR codes from text or URL parameters instantly.',
+    whenToUse: 'Perfect for sharing links, printing cards, or encoding Wi-Fi details.',
+    howItWorks: 'Uses the qrcode library to build matrix grids and render them on Canvas elements.',
+    privacyExplanation: 'QR codes are rendered locally. Your text strings are never uploaded.',
+    exampleInput: 'URL: https://tools.chinmaypatil.com, colors: fg #000, bg #fff',
+    exampleOutput: 'Download: qrcode.png (256x256px)',
+    faqs: [
+      { q: 'Can I customize QR colors?', a: 'Yes. You can configure custom foreground and background colors.' },
+      { q: 'Can QR codes be scanned on any device?', a: 'Yes, our generated QR codes follow the official standard specifications.' }
+    ]
+  },
+  'barcode-generator': {
+    heading: 'Secure Client-Side Barcode Generator',
+    explanation: 'Generate CODE128, EAN13, EAN8, and UPC barcodes as vector SVGs.',
+    whenToUse: 'Ideal for product tagging, inventory systems, or retail scan tests.',
+    howItWorks: 'Integrates jsbarcode to construct standard barcode structures as vector paths.',
+    privacyExplanation: 'Code strings are processed entirely in-browser. Zero server calls.',
+    exampleInput: 'Format: EAN13, Code: 1234567890128',
+    exampleOutput: 'Download: barcode_1234567890128.svg',
+    faqs: [
+      { q: 'Why download as SVG?', a: 'SVGs are vectors, meaning they print cleanly at any scale without pixelating.' },
+      { q: 'Are retail checksums verified?', a: 'Yes. EAN13 and EAN8 validate numeric structures before rendering.' }
+    ]
+  },
+  'color-picker': {
+    heading: 'Secure Color Picker & Palette Generator',
+    explanation: 'Pick colors, inspect HSL/RGB/HEX values, and generate harmonies.',
+    whenToUse: 'Perfect for UI design, CSS styling, brand coloring, or theme picking.',
+    howItWorks: 'Reads standard hex/rgb parameters and calculates HSL complementary shifts.',
+    privacyExplanation: 'Color selections and palettes are computed locally. No data leaves your machine.',
+    exampleInput: 'Color: #6366f1 (Indigo)',
+    exampleOutput: 'Analogous: #3b82f6, #6366f1, #a855f7. Click-to-copy enabled.',
+    faqs: [
+      { q: 'How do I copy color codes?', a: 'Click the copy icon next to any value, or click directly on any palette swatch.' },
+      { q: 'What harmonies are supported?', a: 'Analogous, complementary, triadic, and monochromatic palettes.' }
+    ]
+  },
+  'unit-converter': {
+    heading: 'Secure Universal Unit Converter',
+    explanation: 'Convert metric and imperial units for Length, Weight, Temperature, Area, Volume, Time, and Speed.',
+    whenToUse: 'Great for engineering, recipes, math studies, or travel calculations.',
+    howItWorks: 'Applies conversion factor ratios and temperature offset formulas client-side.',
+    privacyExplanation: 'Calculations run in-browser. Fast, offline, and completely private.',
+    exampleInput: 'Category: Length, Value: 5, From: km, To: m',
+    exampleOutput: 'Result: 5000 m',
+    faqs: [
+      { q: 'Are imperial units supported?', a: 'Yes. Feet, inches, yards, miles, pounds, ounces, gallons, and quarts are supported.' },
+      { q: 'Does it work offline?', a: 'Yes! All unit calculators are loaded in your browser memory and work 100% offline.' }
+    ]
   }
 };
