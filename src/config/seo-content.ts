@@ -207,6 +207,20 @@ export const SEO_CONTENT_MAP: Record<string, SeoToolContent> = {
     ]
   },
 
+  'pdf-compress': {
+    heading: 'Secure Client-Side PDF Compressor & Size Optimizer',
+    explanation: 'Compress and optimize PDF file sizes locally inside your browser memory using Ghostscript WebAssembly.',
+    whenToUse: 'Perfect for reducing PDF file sizes for email attachments, government portal uploads, and mobile sharing.',
+    howItWorks: 'Loads Ghostscript compiled to WebAssembly inside a Web Worker, writes the input PDF to a virtual filesystem (MEMFS), runs the gs CLI device optimizer, and compiles the result.',
+    privacyExplanation: 'Runs entirely in your local browser sandbox. Your document is processed 100% offline, keeping your private data safe.',
+    exampleInput: 'Upload: report.pdf (12.4 MB) with Balanced preset',
+    exampleOutput: 'Download: report-compressed.pdf (2.8 MB - 77% size savings)',
+    faqs: [
+      { q: 'Why is this tool more secure than other PDF compressors?', a: 'Other tools require you to upload your sensitive documents to their servers. This tool processes everything inside your browser using WebAssembly, meaning your file never touches the internet.' },
+      { q: 'What do the compression quality presets mean?', a: 'High Compression uses 72 DPI (best for emails/web); Balanced uses 150 DPI (recommended, clear text); High Quality uses 300 DPI (for standard printing); Maximum Quality keeps 300 DPI with full color profiles.' }
+    ]
+  },
+
   'image-compressor': {
     heading: 'Secure Client-Side Image Compressor & Size Optimizer',
     explanation: 'Compress and optimize sizes of JPG, PNG, and WebP images client-side.',

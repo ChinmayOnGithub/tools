@@ -7,10 +7,13 @@ interface AdContainerProps {
   className?: string;
 }
 
+const SHOW_ADS = false; // Toggle to true when live AdSense ads are configured
+
 export function AdContainer({ slot = 'middle', className = '' }: AdContainerProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    if (!SHOW_ADS) return;
     const timer = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
@@ -22,6 +25,10 @@ export function AdContainer({ slot = 'middle', className = '' }: AdContainerProp
     sidebar: 'h-[600px]', // Half Page 300x600
     bottom: 'h-[90px] max-w-4xl mx-auto', // Leaderboard 728x90
   };
+
+  if (!SHOW_ADS) {
+    return null;
+  }
 
   if (!mounted) {
     return (

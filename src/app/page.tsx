@@ -39,12 +39,6 @@ export default function Home() {
 
   const plannedTools = [
     {
-      name: 'PDF Compress / Size Shrinker',
-      description: 'Compress and optimize PDF file sizes locally inside your browser memory using hybrid rasterization.',
-      category: 'pdf',
-      badge: 'Coming Soon',
-    },
-    {
       name: 'OCR PDF / Scan to Text',
       description: 'Convert scanned PDF documents or image-only PDFs into selectable, editable text locally using WebAssembly.',
       category: 'pdf',

@@ -1,0 +1,33 @@
+{
+  "title": "Compress PDF",
+  "description": "Compress and optimize PDF file sizes locally inside your browser memory using hybrid rasterization.",
+  "selectPreset": "Select Compression Quality Preset",
+  "compressBtn": "Compress PDF",
+  "compressing": "Compressing...",
+  "done": "PDF compressed successfully!",
+  "downloadBtn": "Download Compressed PDF",
+  "resetBtn": "Compress Another File",
+  "invalidFile": "Please select a valid PDF file.",
+  "sizeLimitExceeded": "File size exceeds the 50MB safety limit. Please upload a smaller file.",
+  "errorOccurred": "An error occurred during compression. Please ensure the PDF is not encrypted or corrupted.",
+  "alreadyOptimized": "This file is already highly optimized. Compression did not yield size savings.",
+  "privacyNote": "Processed 100% locally in your browser — your files are never uploaded. Verify by inspecting your network tab.",
+  "presets": {
+    "screen": {
+      "name": "High Compression",
+      "desc": "Smallest file size, 72 DPI (best for quick web sharing and emails)"
+    },
+    "ebook": {
+      "name": "Balanced",
+      "desc": "Medium file size, 150 DPI (recommended, maintains sharp text readability)"
+    },
+    "printer": {
+      "name": "High Quality",
+      "desc": "Higher file size, 300 DPI (ideal for standard office printing)"
+    },
+    "prepress": {
+      "name": "Maximum Quality",
+      "desc": "Original resolution, preserves professional color profiles"
+    }
+  }
+}

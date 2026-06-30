@@ -73,6 +73,10 @@ const TOOLS_COMPONENTS: Record<string, ComponentType> = {
     loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
     ssr: false,
   }),
+  'pdf-compress': dynamic(() => import('@/components/tools/pdf-compress'), {
+    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    ssr: false,
+  }),
   'image-compressor': dynamic(() => import('@/components/tools/image-compressor'), {
     loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
     ssr: false,

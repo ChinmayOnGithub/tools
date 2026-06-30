@@ -20,6 +20,12 @@ To maintain the low-cost Google AdSense model:
 *   The server (Vercel edge) strictly serves static HTML, CSS, client JS, and assets.
 *   The client browser performs 100% of processing (PDF merges, image cropping, parsing, conversions) using WebAssembly, client libraries, and Web Workers.
 
+### 1.3 WebAssembly & Web Worker Offloading
+For computationally intensive operations (like Ghostscript PDF compression) that exceed standard JavaScript performance limits:
+*   **Web Workers**: Execution is offloaded to a background thread (`pdf-compress-worker.js`) to keep the main UI thread highly responsive and prevent frame freezes.
+*   **WASM Command-Line Interface (CLI)**: Leverages native programs compiled to WebAssembly (such as Ghostscript via `gs-worker.js`/`gs-worker.wasm`) operating inside the Emscripten virtual filesystem (MEMFS).
+*   **Memory Safety & Transferable Objects**: To prevent memory leaks in the browser sandbox, virtual filesystem files are immediately unlinked (`FS.unlink`) in a `finally` block post-execution, and output buffers are passed using **transferable objects** to transfer ownership rather than cloning memory.
+
 ---
 
 ## 2. Rendering & Routing Strategy
