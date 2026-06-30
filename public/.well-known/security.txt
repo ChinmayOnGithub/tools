@@ -1,0 +1,4 @@
+# Security contact details for CoolTools
+Contact: https://github.com/ChinmayOnGithub/tools/issues
+Expires: 2027-06-30T12:00:00.000Z
+Preferred-Languages: en

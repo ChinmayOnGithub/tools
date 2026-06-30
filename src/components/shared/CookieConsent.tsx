@@ -32,9 +32,10 @@ export default function CookieConsent() {
       // Safe fallback
     }
 
-    // Fire Google Analytics consent update
+    // Fire Google Analytics and Microsoft Clarity consent update
     interface GtagWindow extends Window {
       gtag?: (command: string, action: string, params?: Record<string, string | number | boolean | undefined>) => void;
+      clarity?: (command: string, ...args: unknown[]) => void;
     }
 
     if (typeof window !== 'undefined') {
@@ -46,6 +47,9 @@ export default function CookieConsent() {
           ad_personalization: value,
           analytics_storage: value,
         });
+      }
+      if (gWindow.clarity) {
+        gWindow.clarity('consent', granted);
       }
     }
 

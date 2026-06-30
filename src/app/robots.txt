@@ -1,4 +1,35 @@
 User-agent: *
 Allow: /
 
+# Block AI crawlers from scraping platform content for training
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-User
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: AmazonBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
 Sitemap: https://tools.chinmaypatil.com/sitemap.xml

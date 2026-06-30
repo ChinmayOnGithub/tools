@@ -39,7 +39,7 @@ export function Navigation() {
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-3">
               <Link className="flex items-center space-x-2 font-bold text-lg group" href="/" aria-label="Home page">
-                <span className="bg-primary text-primary-foreground px-3 py-1 text-sm font-extrabold tracking-tight group-hover:bg-primary/90 transition-colors">
+                <span className="bg-foreground text-background px-3 py-1 text-sm font-extrabold tracking-tight group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200">
                   COOL
                 </span>
                 <span className="font-extrabold tracking-tight">TOOLS</span>

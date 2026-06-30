@@ -204,7 +204,7 @@ export default function Home() {
                   <h2 className="text-xl font-bold text-foreground tracking-tight">Development Roadmap</h2>
                   <p className="text-sm text-muted-foreground mt-1">Upcoming tools in active architectural planning.</p>
                 </div>
-                <span className="inline-flex items-center bg-amber-500/10 text-amber-700 dark:text-amber-400 px-3 py-1 border border-amber-500/20 text-xs font-bold uppercase tracking-wider">
+                <span className="inline-flex items-center bg-amber-500/10 text-amber-800 dark:text-amber-300 px-3 py-1 border border-amber-500/20 text-xs font-bold uppercase tracking-wider">
                   Planned
                 </span>
               </div>
@@ -213,21 +213,21 @@ export default function Home() {
                 {plannedTools.map((tool, idx) => (
                   <div 
                     key={idx}
-                    className="bg-card/40 border-2 border-border/50 p-5 opacity-60 flex flex-col justify-between h-36 cursor-not-allowed select-none"
+                    className="bg-card/40 border-2 border-border/50 p-5 opacity-70 flex flex-col justify-between h-36 cursor-not-allowed select-none"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <div className="h-7 w-7 bg-muted text-muted-foreground flex items-center justify-center rounded">
+                        <div className="h-7 w-7 bg-muted text-foreground/80 flex items-center justify-center rounded">
                           <Icon name="FileText" className="h-3.5 w-3.5" />
                         </div>
-                        <span className="text-[9px] font-bold uppercase tracking-widest bg-muted text-muted-foreground px-2 py-0.5 rounded border border-border">
+                        <span className="text-[9px] font-extrabold uppercase tracking-widest bg-muted text-foreground/90 px-2 py-0.5 rounded border border-border">
                           {tool.badge}
                         </span>
                       </div>
-                      <h3 className="text-xs font-bold text-muted-foreground mb-1">{tool.name}</h3>
-                      <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">{tool.description}</p>
+                      <h3 className="text-xs font-extrabold text-foreground mb-1">{tool.name}</h3>
+                      <p className="text-[10px] text-foreground/75 leading-relaxed line-clamp-2">{tool.description}</p>
                     </div>
-                    <div className="text-[9px] text-muted-foreground/80 pt-1.5 border-t border-border/20">
+                    <div className="text-[9px] text-foreground/80 pt-1.5 border-t border-border/20">
                       Status: Local feasibility testing
                     </div>
                   </div>
@@ -246,10 +246,10 @@ export default function Home() {
                 {FAQS.map((faq, index) => (
                   <div key={index} className="bg-card border-2 border-border p-5 card-depth-1 hover:card-depth-2 transition-all">
                     <h3 className="text-sm font-bold text-foreground mb-2 flex items-start gap-2">
-                      <span className="text-primary shrink-0">Q:</span> 
+                      <span className="text-foreground font-extrabold shrink-0">Q:</span> 
                       <span>{faq.q}</span>
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed pl-5">
+                    <p className="text-xs text-muted-foreground leading-relaxed pl-6">
                       {faq.a}
                     </p>
                   </div>

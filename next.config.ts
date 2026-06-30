@@ -1,10 +1,12 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.clarity.ms;
+  script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://*.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.clarity.ms;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms;
+  img-src 'self' blob: data: https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms https://*.bing.com;
   font-src 'self' data:;
   connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms https://*.bing.com;
   frame-src 'self' https://googleads.g.doubleclick.net https://*.doubleclick.net https://pagead2.googlesyndication.com;
@@ -13,7 +15,7 @@ const cspHeader = `
   form-action 'self';
   frame-ancestors 'none';
   upgrade-insecure-requests;
-`.replace(/\s{2,}/g, ' ').trim();
+`.replace(/\s{2,}/g, ' ').trim().replace(/;$/, '');
 
 const securityHeaders = [
   {
