@@ -332,10 +332,10 @@ export default function PomodoroTimer() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-96 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-96 rounded-none w-full border-2 border-border" />;
   }
 
-  // Calculate SVG progress ring coordinates
+  // Calculate SVG progress frame coordinates
   const currentTotalSeconds = (mode === 'focus' 
     ? focusDuration 
     : mode === 'short' 
@@ -343,29 +343,29 @@ export default function PomodoroTimer() {
       : longBreakDuration) * 60;
   
   const percentage = currentTotalSeconds > 0 ? (timeLeft / currentTotalSeconds) * 100 : 0;
-  const radius = 120;
-  const circumference = 2 * Math.PI * radius; // 753.98
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  const side = 264; // width/height of the progress square
+  const perimeter = side * 4; // 1056
+  const strokeDashoffset = perimeter - (percentage / 100) * perimeter;
 
   // Determine themes colors based on active modes
   const modeColors = {
     focus: {
       bg: 'bg-rose-500/10',
-      border: 'border-rose-500/20',
+      border: 'border-rose-500/30',
       text: 'text-rose-500',
       stroke: 'stroke-rose-500',
       label: t.focus
     },
     short: {
       bg: 'bg-emerald-500/10',
-      border: 'border-emerald-500/20',
+      border: 'border-emerald-500/30',
       text: 'text-emerald-500',
       stroke: 'stroke-emerald-500',
       label: t.shortBreak
     },
     long: {
       bg: 'bg-sky-500/10',
-      border: 'border-sky-500/20',
+      border: 'border-sky-500/30',
       text: 'text-sky-500',
       stroke: 'stroke-sky-500',
       label: t.longBreak
@@ -395,10 +395,10 @@ export default function PomodoroTimer() {
       {/* Main interactive timer workspace */}
       <div 
         ref={containerRef}
-        className={`flex flex-col items-center justify-center border transition-all duration-300 rounded-lg p-6 ${
+        className={`flex flex-col items-center justify-center border-2 transition-all duration-300 rounded-none p-6 ${
           isFullscreen 
             ? 'fixed inset-0 z-50 bg-background w-screen h-screen rounded-none border-none' 
-            : 'bg-card'
+            : 'bg-card border-border card-depth-2'
         }`}
       >
         {/* Fullscreen header mode exit buttons */}
@@ -413,31 +413,38 @@ export default function PomodoroTimer() {
         <div className="flex flex-col items-center justify-center max-w-md w-full space-y-6">
           
           {/* Active Mode Indicator Badge */}
-          <div className={`px-4 py-1.5 rounded-full border text-xs font-extrabold uppercase tracking-widest ${theme.bg} ${theme.border} ${theme.text}`}>
+          <div className={`px-4 py-1.5 rounded-none border-2 text-xs font-extrabold uppercase tracking-widest ${theme.bg} ${theme.border} ${theme.text}`}>
             {theme.label}
           </div>
 
-          {/* SVG Circular Progress Ring */}
-          <div className="relative w-[280px] h-[280px] flex items-center justify-center">
-            <svg className="w-full h-full transform -rotate-90 origin-center" viewBox="0 0 280 280">
-              {/* Background Track Circle */}
-              <circle
-                cx="140"
-                cy="140"
-                r={radius}
-                className="stroke-muted fill-transparent"
-                strokeWidth="10"
+          {/* SVG Square Progress Frame */}
+          <div className="relative w-[280px] h-[280px] border-2 border-border/40 bg-muted/5 flex items-center justify-center rounded-none">
+            {/* Retro Corner brackets decor */}
+            <span className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-t-2 border-l-2 border-muted-foreground/30" />
+            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 border-t-2 border-r-2 border-muted-foreground/30" />
+            <span className="absolute bottom-1.5 left-1.5 w-2.5 h-2.5 border-b-2 border-l-2 border-muted-foreground/30" />
+            <span className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-b-2 border-r-2 border-muted-foreground/30" />
+
+            <svg className="w-full h-full absolute inset-0 transform -rotate-90 origin-center" viewBox="0 0 280 280">
+              {/* Background Track Rect */}
+              <rect
+                x="8"
+                y="8"
+                width={side}
+                height={side}
+                className="stroke-muted/30 fill-transparent"
+                strokeWidth="6"
               />
-              {/* Animated Progress Circle */}
-              <circle
-                cx="140"
-                cy="140"
-                r={radius}
+              {/* Animated Progress Rect */}
+              <rect
+                x="8"
+                y="8"
+                width={side}
+                height={side}
                 className={`fill-transparent transition-all duration-300 ${theme.stroke}`}
-                strokeWidth="10"
-                strokeDasharray={circumference}
+                strokeWidth="6"
+                strokeDasharray={perimeter}
                 strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
               />
             </svg>
             
@@ -459,7 +466,7 @@ export default function PomodoroTimer() {
               size="icon"
               onClick={handleReset}
               aria-label={t.resetButton}
-              className="h-10 w-10 rounded-full"
+              className="h-10 w-10 rounded-none border-2 border-border"
             >
               <RotateCcw className="h-4 w-4" />
             </Button>
@@ -468,7 +475,7 @@ export default function PomodoroTimer() {
               variant="default"
               onClick={() => setIsActive((prev) => !prev)}
               aria-label={isActive ? t.pauseButton : t.startButton}
-              className="h-12 px-6 rounded-full font-bold flex items-center gap-2"
+              className="h-12 px-6 rounded-none border-2 border-primary font-bold flex items-center gap-2"
             >
               {isActive ? (
                 <>
@@ -488,7 +495,7 @@ export default function PomodoroTimer() {
               size="icon"
               onClick={handleSkip}
               aria-label={t.skipButton}
-              className="h-10 w-10 rounded-full"
+              className="h-10 w-10 rounded-none border-2 border-border"
             >
               <SkipForward className="h-4 w-4" />
             </Button>
