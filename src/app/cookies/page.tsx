@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import ResetConsentButton from '@/components/shared/ResetConsentButton';
+import AdContainer from '@/components/shared/AdContainer';
 
 export const metadata: Metadata = {
   title: 'Cookie Policy - CoolTools',
@@ -59,6 +60,8 @@ export default function CookiesPage() {
           <ResetConsentButton />
         </div>
       </section>
+
+      <AdContainer slot="bottom" />
     </div>
   );
 }

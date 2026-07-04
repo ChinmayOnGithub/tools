@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import ResetConsentButton from '@/components/shared/ResetConsentButton';
+import AdContainer from '@/components/shared/AdContainer';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - Privacy-First Browser Tools',
@@ -67,6 +68,8 @@ export default function PrivacyPage() {
           </p>
         </div>
       </section>
+
+      <AdContainer slot="bottom" />
     </div>
   );
 }

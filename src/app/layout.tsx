@@ -7,6 +7,7 @@ import SkipNavLink from '@/components/shared/SkipNavLink';
 import Navigation from '@/components/shared/Navigation';
 import AnalyticsTracker from '@/components/shared/AnalyticsTracker';
 import CookieConsent from '@/components/shared/CookieConsent';
+import { SITE_URL } from '@/config/site';
 import './globals.css';
 
 const geistSans = Geist({
@@ -21,22 +22,21 @@ const geistMono = Geist_Mono({
   display: 'swap',
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tools.chinmaypatil.com';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Free Online Tools Platform - Browser-Based Utilities',
     template: '%s - Free Online Browser Tool',
   },
   description: 'Free online browser-based tools for PDF, images, coding, text editing, and calculations. Secure, private, and processes data client-side.',
   alternates: {
-    canonical: siteUrl,
+    canonical: SITE_URL,
   },
   openGraph: {
     title: 'Free Online Tools Platform',
     description: 'Secure, private, client-side utility tools.',
-    url: siteUrl,
+    url: SITE_URL,
     siteName: 'Online Tools Platform',
     locale: 'en_US',
     type: 'website',
@@ -122,6 +122,14 @@ export default function RootLayout({
               `}
             </Script>
           )}
+          {process.env.NEXT_PUBLIC_ADSENSE_CLIENT && (
+            <Script
+              async
+              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT}`}
+              crossOrigin="anonymous"
+              strategy="afterInteractive"
+            />
+          )}
           <SkipNavLink />
           <Navigation />
           
@@ -144,7 +152,7 @@ export default function RootLayout({
                   <Link href="/privacy" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Privacy Policy</Link>
                   <Link href="/terms" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Terms of Service</Link>
                   <Link href="/cookies" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Cookie Policy</Link>
-                  <a href="https://github.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground font-medium transition-colors">GitHub</a>
+                  <a href="https://github.com/ChinmayOnGithub/tools" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground font-medium transition-colors">GitHub</a>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground text-center mt-6">

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import AdContainer from '@/components/shared/AdContainer';
 
 export const metadata: Metadata = {
   title: 'Terms of Service - CoolTools',
@@ -58,6 +59,8 @@ export default function TermsPage() {
           </p>
         </div>
       </section>
+
+      <AdContainer slot="bottom" />
     </div>
   );
 }

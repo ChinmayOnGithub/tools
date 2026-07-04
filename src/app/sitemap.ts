@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import { CATEGORIES } from '@/config/categories';
+import { SITE_URL } from '@/config/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tools.chinmaypatil.com';
+  const siteUrl = SITE_URL;
 
   const routes = [
     {

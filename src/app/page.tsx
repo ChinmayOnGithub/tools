@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AdContainer from '@/components/shared/AdContainer';
 import HomeSearchTrigger from '@/components/shared/HomeSearchTrigger';
+import { SITE_URL } from '@/config/site';
 import Icon from '@/components/shared/Icon';
 import StatsCard from '@/components/shared/StatsCard';
 import ScrollControls from '@/components/shared/ScrollControls';
@@ -46,17 +47,16 @@ export default function Home() {
     }
   ];
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tools.chinmaypatil.com';
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     'name': 'CoolTools',
-    'url': siteUrl,
+    'url': SITE_URL,
     'potentialAction': {
       '@type': 'SearchAction',
       'target': {
         '@type': 'EntryPoint',
-        'urlTemplate': `${siteUrl}/?q={search_term_string}`
+        'urlTemplate': `${SITE_URL}/?q={search_term_string}`
       },
       'query-input': 'required name=search_term_string'
     }

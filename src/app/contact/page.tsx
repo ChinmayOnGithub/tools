@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { Mail, AlertCircle, Sparkles } from 'lucide-react';
+import AdContainer from '@/components/shared/AdContainer';
 
 const Github = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -51,7 +52,7 @@ export default function ContactPage() {
             Spotted a bug or have a feature idea? Please open a ticket on our GitHub Issue tracker to help us improve.
           </p>
           <a 
-            href="https://github.com" 
+            href="https://github.com/ChinmayOnGithub/tools" 
             target="_blank"
             rel="noreferrer"
             className="text-xs font-bold text-primary hover:underline block pt-1"
@@ -70,7 +71,7 @@ export default function ContactPage() {
             CoolTools is built on open standards and transparency. Browse the code repository, review code, or star the project.
           </p>
           <a 
-            href="https://github.com" 
+            href="https://github.com/ChinmayOnGithub/tools" 
             target="_blank" 
             rel="noreferrer" 
             className="text-xs font-bold text-primary hover:underline block pt-1"
@@ -106,6 +107,8 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+
+      <AdContainer slot="bottom" />
     </div>
   );
 }

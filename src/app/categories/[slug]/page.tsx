@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { SITE_URL } from '@/config/site';
 import { CATEGORIES } from '@/config/categories';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import ToolCard from '@/components/shared/ToolCard';
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
   if (!category) return {};
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tools.chinmaypatil.com';
+  const siteUrl = SITE_URL;
 
   return {
     title: category.seoTitle,

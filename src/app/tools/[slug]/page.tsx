@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { SITE_URL } from '@/config/site';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import { CATEGORIES } from '@/config/categories';
 import { SEO_CONTENT_MAP } from '@/config/seo-content';
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {};
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tools.chinmaypatil.com';
+  const siteUrl = SITE_URL;
 
   return {
     title: tool.seoTitle || tool.name,
@@ -66,7 +67,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
     (t) => tool.relatedTools.includes(t.id) && t.status === 'published'
   );
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tools.chinmaypatil.com';
+  const siteUrl = SITE_URL;
 
   // 1. Breadcrumb Schema List
   const breadcrumbSchema = {
@@ -232,6 +233,8 @@ export default async function ToolWrapperPage({ params }: PageProps) {
           </span>
         ))}
       </div>
+
+      <AdContainer slot="top" />
 
       {/* Dynamic Client Tool component */}
       <main className="min-h-[300px]">

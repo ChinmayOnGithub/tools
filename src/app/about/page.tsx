@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ShieldCheck, Cpu, Key, FileText, CheckCircle2 } from 'lucide-react';
+import AdContainer from '@/components/shared/AdContainer';
 
 export const metadata: Metadata = {
   title: 'About Us - Privacy-First Browser Utilities',
@@ -98,6 +99,8 @@ export default function AboutPage() {
           Explore Available Tools
         </Link>
       </section>
+
+      <AdContainer slot="bottom" />
     </div>
   );
 }
