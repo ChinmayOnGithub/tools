@@ -28,53 +28,57 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="max-w-3xl mx-auto space-y-10 py-4">
+    <div className="max-w-3xl mx-auto space-y-8 py-4">
       {/* Header section */}
       <section className="space-y-3 text-center sm:text-left">
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
           Contact Us
         </h1>
-        <p className="text-base text-muted-foreground leading-relaxed">
-          Have a question, encountered a bug, or want to suggest a new browser utility? 
-          Since all operations run client-side, we maintain direct open-source feedback channels.
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Encountered a bug, have a feature idea, or want to explore the code? 
+          Since all operations run client-side in your browser, we manage all feedback and updates transparently through GitHub.
         </p>
       </section>
 
       {/* Support Methods Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Issue Tracker Box */}
-        <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-3">
-          <div className="h-10 w-10 bg-primary/10 text-primary flex items-center justify-center">
-            <Mail className="h-5 w-5" />
+        <div className="bg-card border-2 border-border p-6 card-depth-1 flex flex-col justify-between space-y-4">
+          <div className="space-y-3">
+            <div className="h-10 w-10 bg-primary/10 text-primary flex items-center justify-center">
+              <Mail className="h-5 w-5" />
+            </div>
+            <h2 className="text-base font-bold text-foreground">Bug Reports & Feedback</h2>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Spotted a validation error or processing crash? Please open a ticket on our official GitHub Issue tracker to help us improve.
+            </p>
           </div>
-          <h2 className="text-base font-bold text-foreground">Bug Reports & Feedback</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Spotted a bug or have a feature idea? Please open a ticket on our GitHub Issue tracker to help us improve.
-          </p>
           <a 
-            href="https://github.com/ChinmayOnGithub/tools" 
+            href="https://github.com/ChinmayOnGithub/tools/issues" 
             target="_blank"
             rel="noreferrer"
-            className="text-xs font-bold text-primary hover:underline block pt-1"
+            className="inline-flex h-9 items-center justify-center bg-primary text-primary-foreground text-xs font-bold px-4 py-2 border-2 border-primary hover:bg-primary/95 transition-colors w-full sm:w-auto"
           >
-            Open GitHub Issue
+            Open GitHub Issue Tracker
           </a>
         </div>
 
         {/* GitHub Box */}
-        <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-3">
-          <div className="h-10 w-10 bg-foreground/10 text-foreground flex items-center justify-center">
-            <Github className="h-5 w-5" />
+        <div className="bg-card border-2 border-border p-6 card-depth-1 flex flex-col justify-between space-y-4">
+          <div className="space-y-3">
+            <div className="h-10 w-10 bg-foreground/10 text-foreground flex items-center justify-center">
+              <Github className="h-5 w-5" />
+            </div>
+            <h2 className="text-base font-bold text-foreground">Open Source Repository</h2>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Browse the code, review code signatures, star the repository, or fork the codebase to suggest local utility improvements.
+            </p>
           </div>
-          <h2 className="text-base font-bold text-foreground">Open Source Repository</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            CoolTools is built on open standards and transparency. Browse the code repository, review code, or star the project.
-          </p>
           <a 
             href="https://github.com/ChinmayOnGithub/tools" 
             target="_blank" 
             rel="noreferrer" 
-            className="text-xs font-bold text-primary hover:underline block pt-1"
+            className="inline-flex h-9 items-center justify-center bg-transparent border-2 border-border hover:border-primary hover:bg-accent text-xs font-bold px-4 py-2 transition-colors w-full sm:w-auto"
           >
             Visit GitHub Repository
           </a>
@@ -82,27 +86,27 @@ export default function ContactPage() {
       </section>
 
       {/* Guidance Area */}
-      <section className="bg-muted/30 border border-border p-6 space-y-6">
-        <h2 className="text-lg font-bold text-foreground">Issue & Feedback Guidelines</h2>
+      <section className="border-2 border-border p-6 space-y-4 bg-muted/10">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">Submission Guidelines</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-red-500" />
+          <div className="space-y-2 border-l-2 border-primary/30 pl-4">
+            <h3 className="text-xs font-bold text-foreground flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
               <span>Report a Bug</span>
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Encountered a validation error or processing crash? Open a GitHub issue detailing the tool name, your browser info, the inputs used, and steps to reproduce.
+              Open an issue detailing the specific tool name, your browser/OS version, the inputs used, and steps or sample files required to reproduce the error.
             </p>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-amber-500" />
+          <div className="space-y-2 border-l-2 border-primary/30 pl-4">
+            <h3 className="text-xs font-bold text-foreground flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
               <span>Request a Feature</span>
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Need a specific utility or custom parameter option? Submit an issue tagged as a feature request on GitHub, explaining the target use case.
+              Submit an issue tagged as a feature request. Describe the missing browser utility or specify target parameters and local use cases.
             </p>
           </div>
         </div>

@@ -9,6 +9,7 @@ import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import AdContainer from '@/components/shared/AdContainer';
 import ToolContainer from '@/components/shared/ToolContainer';
 import ToolCard from '@/components/shared/ToolCard';
+import FaqSection from '@/components/shared/FaqSection';
 
 export async function generateStaticParams() {
   return TOOLS_REGISTRY.map((tool) => ({
@@ -248,7 +249,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
         <article className="border-t pt-8 mt-6 space-y-8">
           
           {/* Explanation, How it Works, Privacy Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-semibold leading-relaxed">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs leading-relaxed">
             <div className="space-y-2">
               <h2 className="text-sm font-bold text-foreground">What is this tool?</h2>
               <p className="text-muted-foreground">{seoContent.explanation}</p>
@@ -266,7 +267,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
           {/* Example Input / Output mockup */}
           <div className="bg-muted/30 border-2 border-border p-4 space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Example Conversions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               <div className="space-y-1">
                 <span className="text-muted-foreground">Sample Input:</span>
                 <pre className="p-2.5 bg-background border-2 border-border font-mono text-[11px] overflow-auto max-h-32 whitespace-pre-wrap">{seoContent.exampleInput}</pre>
@@ -280,17 +281,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
 
           {/* FAQs section */}
           {seoContent.faqs.length > 0 && (
-            <div className="space-y-4">
-              <h2 className="text-sm font-bold tracking-tight text-foreground">Frequently Asked Questions</h2>
-              <div className="space-y-3 text-xs font-semibold">
-                {seoContent.faqs.map((faq, index) => (
-                  <div key={index} className="border-2 border-border p-3.5 bg-card card-depth-1">
-                    <h3 className="font-bold text-foreground mb-1">{faq.q}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{faq.a}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <FaqSection faqs={seoContent.faqs} />
           )}
         </article>
       )}

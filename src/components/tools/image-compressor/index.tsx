@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
+import { addHistoryEntry } from '@/lib/history';
+import FaqSection from '@/components/shared/FaqSection';
 
 export default function ImageCompressorComponent() {
   const [mounted, setMounted] = useState(false);
@@ -120,6 +122,11 @@ export default function ImageCompressorComponent() {
           setSuccess(true);
           trackToolCompletion('image-compressor');
           trackDownloadAction('image-compressor');
+
+          const diff = sourceFile.size - blob.size;
+          const pct = diff > 0 ? ((diff / sourceFile.size) * 100).toFixed(1) : '0';
+          const savedStr = diff > 0 ? `(Saved ${pct}%)` : '';
+          addHistoryEntry('image-compressor', 'Image Compressor', `Compressed ${sourceFile.name} ${savedStr}`);
 
           const link = document.createElement('a');
           link.href = url;
@@ -316,9 +323,9 @@ export default function ImageCompressorComponent() {
           {/* Success / Result details */}
           {success && downloadUrl && (
             <div className="space-y-4 pt-4 border-t">
-              <div className="bg-emerald-500/10 border-2 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-lg flex flex-col gap-2 text-xs font-semibold leading-relaxed">
+              <div className="bg-emerald-500/5 border-2 border-emerald-600/30 text-emerald-700 dark:text-emerald-400 p-4 rounded-none flex flex-col gap-2 text-xs font-bold leading-relaxed">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5" />
+                  <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                   <span>{t.successMessage}</span>
                 </div>
                 <a
@@ -333,17 +340,17 @@ export default function ImageCompressorComponent() {
               {/* Statistics grid */}
               {compressedSize && sourceFile && (
                 <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="border rounded-lg p-3 bg-muted/10">
-                    <span className="text-[10px] text-muted-foreground block font-semibold uppercase">{t.originalSize}</span>
+                  <div className="border-2 border-border p-3 bg-muted/10 rounded-none">
+                    <span className="text-[10px] text-muted-foreground block font-bold uppercase">{t.originalSize}</span>
                     <span className="text-xs font-bold text-foreground mt-1 block">{formatByteSize(sourceFile.size)}</span>
                   </div>
-                  <div className="border rounded-lg p-3 bg-muted/10">
-                    <span className="text-[10px] text-muted-foreground block font-semibold uppercase">{t.compressedSize}</span>
+                  <div className="border-2 border-border p-3 bg-muted/10 rounded-none">
+                    <span className="text-[10px] text-muted-foreground block font-bold uppercase">{t.compressedSize}</span>
                     <span className="text-xs font-bold text-foreground mt-1 block">{formatByteSize(compressedSize)}</span>
                   </div>
-                  <div className="border rounded-lg p-3 bg-muted/10">
-                    <span className="text-[10px] text-muted-foreground block font-semibold uppercase">{t.reduction}</span>
-                    <span className="text-xs font-bold text-emerald-500 mt-1 block">{getReductionRatio()}</span>
+                  <div className="border-2 border-border p-3 bg-muted/10 rounded-none">
+                    <span className="text-[10px] text-muted-foreground block font-bold uppercase">{t.reduction}</span>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1 block">{getReductionRatio()}</span>
                   </div>
                 </div>
               )}
@@ -353,19 +360,8 @@ export default function ImageCompressorComponent() {
       </Card>
 
       {/* FAQ accordion */}
-      <Card className="p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Frequently Asked Questions
-        </h3>
-        
-        <div className="space-y-3.5 text-xs">
-          {t.faq.map((item, i) => (
-            <div key={i} className={i > 0 ? 'border-t pt-3' : ''}>
-              <h4 className="font-bold text-foreground mb-1">{item.q}</h4>
-              <p className="text-muted-foreground leading-relaxed">{item.a}</p>
-            </div>
-          ))}
-        </div>
+      <Card className="p-4 space-y-4 rounded-none">
+        <FaqSection faqs={t.faq} />
       </Card>
     </div>
   );

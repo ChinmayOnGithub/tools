@@ -77,11 +77,6 @@ export default function Home() {
           <div className="absolute inset-0 grid-background opacity-20" />
           <div className="relative bg-card border-2 border-border p-8 sm:p-12 card-depth-2">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 border border-primary/20 mb-4">
-                <div className="h-1.5 w-1.5 bg-primary animate-pulse" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">100% Client-Side Processing</span>
-              </div>
-              
               <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground mb-4">
                 Professional Browser Tools.
                 <br />

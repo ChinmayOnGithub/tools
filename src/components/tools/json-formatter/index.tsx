@@ -6,6 +6,7 @@ import { beautifyJSON, minifyJSON } from './utils';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
 import { downloadFile } from '@/lib/download';
 import { validateFile } from '@/lib/file-processor';
 import { 
@@ -14,6 +15,7 @@ import {
   trackValidationError, 
   trackDownloadAction 
 } from '@/lib/analytics';
+import { addHistoryEntry } from '@/lib/history';
 
 const SAMPLE_JSON = `{
   "name": "CoolTools Platform",
@@ -64,6 +66,7 @@ export default function JSONFormatter() {
       setErrorMsg(null);
       setIsValid(true);
       trackToolCompletion('json-formatter');
+      addHistoryEntry('json-formatter', 'JSON Formatter', 'Beautified JSON data', result.output);
     } else {
       setOutput('');
       setIsValid(false);
@@ -92,6 +95,7 @@ export default function JSONFormatter() {
       setErrorMsg(null);
       setIsValid(true);
       trackToolCompletion('json-formatter');
+      addHistoryEntry('json-formatter', 'JSON Formatter', 'Minified JSON data', result.output);
     } else {
       setOutput('');
       setIsValid(false);
@@ -219,12 +223,22 @@ export default function JSONFormatter() {
 
       {/* Validation Message Box */}
       {isValid !== null && (
-        <div className={`p-3 rounded-lg text-xs font-semibold border ${
+        <div className={`p-4 rounded-none text-xs font-bold border-2 leading-relaxed flex items-start gap-2.5 ${
           isValid 
-            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
-            : 'bg-destructive/10 text-destructive border-destructive/20'
+            ? 'bg-emerald-500/5 text-emerald-700 dark:text-emerald-400 border-emerald-600/30' 
+            : 'bg-destructive/5 text-destructive border-destructive/30'
         }`}>
-          {isValid ? t.validationValid : errorMsg}
+          {isValid ? (
+            <>
+              <CheckCircle className="h-4.5 w-4.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span>{t.validationValid}</span>
+            </>
+          ) : (
+            <>
+              <AlertTriangle className="h-4.5 w-4.5 shrink-0 text-destructive" />
+              <span>{errorMsg}</span>
+            </>
+          )}
         </div>
       )}
 

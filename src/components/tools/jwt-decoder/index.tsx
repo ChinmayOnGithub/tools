@@ -77,11 +77,20 @@ export default function JWTDecoder() {
 
   return (
     <div className="space-y-6 w-full">
-      {/* Privacy pledge badge */}
-      <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-3 rounded-lg text-[10px] sm:text-xs font-bold flex flex-wrap gap-x-4 gap-y-1">
-        <span>✓ Browser-Only Decodes</span>
-        <span>✓ Tokens Never Leave Your Machine</span>
-        <span>✓ Free & Secure Forever</span>
+      {/* Trust pledge indicators banner */}
+      <div className="bg-muted/30 border-2 border-border p-3 rounded-none text-[10px] sm:text-xs font-bold text-muted-foreground flex flex-wrap gap-x-4 gap-y-1.5">
+        <span className="flex items-center gap-1.5">
+          <span className="text-primary text-[9px] select-none">■</span>
+          Browser-Only Decodes
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="text-primary text-[9px] select-none">■</span>
+          Tokens Never Leave Your Machine
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="text-primary text-[9px] select-none">■</span>
+          Free & Secure Forever
+        </span>
       </div>
 
       {/* Control panel */}

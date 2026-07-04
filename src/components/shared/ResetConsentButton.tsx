@@ -17,6 +17,8 @@ export default function ResetConsentButton() {
   const handleReset = () => {
     try {
       localStorage.removeItem('cookie_consent');
+      localStorage.removeItem('cookie_consent_analytics');
+      localStorage.removeItem('cookie_consent_ads');
       // Force reload to trigger default consent states and show banner
       window.location.reload();
     } catch {

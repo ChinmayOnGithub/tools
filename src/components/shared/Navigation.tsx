@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, Menu, X } from 'lucide-react';
 import { CATEGORIES } from '@/config/categories';
-import ThemeToggle from './ThemeToggle';
-import SearchOverlay from './SearchOverlay';
+import ThemeToggle from '@/components/shared/ThemeToggle';
+import SearchOverlay from '@/components/shared/SearchOverlay';
+import HistoryDrawer from '@/components/shared/HistoryDrawer';
 
 export function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -74,6 +75,9 @@ export function Navigation() {
             {/* Theme Toggle Component */}
             <ThemeToggle />
 
+            {/* History Drawer Overlay & Trigger */}
+            <HistoryDrawer />
+
             {/* Mobile Menu Trigger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -104,6 +108,13 @@ export function Navigation() {
               ))}
             </div>
             <div className="border-t-2 border-border pt-4 flex flex-col gap-2">
+              <Link
+                href="/contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-3 py-2.5 border-2 border-border text-sm hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors font-medium"
+              >
+                Contact & Feedback
+              </Link>
               <Link
                 href="/privacy"
                 onClick={() => setIsMobileMenuOpen(false)}

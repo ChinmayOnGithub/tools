@@ -11,7 +11,7 @@ interface StatsCardProps {
 
 export function StatsCard({ label, value, icon, trend, className = '' }: StatsCardProps) {
   return (
-    <div className={`bg-card border border-border p-4 card-depth-1 hover:card-depth-2 transition-all duration-200 ${className}`}>
+    <div className={`bg-card border-2 border-border p-4 card-depth-1 hover:card-depth-2 transition-all duration-200 ${className}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
