@@ -8,7 +8,7 @@ const cspHeader = `
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms https://*.bing.com;
   font-src 'self' data:;
-  connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms https://*.bing.com;
+  connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms https://*.bing.com https://*.google.com https://*.googleadservices.com;
   frame-src 'self' https://googleads.g.doubleclick.net https://*.doubleclick.net https://pagead2.googlesyndication.com;
   object-src 'none';
   base-uri 'self';
