@@ -47,13 +47,15 @@ export function FaqSection({ faqs, titleClassName = 'text-sm font-bold text-fore
               </button>
               <div 
                 className={`grid transition-all duration-200 ease-in-out ${
-                  isOpen ? 'grid-rows-[1fr] border-t-2 border-border' : 'grid-rows-[0fr]'
+                  isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
                 }`}
               >
                 <div className="overflow-hidden">
-                  <p className="p-4 text-xs text-muted-foreground leading-relaxed bg-background/50">
-                    {faq.a}
-                  </p>
+                  <div className="border-t-2 border-border/60">
+                    <p className="p-4 text-xs text-muted-foreground leading-relaxed bg-background/50">
+                      {faq.a}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
