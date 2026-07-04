@@ -1,3 +1,6 @@
+import { addHistoryEntry } from './history';
+import { TOOLS_REGISTRY } from '@/config/tools-registry';
+
 export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 interface GtagWindow extends Window {
@@ -44,8 +47,55 @@ export function trackValidationError(toolId: string, errorType: string) {
   event('tool_error', 'tool', `${toolId}: ${errorType}`);
 }
 
+interface CustomWindow extends Window {
+  __isInitializing?: boolean;
+}
+
 export function trackToolCompletion(toolId: string) {
   event('tool_complete', 'tool', toolId);
+  
+  // Skip history logging during mount-time initializations
+  if (typeof window !== 'undefined') {
+    const customWindow = window as unknown as CustomWindow;
+    if (customWindow.__isInitializing) {
+      return;
+    }
+  }
+
+  try {
+    const tool = TOOLS_REGISTRY.find((t) => t.id === toolId);
+    const toolName = tool ? tool.name : toolId;
+
+    // Build a user-friendly action description based on the type of tool
+    let action = 'Processed output';
+    if (toolId.includes('generator')) {
+      action = 'Generated output';
+    } else if (toolId.includes('formatter') || toolId.includes('beautify')) {
+      action = 'Formatted content';
+    } else if (toolId.includes('compress')) {
+      action = 'Compressed file';
+    } else if (toolId.includes('convert') || toolId.includes('encoder')) {
+      action = 'Converted values';
+    } else if (toolId.includes('counter')) {
+      action = 'Analyzed text';
+    } else if (toolId.includes('timer') || toolId.includes('stopwatch')) {
+      action = 'Completed session';
+    } else if (toolId.includes('decoder')) {
+      action = 'Decoded key';
+    } else if (toolId.includes('picker')) {
+      action = 'Selected color';
+    } else if (toolId.includes('cropper') || toolId.includes('resizer')) {
+      action = 'Edited image';
+    } else if (toolId.includes('merge')) {
+      action = 'Merged files';
+    } else if (toolId.includes('split')) {
+      action = 'Split file';
+    }
+
+    addHistoryEntry(toolId, toolName, action);
+  } catch (err) {
+    console.error('Failed to auto-log history:', err);
+  }
 }
 
 export function trackRelatedToolClick(fromTool: string, toTool: string) {

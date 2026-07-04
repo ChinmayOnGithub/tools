@@ -24,5 +24,19 @@
   "notificationPermissionDenied": "Notification permission denied by browser.",
   "notificationTimerFinished": "{type} time has finished!",
   "saveButton": "Save Settings",
-  "closeButton": "Close"
+  "closeButton": "Close",
+  "faq": [
+    {
+      "q": "What is the Pomodoro Technique?",
+      "a": "The Pomodoro Technique is a time management method developed by Francesco Cirillo. You work in 25-minute focused intervals (Pomodoros) separated by short 5-minute breaks. After 4 Pomodoros, take a longer 15–30 minute break to recharge."
+    },
+    {
+      "q": "Does my timer state sync or save to the cloud?",
+      "a": "No. All timer state and custom durations are stored entirely in your local browser memory using localStorage. Nothing is uploaded to a server or shared externally."
+    },
+    {
+      "q": "Do audio bells chime when my browser tab is inactive?",
+      "a": "Yes, as long as the tab remains open in the background. The Web Audio API fires the bell sound regardless of tab focus. However, playing audio while minimized depends on your operating system and browser audio policies."
+    }
+  ]
 }

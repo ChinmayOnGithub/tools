@@ -10,9 +10,10 @@ interface FaqItem {
 
 interface FaqSectionProps {
   faqs: FaqItem[];
+  titleClassName?: string;
 }
 
-export function FaqSection({ faqs }: FaqSectionProps) {
+export function FaqSection({ faqs, titleClassName = 'text-sm font-bold text-foreground' }: FaqSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleFaq = (index: number) => {
@@ -21,7 +22,7 @@ export function FaqSection({ faqs }: FaqSectionProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-sm font-bold text-foreground">Frequently Asked Questions</h2>
+      <h2 className={titleClassName}>Frequently Asked Questions</h2>
       <div className="space-y-2">
         {faqs.map((faq, index) => {
           const isOpen = openIndex === index;

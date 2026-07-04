@@ -21,6 +21,7 @@ import {
   Minimize2,
   X
 } from 'lucide-react';
+import FaqSection from '@/components/shared/FaqSection';
 import { 
   trackToolLaunch, 
   trackToolCompletion, 
@@ -677,39 +678,9 @@ export default function PomodoroTimer() {
       </Card>
 
       {/* Accordion FAQ Area */}
-      <Card className="p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Frequently Asked Questions
-        </h3>
-        
-        <div className="space-y-3.5 text-xs">
-          <div>
-            <h4 className="font-bold text-foreground mb-1">
-              What is the Pomodoro Technique?
-            </h4>
-            <p className="text-muted-foreground leading-relaxed">
-              The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. It breaks your work down into intervals (typically 25 minutes long), separated by short breaks (usually 5 minutes). These intervals are named &quot;pomodoros&quot;, the Italian word for tomato, after the tomato-shaped kitchen timer Cirillo originally used.
-            </p>
-          </div>
-
-          <div className="border-t pt-3">
-            <h4 className="font-bold text-foreground mb-1">
-              Does my timer state sync or save to the cloud?
-            </h4>
-            <p className="text-muted-foreground leading-relaxed">
-              No. Privacy is our product philosophy. Your session count, timer controls, focus durations, and preference choices are processed entirely within your local browser sandbox and persisted locally using HTML5 localStorage.
-            </p>
-          </div>
-
-          <div className="border-t pt-3">
-            <h4 className="font-bold text-foreground mb-1">
-              Do audio bells chime when my browser tab is inactive?
-            </h4>
-            <p className="text-muted-foreground leading-relaxed">
-              Yes. The double-chime D5-A5 alert is synthesized dynamically using Web Audio API oscillators, which operate in the background even if you switch browser tabs. Note that some browsers restrict sound auto-play until you interact with the page first.
-            </p>
-          </div>
-        </div>
+      
+      <Card className="p-4 space-y-4 rounded-none">
+        <FaqSection faqs={t.faq} />
       </Card>
     </div>
   );

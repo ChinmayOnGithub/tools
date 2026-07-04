@@ -9,6 +9,7 @@ export function HistoryDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const [historyList, setHistoryList] = useState<HistoryEntry[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [lastViewed, setLastViewed] = useState<number>(0);
 
   // Sync with localStorage on mount and updates
   useEffect(() => {
@@ -23,6 +24,28 @@ export function HistoryDrawer() {
     };
   }, []);
 
+  // Initialize and update lastViewed timestamp when popover opens
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('last_viewed_history_time');
+      if (saved) {
+        setTimeout(() => {
+          setLastViewed(parseInt(saved, 10));
+        }, 0);
+      }
+    }
+  }, []);
+
+  const handleOpenToggle = () => {
+    const nextState = !isOpen;
+    setIsOpen(nextState);
+    if (nextState && typeof window !== 'undefined') {
+      const now = Date.now();
+      localStorage.setItem('last_viewed_history_time', now.toString());
+      setLastViewed(now);
+    }
+  };
+
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text).then(() => {
       setCopiedId(id);
@@ -36,73 +59,74 @@ export function HistoryDrawer() {
     }
   };
 
+  const hasUnread = historyList.some((item) => item.timestamp > lastViewed);
+
   return (
-    <>
-      {/* Header History Button */}
+    <div className="relative">
+      {/* Header History Button Trigger */}
       <button
-        onClick={() => setIsOpen(true)}
-        className="inline-flex items-center justify-center text-sm font-medium transition-colors hover:bg-muted/50 h-10 w-10 border-2 border-border bg-transparent cursor-pointer relative"
+        onClick={handleOpenToggle}
+        className="inline-flex items-center justify-center text-sm font-medium transition-colors hover:bg-muted/50 h-10 w-10 border-2 border-border bg-transparent cursor-pointer relative rounded-none"
         aria-label="View activity history"
       >
         <Clock className="h-5 w-5 text-foreground" />
-        {historyList.length > 0 && (
+        {hasUnread && historyList.length > 0 && (
           <span className="absolute top-1 right-1 flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full bg-primary opacity-75 rounded-none"></span>
+            <span className="relative inline-flex h-2 w-2 bg-primary rounded-none"></span>
           </span>
         )}
       </button>
 
-      {/* Drawer Overlay Backdrop */}
+      {/* Invisible overlay background to close popover on clicking outside */}
       {isOpen && (
         <div 
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm transition-opacity duration-200"
+          className="fixed inset-0 z-40 bg-transparent"
         />
       )}
 
-      {/* Drawer Content */}
-      <div 
-        className={`fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-background border-l-2 border-border p-6 shadow-2xl transition-transform duration-200 ease-in-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-        aria-hidden={!isOpen}
-      >
-        <div className="flex flex-col h-full">
+      {/* Popover Dropdown Content */}
+      {isOpen && (
+        <div 
+          className="absolute right-0 mt-2 w-80 sm:w-96 bg-card border-2 border-border p-4 shadow-2xl z-50 text-left rounded-none space-y-4 animate-in fade-in slide-in-from-top-2 duration-200"
+          role="dialog"
+          aria-label="Activity history panel"
+        >
           {/* Header */}
-          <div className="flex items-center justify-between pb-4 border-b-2 border-border">
+          <div className="flex items-center justify-between pb-3 border-b-2 border-border">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />
-              <h2 className="text-sm font-bold text-foreground">Activity History</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">Recent Activity</h2>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               {historyList.length > 0 && (
                 <button
                   onClick={handleClear}
-                  className="inline-flex items-center justify-center h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-muted/50 border border-transparent transition-colors cursor-pointer"
+                  className="inline-flex items-center justify-center h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-muted/50 border-2 border-border hover:border-destructive transition-colors cursor-pointer rounded-none"
                   title="Clear history"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3.5 w-3.5" />
                 </button>
               )}
               <button
                 onClick={() => setIsOpen(false)}
-                className="inline-flex items-center justify-center h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent transition-colors cursor-pointer"
+                className="inline-flex items-center justify-center h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted/50 border-2 border-border hover:border-primary transition-colors cursor-pointer rounded-none"
                 aria-label="Close panel"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
 
-          {/* List items */}
-          <div className="flex-1 overflow-y-auto py-4 space-y-3 pr-1">
+          {/* List scroll container */}
+          <div className="max-h-72 overflow-y-auto space-y-3 pr-1">
             {historyList.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
-                <Clock className="h-8 w-8 text-muted-foreground/30" />
-                <p className="text-xs font-semibold text-muted-foreground">No recent activity</p>
-                <p className="text-[10px] text-muted-foreground/60 max-w-[200px]">
-                  Actions performed across generators, formatters, and compilers appear here locally.
+              <div className="py-8 flex flex-col items-center justify-center text-center space-y-2">
+                <Clock className="h-7 w-7 text-muted-foreground/30" />
+                <p className="text-[10px] font-bold uppercase text-muted-foreground">No activity logs</p>
+                <p className="text-[10px] text-muted-foreground/60 max-w-[200px] leading-relaxed">
+                  Actions performed across our browser utilities will appear here locally.
                 </p>
               </div>
             ) : (
@@ -114,19 +138,19 @@ export function HistoryDrawer() {
                 return (
                   <div 
                     key={item.id} 
-                    className="border-2 border-border p-3 bg-muted/10 flex flex-col gap-2 relative transition-colors duration-150 hover:border-primary/30"
+                    className="border-2 border-border p-3 bg-muted/10 flex flex-col gap-2 relative transition-colors duration-150 hover:border-primary/40 rounded-none"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex flex-col min-w-0">
                         <Link 
                           href={`/tools/${item.toolId}`}
                           onClick={() => setIsOpen(false)}
-                          className="text-[10px] font-extrabold uppercase tracking-wider text-primary hover:underline inline-flex items-center gap-1"
+                          className="text-[9px] font-extrabold uppercase tracking-wider text-primary hover:underline inline-flex items-center gap-1 leading-none"
                         >
                           {item.toolName}
                           <ExternalLink className="h-2 w-2" />
                         </Link>
-                        <span className="text-xs font-bold text-foreground mt-0.5 leading-tight">
+                        <span className="text-xs font-bold text-foreground mt-1 leading-tight">
                           {item.action}
                         </span>
                       </div>
@@ -136,19 +160,19 @@ export function HistoryDrawer() {
                     </div>
 
                     {item.details && (
-                      <div className="flex items-center justify-between gap-2 bg-background/50 border border-border px-2 py-1 text-[10px] text-muted-foreground">
-                        <span className="truncate font-mono select-all">
+                      <div className="flex items-center justify-between gap-2 bg-background border border-border px-2 py-1 text-[10px] text-muted-foreground rounded-none">
+                        <span className="truncate font-mono select-all flex-1">
                           {item.details}
                         </span>
                         <button
                           onClick={() => handleCopy(item.id, item.details || '')}
-                          className="shrink-0 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                          className="shrink-0 text-muted-foreground hover:text-primary border border-border hover:border-primary p-1 transition-colors cursor-pointer rounded-none"
                           title="Copy details"
                         >
                           {copiedId === item.id ? (
-                            <Check className="h-3.5 w-3.5 text-primary" />
+                            <Check className="h-3 w-3 text-primary" />
                           ) : (
-                            <Copy className="h-3.5 w-3.5" />
+                            <Copy className="h-3 w-3" />
                           )}
                         </button>
                       </div>
@@ -159,8 +183,8 @@ export function HistoryDrawer() {
             )}
           </div>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 

@@ -18,6 +18,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
+import FaqSection from '@/components/shared/FaqSection';
 
 export default function ImageResizerComponent() {
   const [mounted, setMounted] = useState(false);
@@ -362,19 +363,9 @@ export default function ImageResizerComponent() {
       </Card>
 
       {/* FAQ accordion */}
-      <Card className="p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Frequently Asked Questions
-        </h3>
-        
-        <div className="space-y-3.5 text-xs">
-          {t.faq.map((item, i) => (
-            <div key={i} className={i > 0 ? 'border-t pt-3' : ''}>
-              <h4 className="font-bold text-foreground mb-1">{item.q}</h4>
-              <p className="text-muted-foreground leading-relaxed">{item.a}</p>
-            </div>
-          ))}
-        </div>
+      
+      <Card className="p-4 space-y-4 rounded-none">
+        <FaqSection faqs={t.faq} />
       </Card>
     </div>
   );

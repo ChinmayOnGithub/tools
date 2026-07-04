@@ -1,124 +1,128 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { ComponentType } from 'react';
+import { ComponentType, useEffect } from 'react';
+import { ToolSkeleton } from '@/components/shared/ToolSkeleton';
 
 const FallbackTool: ComponentType = () => (
-  <div className="p-6 text-center border border-dashed rounded-lg">
+  <div className="p-6 text-center border-2 border-dashed border-border">
     <p className="text-sm text-muted-foreground">Tool module configuration is under construction.</p>
   </div>
 );
 FallbackTool.displayName = 'FallbackTool';
 
+// Shared loading element — used by every dynamic import
+const toolLoader = () => <ToolSkeleton />;
+
 // Client-side dynamic loader registry.
 // Register all newly developed tools here to compile them in the client bundle.
 const TOOLS_COMPONENTS: Record<string, ComponentType> = {
   'uuid-generator': dynamic(() => import('@/components/tools/uuid-generator'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'word-counter': dynamic(() => import('@/components/tools/word-counter'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'json-formatter': dynamic(() => import('@/components/tools/json-formatter'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'url-encoder': dynamic(() => import('@/components/tools/url-encoder'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'base64-converter': dynamic(() => import('@/components/tools/base64-converter'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'password-generator': dynamic(() => import('@/components/tools/password-generator'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'jwt-decoder': dynamic(() => import('@/components/tools/jwt-decoder'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'hash-generator': dynamic(() => import('@/components/tools/hash-generator'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'case-converter': dynamic(() => import('@/components/tools/case-converter'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'remove-duplicate-lines': dynamic(() => import('@/components/tools/remove-duplicate-lines'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'lorem-ipsum-generator': dynamic(() => import('@/components/tools/lorem-ipsum-generator'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'pomodoro-timer': dynamic(() => import('@/components/tools/pomodoro-timer'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'pdf-merge': dynamic(() => import('@/components/tools/pdf-merge'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'pdf-split': dynamic(() => import('@/components/tools/pdf-split'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'images-to-pdf': dynamic(() => import('@/components/tools/images-to-pdf'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'pdf-compress': dynamic(() => import('@/components/tools/pdf-compress'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'image-compressor': dynamic(() => import('@/components/tools/image-compressor'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'image-resizer': dynamic(() => import('@/components/tools/image-resizer'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'image-format-converter': dynamic(() => import('@/components/tools/image-format-converter'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'image-cropper': dynamic(() => import('@/components/tools/image-cropper'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'fullscreen-clock': dynamic(() => import('@/components/tools/fullscreen-clock'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'stopwatch': dynamic(() => import('@/components/tools/stopwatch'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'countdown-timer': dynamic(() => import('@/components/tools/countdown-timer'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'qr-generator': dynamic(() => import('@/components/tools/qr-generator'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'barcode-generator': dynamic(() => import('@/components/tools/barcode-generator'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'color-picker': dynamic(() => import('@/components/tools/color-picker'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
   'unit-converter': dynamic(() => import('@/components/tools/unit-converter'), {
-    loading: () => <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />,
+    loading: toolLoader,
     ssr: false,
   }),
 };
@@ -127,8 +131,24 @@ interface ToolContainerProps {
   slug: string;
 }
 
+interface CustomWindow extends Window {
+  __isInitializing?: boolean;
+}
+
 export function ToolContainer({ slug }: ToolContainerProps) {
   const ToolComponent = TOOLS_COMPONENTS[slug] || FallbackTool;
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const customWindow = window as unknown as CustomWindow;
+      customWindow.__isInitializing = true;
+      const timer = setTimeout(() => {
+        customWindow.__isInitializing = false;
+      }, 1000); // Guard window for 1 second of initial mount auto-runs
+      return () => clearTimeout(timer);
+    }
+  }, [slug]);
+
   return <ToolComponent />;
 }
 

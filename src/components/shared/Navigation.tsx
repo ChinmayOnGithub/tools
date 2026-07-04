@@ -7,6 +7,7 @@ import { CATEGORIES } from '@/config/categories';
 import ThemeToggle from '@/components/shared/ThemeToggle';
 import SearchOverlay from '@/components/shared/SearchOverlay';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
+import SiteLogo from '@/components/shared/SiteLogo';
 
 export function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -39,12 +40,7 @@ export function Navigation() {
         <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-3">
-              <Link className="flex items-center space-x-2 font-bold text-lg group" href="/" aria-label="Home page">
-                <span className="bg-foreground text-background px-3 py-1 text-sm font-extrabold tracking-tight group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200">
-                  COOL
-                </span>
-                <span className="font-extrabold tracking-tight">TOOLS</span>
-              </Link>
+              <SiteLogo size="md" />
             </div>
             
             {/* Desktop Navigation */}

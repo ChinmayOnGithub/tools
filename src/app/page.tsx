@@ -7,11 +7,11 @@ import StatsCard from '@/components/shared/StatsCard';
 import ScrollControls from '@/components/shared/ScrollControls';
 import { CATEGORIES } from '@/config/categories';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
+import FaqSection from '@/components/shared/FaqSection';
 import { 
   ShieldCheck, 
   Cpu, 
   Code2, 
-  HelpCircle,
   Wrench,
   TrendingUp,
   Clock,
@@ -226,24 +226,7 @@ export default function Home() {
 
             {/* FAQ Section */}
             <section className="border-t-2 border-border pt-10">
-              <div className="flex items-center gap-2 mb-6">
-                <HelpCircle className="h-5 w-5 text-primary" />
-                <h2 className="text-lg font-bold text-foreground">Frequently Asked Questions</h2>
-              </div>
-              
-              <div className="space-y-4">
-                {FAQS.map((faq, index) => (
-                  <div key={index} className="bg-card border-2 border-border p-5 card-depth-1 hover:card-depth-2 transition-all">
-                    <h3 className="text-sm font-bold text-foreground mb-2 flex items-start gap-2">
-                      <span className="text-foreground font-extrabold shrink-0">Q:</span> 
-                      <span>{faq.q}</span>
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed pl-6">
-                      {faq.a}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              <FaqSection faqs={FAQS} titleClassName="text-lg font-bold text-foreground" />
             </section>
 
           </div>

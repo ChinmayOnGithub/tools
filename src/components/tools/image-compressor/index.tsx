@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
-import { addHistoryEntry } from '@/lib/history';
 import FaqSection from '@/components/shared/FaqSection';
 
 export default function ImageCompressorComponent() {
@@ -122,11 +121,6 @@ export default function ImageCompressorComponent() {
           setSuccess(true);
           trackToolCompletion('image-compressor');
           trackDownloadAction('image-compressor');
-
-          const diff = sourceFile.size - blob.size;
-          const pct = diff > 0 ? ((diff / sourceFile.size) * 100).toFixed(1) : '0';
-          const savedStr = diff > 0 ? `(Saved ${pct}%)` : '';
-          addHistoryEntry('image-compressor', 'Image Compressor', `Compressed ${sourceFile.name} ${savedStr}`);
 
           const link = document.createElement('a');
           link.href = url;

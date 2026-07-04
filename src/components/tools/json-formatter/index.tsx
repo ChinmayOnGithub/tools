@@ -15,7 +15,6 @@ import {
   trackValidationError, 
   trackDownloadAction 
 } from '@/lib/analytics';
-import { addHistoryEntry } from '@/lib/history';
 
 const SAMPLE_JSON = `{
   "name": "CoolTools Platform",
@@ -66,7 +65,6 @@ export default function JSONFormatter() {
       setErrorMsg(null);
       setIsValid(true);
       trackToolCompletion('json-formatter');
-      addHistoryEntry('json-formatter', 'JSON Formatter', 'Beautified JSON data', result.output);
     } else {
       setOutput('');
       setIsValid(false);
@@ -95,7 +93,6 @@ export default function JSONFormatter() {
       setErrorMsg(null);
       setIsValid(true);
       trackToolCompletion('json-formatter');
-      addHistoryEntry('json-formatter', 'JSON Formatter', 'Minified JSON data', result.output);
     } else {
       setOutput('');
       setIsValid(false);

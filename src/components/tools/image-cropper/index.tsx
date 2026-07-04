@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
+import FaqSection from '@/components/shared/FaqSection';
 
 export default function ImageCropperComponent() {
   const [mounted, setMounted] = useState(false);
@@ -33,6 +34,10 @@ export default function ImageCropperComponent() {
   const [cropW, setCropW] = useState(200);
   const [cropH, setCropH] = useState(200);
 
+  // Drag and resize mouse/touch state
+  const [dragMode, setDragMode] = useState<'none' | 'moving' | 'resizing'>('none');
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0, cropX: 0, cropY: 0, cropW: 0, cropH: 0 });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -49,6 +54,40 @@ export default function ImageCropperComponent() {
     }, 0);
     return () => clearTimeout(timer);
   }, []);
+
+  // Handle box dragging & resizing outside image container smoothly
+  useEffect(() => {
+    if (dragMode === 'none') return;
+
+    const handlePointerMove = (e: PointerEvent) => {
+      const deltaX = e.clientX - dragStart.x;
+      const deltaY = e.clientY - dragStart.y;
+
+      if (dragMode === 'moving') {
+        const nextX = Math.max(0, Math.min(displayWidth - cropW, dragStart.cropX + deltaX));
+        const nextY = Math.max(0, Math.min(displayHeight - cropH, dragStart.cropY + deltaY));
+        setCropX(nextX);
+        setCropY(nextY);
+      } else if (dragMode === 'resizing') {
+        const nextW = Math.max(20, Math.min(displayWidth - cropX, dragStart.cropW + deltaX));
+        const nextH = Math.max(20, Math.min(displayHeight - cropY, dragStart.cropH + deltaY));
+        setCropW(nextW);
+        setCropH(nextH);
+      }
+    };
+
+    const handlePointerUp = () => {
+      setDragMode('none');
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+  }, [dragMode, dragStart, cropX, cropY, cropW, cropH, displayWidth, displayHeight]);
 
   const handleFile = (file: File) => {
     setError(null);
@@ -214,12 +253,12 @@ export default function ImageCropperComponent() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full" />;
   }
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
-      <Card className="card-depth-2">
+      <Card className="card-depth-2 rounded-none">
         <CardHeader>
           <CardTitle className="text-lg font-bold text-foreground">
             {t.title}
@@ -235,7 +274,7 @@ export default function ImageCropperComponent() {
               onDragLeave={handleDrag}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
+              className={`border-2 border-dashed rounded-none p-8 text-center cursor-pointer transition-all duration-200 ${
                 dragActive 
                   ? 'border-primary bg-primary/5' 
                   : 'border-border bg-muted/10 hover:bg-muted/20 hover:border-primary/50'
@@ -249,7 +288,7 @@ export default function ImageCropperComponent() {
                 className="hidden"
               />
               <div className="flex flex-col items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                <div className="h-12 w-12 rounded-none bg-primary/10 text-primary flex items-center justify-center border-2 border-border">
                   <Upload className="h-6 w-6" />
                 </div>
                 <p className="text-sm font-semibold text-foreground">
@@ -262,11 +301,11 @@ export default function ImageCropperComponent() {
             /* Crop workspace */
             <div className="flex flex-col md:flex-row gap-6">
               {/* Visual preview box */}
-              <div className="flex flex-col items-center justify-center border-2 border-border p-4 rounded-lg bg-muted/5 shrink-0">
+              <div className="flex flex-col items-center justify-center border-2 border-border p-4 rounded-none bg-muted/5 shrink-0 select-none">
                 <div
                   ref={containerRef}
                   style={{ width: `${displayWidth}px`, height: `${displayHeight}px` }}
-                  className="relative overflow-hidden border border-muted-foreground/30 select-none bg-checkered"
+                  className="relative overflow-hidden border border-border bg-checkered touch-none"
                 >
                   {previewUrl && (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -277,7 +316,7 @@ export default function ImageCropperComponent() {
                       className="pointer-events-none"
                     />
                   )}
-                  {/* Cropping box overlay */}
+                  {/* Cropping box overlay with drag & resize capabilities */}
                   <div
                     style={{
                       left: `${cropX}px`,
@@ -285,12 +324,40 @@ export default function ImageCropperComponent() {
                       width: `${cropW}px`,
                       height: `${cropH}px`,
                     }}
-                    className="absolute border-2 border-primary bg-primary/10 shadow-overlay"
+                    onPointerDown={(e) => {
+                      setDragMode('moving');
+                      setDragStart({
+                        x: e.clientX,
+                        y: e.clientY,
+                        cropX,
+                        cropY,
+                        cropW,
+                        cropH
+                      });
+                    }}
+                    className="absolute border-2 border-primary bg-primary/10 shadow-overlay cursor-move select-none touch-none"
                   >
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="border border-white/50 border-dashed w-full h-1/3 absolute top-1/3 pointer-events-none" />
-                      <div className="border border-white/50 border-dashed h-full w-1/3 absolute left-1/3 pointer-events-none" />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="border border-white/50 border-dashed w-full h-1/3 absolute top-1/3" />
+                      <div className="border border-white/50 border-dashed h-full w-1/3 absolute left-1/3" />
                     </div>
+
+                    {/* Resize Handle: Bottom-Right Corner */}
+                    <div
+                      onPointerDown={(e) => {
+                        e.stopPropagation();
+                        setDragMode('resizing');
+                        setDragStart({
+                          x: e.clientX,
+                          y: e.clientY,
+                          cropX,
+                          cropY,
+                          cropW,
+                          cropH
+                        });
+                      }}
+                      className="absolute bottom-0 right-0 w-3 h-3 bg-primary border-2 border-white cursor-se-resize -mr-1.5 -mb-1.5 z-10 shadow-md touch-none"
+                    />
                   </div>
                 </div>
                 <span className="text-[10px] text-muted-foreground mt-2 font-semibold">
@@ -308,7 +375,7 @@ export default function ImageCropperComponent() {
                     variant="outline"
                     size="icon"
                     onClick={clearSelection}
-                    className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                    className="h-8 w-8 text-destructive hover:bg-destructive/10 border-2 border-border rounded-none"
                     aria-label="Remove image"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -328,7 +395,7 @@ export default function ImageCropperComponent() {
                     max={String(displayWidth - cropW)}
                     value={cropX}
                     onChange={(e) => setCropX(Math.min(parseInt(e.target.value, 10), displayWidth - cropW))}
-                    className="w-full h-1.5 bg-border rounded cursor-pointer accent-primary"
+                    className="w-full h-1.5 bg-border rounded-none cursor-pointer accent-primary"
                     aria-label="Crop X position offset slider"
                   />
                 </div>
@@ -346,7 +413,7 @@ export default function ImageCropperComponent() {
                     max={String(displayHeight - cropH)}
                     value={cropY}
                     onChange={(e) => setCropY(Math.min(parseInt(e.target.value, 10), displayHeight - cropH))}
-                    className="w-full h-1.5 bg-border rounded cursor-pointer accent-primary"
+                    className="w-full h-1.5 bg-border rounded-none cursor-pointer accent-primary"
                     aria-label="Crop Y position offset slider"
                   />
                 </div>
@@ -364,7 +431,7 @@ export default function ImageCropperComponent() {
                     max={String(displayWidth - cropX)}
                     value={cropW}
                     onChange={(e) => setCropW(Math.min(parseInt(e.target.value, 10), displayWidth - cropX))}
-                    className="w-full h-1.5 bg-border rounded cursor-pointer accent-primary"
+                    className="w-full h-1.5 bg-border rounded-none cursor-pointer accent-primary"
                     aria-label="Crop width dimension slider"
                   />
                 </div>
@@ -382,7 +449,7 @@ export default function ImageCropperComponent() {
                     max={String(displayHeight - cropY)}
                     value={cropH}
                     onChange={(e) => setCropH(Math.min(parseInt(e.target.value, 10), displayHeight - cropY))}
-                    className="w-full h-1.5 bg-border rounded cursor-pointer accent-primary"
+                    className="w-full h-1.5 bg-border rounded-none cursor-pointer accent-primary"
                     aria-label="Crop height dimension slider"
                   />
                 </div>
@@ -392,7 +459,7 @@ export default function ImageCropperComponent() {
 
           {/* Error Message Card */}
           {error && (
-            <div className="bg-destructive/10 border-2 border-destructive/20 text-destructive p-4 flex gap-3 text-xs font-semibold leading-relaxed">
+            <div className="bg-destructive/5 border-2 border-destructive/20 text-destructive p-4 flex gap-3 text-xs font-semibold leading-relaxed rounded-none">
               <AlertTriangle className="h-5 w-5 shrink-0" />
               <span>{error}</span>
             </div>
@@ -404,7 +471,7 @@ export default function ImageCropperComponent() {
               <Button
                 onClick={handleCrop}
                 disabled={loading}
-                className="w-full font-bold flex items-center justify-center gap-2 h-11 text-sm cursor-pointer"
+                className="w-full font-bold flex items-center justify-center gap-2 h-11 text-sm cursor-pointer rounded-none"
               >
                 {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
                 {loading ? t.croppingStatus : t.cropButton}
@@ -414,9 +481,9 @@ export default function ImageCropperComponent() {
 
           {/* Success / Result details */}
           {success && downloadUrl && (
-            <div className="bg-emerald-500/10 border-2 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-lg flex flex-col gap-2 text-xs font-semibold leading-relaxed">
+            <div className="bg-emerald-500/5 border-2 border-emerald-600/30 text-emerald-700 dark:text-emerald-400 p-4 rounded-none flex flex-col gap-2 text-xs font-bold leading-relaxed">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5" />
+                <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 <span>{t.successMessage}</span>
               </div>
               <a
@@ -432,19 +499,8 @@ export default function ImageCropperComponent() {
       </Card>
 
       {/* FAQ accordion */}
-      <Card className="p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Frequently Asked Questions
-        </h3>
-        
-        <div className="space-y-3.5 text-xs">
-          {t.faq.map((item, i) => (
-            <div key={i} className={i > 0 ? 'border-t pt-3' : ''}>
-              <h4 className="font-bold text-foreground mb-1">{item.q}</h4>
-              <p className="text-muted-foreground leading-relaxed">{item.a}</p>
-            </div>
-          ))}
-        </div>
+      <Card className="p-4 space-y-4 rounded-none">
+        <FaqSection faqs={t.faq} />
       </Card>
     </div>
   );

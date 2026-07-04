@@ -7,6 +7,7 @@ import { convertUnit, CONVERSIONS } from './utils';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { trackToolLaunch, trackToolCompletion } from '@/lib/analytics';
+import FaqSection from '@/components/shared/FaqSection';
 
 export default function UnitConverterComponent() {
   const [mounted, setMounted] = useState(false);
@@ -22,6 +23,16 @@ export default function UnitConverterComponent() {
     }, 0);
     return () => clearTimeout(timer);
   }, []);
+
+  // Track tool completion safely outside of render phase using a debounced hook
+  useEffect(() => {
+    if (!mounted || !inputValue.trim() || isNaN(parseFloat(inputValue))) return;
+
+    const timer = setTimeout(() => {
+      trackToolCompletion('unit-converter');
+    }, 500); // 500ms debounce
+    return () => clearTimeout(timer);
+  }, [inputValue, category, fromUnit, toUnit, mounted]);
 
   // Update dropdown defaults when changing category
   const handleCategoryChange = (cat: string) => {
@@ -58,25 +69,23 @@ export default function UnitConverterComponent() {
     if (isNaN(parsed)) return '';
 
     const converted = convertUnit(category, parsed, fromUnit, toUnit);
-    // Track completion slightly throttled
-    trackToolCompletion('unit-converter');
     return String(parseFloat(converted.toFixed(6)));
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 w-full" />;
+    return <div className="animate-pulse bg-muted h-64 w-full border-2 border-border rounded-none" />;
   }
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
-      <Card className="card-depth-2">
-        <CardHeader>
+      <Card className="card-depth-2 rounded-none border-2 border-border">
+        <CardHeader className="border-b-2 border-border py-3.5 px-4">
           <CardTitle className="text-lg font-bold text-foreground">
             {t.title}
           </CardTitle>
         </CardHeader>
         
-        <CardContent className="space-y-6">
+        <CardContent className="p-4 space-y-6">
           {/* Category Selector dropdown */}
           <div className="space-y-1.5">
             <label htmlFor="category-select" className="text-xs font-bold text-muted-foreground">{t.categoryLabel}</label>
@@ -84,7 +93,7 @@ export default function UnitConverterComponent() {
               id="category-select"
               value={category}
               onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full h-10 border-2 border-input px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="w-full h-10 border-2 border-border px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-none"
             >
               <option value="length">Length</option>
               <option value="weight">Weight & Mass</option>
@@ -96,7 +105,7 @@ export default function UnitConverterComponent() {
             </select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-border pt-4">
             {/* Input card parameters */}
             <div className="space-y-4">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -110,7 +119,7 @@ export default function UnitConverterComponent() {
                   type="number"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  className="h-10 text-xs font-semibold"
+                  className="h-10 text-xs font-semibold rounded-none border-2 border-border"
                   aria-label="Input value for conversion"
                 />
               </div>
@@ -121,7 +130,7 @@ export default function UnitConverterComponent() {
                   id="from-select"
                   value={fromUnit}
                   onChange={(e) => setFromUnit(e.target.value)}
-                  className="w-full h-10 border-2 border-input px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="w-full h-10 border-2 border-border px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-none"
                 >
                   {getUnitsForCategory().map((u) => (
                     <option key={u.val} value={u.val}>{u.label}</option>
@@ -131,7 +140,7 @@ export default function UnitConverterComponent() {
             </div>
 
             {/* Output conversion result */}
-            <div className="space-y-4 border-t md:border-t-0 md:border-l md:pl-6 pt-4 md:pt-0">
+            <div className="space-y-4 border-t-2 border-border md:border-t-0 md:border-l-2 md:pl-6 pt-4 md:pt-0">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <RefreshCw className="h-4 w-4" /> Result details
               </span>
@@ -143,7 +152,7 @@ export default function UnitConverterComponent() {
                   type="text"
                   readOnly
                   value={calculateResult()}
-                  className="h-10 text-xs font-bold bg-muted/20 text-primary border-primary/20"
+                  className="h-10 text-xs font-bold bg-muted/20 text-primary border-2 border-primary/20 rounded-none"
                   aria-label="Converted output value read-only"
                 />
               </div>
@@ -154,7 +163,7 @@ export default function UnitConverterComponent() {
                   id="to-select"
                   value={toUnit}
                   onChange={(e) => setToUnit(e.target.value)}
-                  className="w-full h-10 border-2 border-input px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="w-full h-10 border-2 border-border px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-none"
                 >
                   {getUnitsForCategory().map((u) => (
                     <option key={u.val} value={u.val}>{u.label}</option>
@@ -167,19 +176,8 @@ export default function UnitConverterComponent() {
       </Card>
 
       {/* FAQ accordion */}
-      <Card className="p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Frequently Asked Questions
-        </h3>
-        
-        <div className="space-y-3.5 text-xs">
-          {t.faq.map((item, i) => (
-            <div key={i} className={i > 0 ? 'border-t pt-3' : ''}>
-              <h4 className="font-bold text-foreground mb-1">{item.q}</h4>
-              <p className="text-muted-foreground leading-relaxed">{item.a}</p>
-            </div>
-          ))}
-        </div>
+      <Card className="p-4 space-y-4 rounded-none border-2 border-border">
+        <FaqSection faqs={t.faq} />
       </Card>
     </div>
   );

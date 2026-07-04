@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { trackToolLaunch, trackToolCompletion } from '@/lib/analytics';
-import { addHistoryEntry } from '@/lib/history';
 
 export default function UUIDGenerator() {
   const [mounted, setMounted] = useState(false);
@@ -25,7 +24,6 @@ export default function UUIDGenerator() {
     const list = generateUUIDs(boundedQuantity, { uppercase, hyphens });
     setOutput(list);
     trackToolCompletion('uuid-generator');
-    addHistoryEntry('uuid-generator', 'UUID Generator', `Generated ${boundedQuantity} UUIDs`, list.slice(0, 3).join('\n') + (list.length > 3 ? '\n...' : ''));
   }, [quantity, uppercase, hyphens]);
 
   useEffect(() => {
