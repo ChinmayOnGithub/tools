@@ -1,3 +1,5 @@
+import { logger } from './logger';
+
 export interface HistoryEntry {
   id: string;
   toolId: string;
@@ -13,7 +15,7 @@ export function getHistory(): HistoryEntry[] {
     const raw = localStorage.getItem('tool_history');
     return raw ? JSON.parse(raw) : [];
   } catch (e) {
-    console.error('Failed to parse history:', e);
+    logger.error('Failed to parse history', e);
     return [];
   }
 }
@@ -47,7 +49,7 @@ export function addHistoryEntry(toolId: string, toolName: string, action: string
     localStorage.setItem('tool_history', JSON.stringify(updated));
     window.dispatchEvent(new Event('tool_history_update'));
   } catch (e) {
-    console.error('Failed to save history entry:', e);
+    logger.error('Failed to save history entry', e);
   }
 }
 
@@ -57,6 +59,6 @@ export function clearHistory() {
     localStorage.removeItem('tool_history');
     window.dispatchEvent(new Event('tool_history_update'));
   } catch (e) {
-    console.error('Failed to clear history:', e);
+    logger.error('Failed to clear history', e);
   }
 }

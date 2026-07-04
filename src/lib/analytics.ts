@@ -1,5 +1,6 @@
 import { addHistoryEntry } from './history';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
+import { logger } from './logger';
 
 export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -94,7 +95,7 @@ export function trackToolCompletion(toolId: string) {
 
     addHistoryEntry(toolId, toolName, action);
   } catch (err) {
-    console.error('Failed to auto-log history:', err);
+    logger.error('Failed to auto-log history', err);
   }
 }
 
