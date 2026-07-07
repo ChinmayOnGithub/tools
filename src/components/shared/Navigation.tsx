@@ -37,7 +37,7 @@ export function Navigation() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b-2 border-border bg-background card-depth-2">
-        <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-16 max-w-7xl w-full items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-3">
               <SiteLogo size="md" />
@@ -57,12 +57,15 @@ export function Navigation() {
           <div className="flex items-center space-x-3">
             {/* Search Trigger Button */}
             <button
-              onClick={() => setIsSearchOpen(true)}
-              className="relative inline-flex items-center gap-2 h-10 w-40 sm:w-64 border-2 border-border bg-muted/30 px-3 text-xs text-muted-foreground hover:bg-muted/60 hover:border-primary/50 transition-all cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              onClick={() => {
+                setIsSearchOpen(true);
+                setIsMobileMenuOpen(false);
+              }}
+              className="relative inline-flex items-center justify-center sm:justify-start gap-2 h-10 w-10 sm:w-64 border-2 border-border bg-muted/30 sm:px-3 text-xs text-muted-foreground hover:bg-muted/60 hover:border-primary/50 transition-all cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               aria-label="Search tools"
             >
-              <Search className="h-4 w-4" />
-              <span className="font-medium">Search tools...</span>
+              <Search className="h-4 w-4 shrink-0" />
+              <span className="font-medium hidden sm:inline">Search tools...</span>
               <kbd className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none hidden sm:inline-flex h-5 select-none items-center justify-center gap-0.5 border border-border bg-background px-1.5 font-mono text-[10px] font-bold text-muted-foreground">
                 /
               </kbd>

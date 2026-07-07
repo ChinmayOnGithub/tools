@@ -38,14 +38,14 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
       return (
-        <div className="p-6 my-6 bg-destructive/10 text-destructive rounded-lg border border-destructive/20 shadow-sm flex flex-col items-center justify-center text-center">
-          <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>
-          <p className="text-sm text-muted-foreground mb-4 max-w-md">
+        <div className="p-6 my-6 bg-destructive/10 text-destructive border-2 border-destructive card-depth-2 flex flex-col items-center justify-center text-center">
+          <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
+          <p className="text-xs text-muted-foreground mb-4 max-w-md leading-relaxed">
             This tool encountered an unexpected crash while processing data. No files or inputs were uploaded to any server.
           </p>
           <button
             onClick={this.handleReset}
-            className="px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            className="px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 border-2 border-destructive transition-all hover:scale-105 active:scale-95 text-xs font-bold cursor-pointer"
           >
             Reset Tool
           </button>

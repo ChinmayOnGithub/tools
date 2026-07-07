@@ -91,12 +91,12 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             className="flex-1 h-full bg-transparent border-none text-sm placeholder:text-muted-foreground outline-none text-foreground focus:ring-0"
             aria-label="Search inputs"
           />
-          <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+          <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
             ESC
           </kbd>
           <button 
             onClick={onClose} 
-            className="rounded-md hover:bg-muted p-1 transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
+            className="hover:bg-muted p-1 border-2 border-transparent hover:border-border transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
             aria-label="Close search overlay"
           >
             <X className="h-4 w-4" />

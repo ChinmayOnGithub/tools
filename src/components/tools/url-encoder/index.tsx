@@ -1,24 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import t from './locales/en.json';
 import { encodeURLString, decodeURLString } from './utils';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
+import { TextInputArea } from '@/components/ui/TextInputArea';
+import { StatusBanner } from '@/components/ui/StatusBanner';
 import { 
   trackToolLaunch, 
   trackToolCompletion, 
   trackValidationError 
 } from '@/lib/analytics';
+import { Link2, Unlink } from 'lucide-react';
 
 export default function URLEncoder() {
   const [mounted, setMounted] = useState(false);
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
+  const [queryOnly, setQueryOnly] = useState(false);
   
-  const { copied, copy } = useCopyToClipboard('url-encoder');
-
   // Track initial tool page view launch
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,7 +29,7 @@ export default function URLEncoder() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Debounce conversion event tracking to prevent flooding GA4 logs during keystrokes
+  // Debounce conversion event tracking
   useEffect(() => {
     if (!input.trim()) return;
 
@@ -48,26 +49,28 @@ export default function URLEncoder() {
     return () => clearTimeout(timer);
   }, [input, mode]);
 
-  let output = '';
-  let errorMsg: string | null = null;
+  // Compute outputs and errors using useMemo for performance
+  const { output, errorMsg } = useMemo(() => {
+    let outputVal = '';
+    let errorVal: string | null = null;
 
-  // Input boundary limit checking
-  const isInputTooLarge = input.length > 2000000;
-
-  if (isInputTooLarge) {
-    errorMsg = 'Input size exceeds maximum limit of 2MB. Please enter a smaller URL string.';
-  } else if (input.trim()) {
-    if (mode === 'encode') {
-      output = encodeURLString(input);
-    } else {
-      const result = decodeURLString(input);
-      if (result.success) {
-        output = result.output;
+    if (input.length > 2000000) {
+      errorVal = 'Input size exceeds maximum limit of 2MB. Please enter a smaller URL string.';
+    } else if (input.trim()) {
+      if (mode === 'encode') {
+        outputVal = encodeURLString(input, queryOnly);
       } else {
-        errorMsg = t.validationError.replace('{message}', result.error || 'Invalid string');
+        const result = decodeURLString(input);
+        if (result.success) {
+          outputVal = result.output;
+        } else {
+          errorVal = t.validationError.replace('{message}', result.error || 'Invalid string');
+        }
       }
     }
-  }
+
+    return { output: outputVal, errorMsg: errorVal };
+  }, [input, mode, queryOnly]);
 
   const handleClear = () => {
     setInput('');
@@ -81,98 +84,91 @@ export default function URLEncoder() {
     }
   };
 
+  const processUploadedFile = (file: File) => {
+    if (file.size > 2 * 1024 * 1024) {
+      alert("File size exceeds 2MB limit.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setInput(event.target?.result as string || '');
+    };
+    reader.readAsText(file);
+  };
+
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 w-full" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border-2 border-border" />;
   }
+
+  const controlOptions = [
+    { value: 'encode' as const, label: t.encodeButton, icon: <Link2 className="h-4 w-4" /> },
+    { value: 'decode' as const, label: t.decodeButton, icon: <Unlink className="h-4 w-4" /> }
+  ];
 
   return (
     <div className="space-y-6 w-full">
-      {/* Controls panel */}
-      <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 border-2 border-border">
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant={mode === 'encode' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setMode('encode');
-              handleClear();
-            }}
-          >
-            {t.encodeButton}
-          </Button>
-          <Button
-            variant={mode === 'decode' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setMode('decode');
-              handleClear();
-            }}
-          >
-            {t.decodeButton}
-          </Button>
-        </div>
+      {/* Segmented Control Primitives */}
+      <SegmentedControl
+        options={controlOptions}
+        value={mode}
+        onChange={(val) => {
+          setMode(val);
+          handleClear();
+        }}
+      />
 
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleLoadSample}>
+      {/* Configuration bar */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-card p-3 border-2 border-border rounded-none">
+        <div className="flex flex-wrap gap-2 items-center">
+          <Button variant="outline" size="sm" onClick={handleLoadSample} className="rounded-none border-2">
             Load Sample
           </Button>
-          <Button variant="outline" size="sm" onClick={handleClear} disabled={!input}>
+          <Button variant="outline" size="sm" onClick={handleClear} disabled={!input} className="rounded-none border-2">
             {t.clearButton}
           </Button>
+
+          {/* Conditional Query Param toggle */}
+          {mode === 'encode' && (
+            <label className="flex items-center gap-2 text-xs font-bold text-foreground cursor-pointer select-none ml-2 border-l-2 border-border pl-4 h-7">
+              <input
+                type="checkbox"
+                checked={queryOnly}
+                onChange={(e) => setQueryOnly(e.target.checked)}
+                className="h-4 w-4 rounded-none border-2 border-border text-primary focus:ring-primary checked:bg-primary cursor-pointer"
+              />
+              Encode Query Params Only
+            </label>
+          )}
         </div>
       </div>
 
-      {/* Validation Message Box */}
+      {/* Validation Message Box Banner */}
       {errorMsg && (
-        <div className="p-3 text-xs font-semibold border-2 bg-destructive/10 text-destructive border-destructive/20">
-          {errorMsg}
-        </div>
+        <StatusBanner type="error" message={errorMsg} />
       )}
 
       {/* Inputs grids */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Input Card */}
-        <Card className="flex flex-col h-full">
-          <CardHeader className="py-3.5 px-4 border-b">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {t.inputLabel}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 flex-1">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={t.placeholder}
-              rows={12}
-              className="w-full h-full min-h-[250px] border-none bg-transparent p-4 font-mono text-xs outline-none focus:ring-0 resize-y"
-              aria-label="URL raw inputs text"
-            />
-          </CardContent>
-        </Card>
+        <TextInputArea 
+          value={input}
+          onChange={setInput}
+          placeholder={t.placeholder}
+          label={t.inputLabel}
+          onFileDrop={processUploadedFile}
+          rows={12}
+          showStats={true}
+        />
 
         {/* Output Card */}
-        <Card className="flex flex-col h-full">
-          <CardHeader className="py-3.5 px-4 border-b flex flex-row justify-between items-center space-y-0">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {t.outputLabel}
-            </CardTitle>
-            {output && (
-              <Button variant="outline" size="sm" onClick={() => copy(output)}>
-                {copied ? t.copiedFeedback : t.copyButton}
-              </Button>
-            )}
-          </CardHeader>
-          <CardContent className="p-0 flex-1">
-            <textarea
-              readOnly
-              value={output}
-              placeholder={t.outputPlaceholder}
-              rows={12}
-              className="w-full h-full min-h-[250px] border-none bg-muted/20 p-4 font-mono text-xs outline-none focus:ring-0 resize-y"
-              aria-label="URL converted output text"
-            />
-          </CardContent>
-        </Card>
+        <TextInputArea 
+          value={output}
+          readOnly={true}
+          placeholder={t.outputPlaceholder}
+          label={t.outputLabel}
+          rows={12}
+          showStats={true}
+        />
       </div>
     </div>
   );

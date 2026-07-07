@@ -243,3 +243,30 @@ export async function generateHash(text: string, algorithm: string): Promise<str
   const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
   return hashHex;
 }
+
+export interface AllHashes {
+  md5: string;
+  sha1: string;
+  sha256: string;
+  sha512: string;
+}
+
+export async function generateAllHashes(text: string, salt = '', saltPosition: 'prepend' | 'append' = 'append'): Promise<AllHashes> {
+  const saltedText = salt 
+    ? (saltPosition === 'prepend' ? salt + text : text + salt)
+    : text;
+    
+  const [md5Val, sha1Val, sha256Val, sha512Val] = await Promise.all([
+    generateHash(saltedText, 'MD5'),
+    generateHash(saltedText, 'SHA-1'),
+    generateHash(saltedText, 'SHA-256'),
+    generateHash(saltedText, 'SHA-512')
+  ]);
+  
+  return {
+    md5: md5Val,
+    sha1: sha1Val,
+    sha256: sha256Val,
+    sha512: sha512Val
+  };
+}

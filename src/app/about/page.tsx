@@ -94,7 +94,7 @@ export default function AboutPage() {
       <section className="text-center pt-4">
         <Link 
           href="/" 
-          className="inline-flex h-10 items-center justify-center rounded bg-primary px-6 text-xs font-bold text-primary-foreground shadow hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="inline-flex h-10 items-center justify-center border-2 border-primary bg-primary px-6 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           Explore Available Tools
         </Link>

@@ -45,6 +45,12 @@ export function convertCase(text: string, style: string): string {
       const words = getWords(text);
       return words.map((w) => w.toLowerCase()).join('.');
     }
+    case 'alternate': {
+      return text
+        .split('')
+        .map((char, i) => (i % 2 === 0 ? char.toLowerCase() : char.toUpperCase()))
+        .join('');
+    }
     default:
       return text;
   }

@@ -34,6 +34,43 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   };
 }
 
+const CATEGORY_COLOR_MAP: Record<string, {
+  bar: string;
+  text: string;
+  badge: string;
+}> = {
+  red: {
+    bar: 'bg-red-500',
+    text: 'text-red-600 dark:text-red-400',
+    badge: 'bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20',
+  },
+  blue: {
+    bar: 'bg-blue-500',
+    text: 'text-blue-600 dark:text-blue-400',
+    badge: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20',
+  },
+  emerald: {
+    bar: 'bg-emerald-500',
+    text: 'text-emerald-600 dark:text-emerald-400',
+    badge: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20',
+  },
+  orange: {
+    bar: 'bg-orange-500',
+    text: 'text-orange-600 dark:text-orange-400',
+    badge: 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/20',
+  },
+  violet: {
+    bar: 'bg-violet-500',
+    text: 'text-violet-600 dark:text-violet-400',
+    badge: 'bg-violet-500/10 text-violet-700 dark:text-violet-300 border-violet-500/20',
+  },
+  amber: {
+    bar: 'bg-amber-500',
+    text: 'text-amber-600 dark:text-amber-400',
+    badge: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20',
+  },
+};
+
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
   const category = CATEGORIES.find((c) => c.slug === slug);
@@ -41,6 +78,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   if (!category) {
     notFound();
   }
+
+  const colors = CATEGORY_COLOR_MAP[category.color] || CATEGORY_COLOR_MAP.orange;
 
   const matchingTools = TOOLS_REGISTRY.filter((tool) => tool.category === category.id);
   const availableTools = matchingTools.filter((t) => t.status === 'published');
@@ -52,15 +91,18 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       <nav className="text-xs text-muted-foreground flex gap-2 items-center" aria-label="Breadcrumb">
         <Link href="/" className="hover:underline">Home</Link>
         <span>/</span>
-        <span className="font-semibold text-foreground">{category.title}</span>
+        <span className={`font-bold ${colors.text}`}>{category.title}</span>
       </nav>
 
       {/* Header Panel */}
-      <section className="border-b-2 border-border pb-6">
+      <section className="relative bg-card border-2 border-border p-6 sm:p-8 card-depth-1 overflow-hidden">
+        {/* Top accent bar matching category */}
+        <div className={`absolute top-0 left-0 right-0 h-1 ${colors.bar}`} />
+        
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
           {category.title}
         </h1>
-        <p className="mt-2 text-base text-muted-foreground max-w-2xl leading-relaxed">
+        <p className="mt-2.5 text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
           {category.description}
         </p>
       </section>
@@ -76,7 +118,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             <h2 className="text-xl font-bold tracking-tight text-foreground">
               Available Tools
             </h2>
-            <span className="inline-flex items-center bg-green-500/10 text-green-700 dark:text-green-400 px-3 py-1 border border-green-500/20 text-xs font-bold uppercase tracking-wider">
+            <span className={`inline-flex items-center px-3 py-1 border text-xs font-bold uppercase tracking-wider ${colors.badge}`}>
               {availableTools.length} Live
             </span>
           </div>
@@ -101,7 +143,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               <h2 className="text-xl font-bold tracking-tight text-foreground">
                 Coming Soon
               </h2>
-              <span className="inline-flex items-center bg-blue-500/10 text-blue-700 dark:text-blue-400 px-3 py-1 border border-blue-500/20 text-xs font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center bg-muted text-muted-foreground px-3 py-1 border border-border text-xs font-bold uppercase tracking-wider">
                 {upcomingTools.length} Pipeline
               </span>
             </div>

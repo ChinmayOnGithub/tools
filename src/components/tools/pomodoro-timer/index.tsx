@@ -21,6 +21,7 @@ import {
   Minimize2,
   X
 } from 'lucide-react';
+import { CheckboxField } from '@/components/ui/CheckboxField';
 import FaqSection from '@/components/shared/FaqSection';
 import { 
   trackToolLaunch, 
@@ -623,26 +624,20 @@ export default function PomodoroTimer() {
                 </div>
               </div>
 
-              <div className="space-y-2.5 pt-2.5 border-t">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={editAutoStart}
-                    onChange={(e) => setEditAutoStart(e.target.checked)}
-                    className="h-3.5 w-3.5 rounded border-muted text-primary focus:ring-primary accent-primary"
-                  />
-                  <span>Auto-start breaks & focus sessions</span>
-                </label>
+              <div className="space-y-3 pt-2.5 border-t">
+                <CheckboxField
+                  id="pomodoro-autostart"
+                  label="Auto-start breaks & focus sessions"
+                  checked={editAutoStart}
+                  onChange={setEditAutoStart}
+                />
 
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={editSound}
-                    onChange={(e) => setEditSound(e.target.checked)}
-                    className="h-3.5 w-3.5 rounded border-muted text-primary focus:ring-primary accent-primary"
-                  />
-                  <span>{t.alarmSoundLabel}</span>
-                </label>
+                <CheckboxField
+                  id="pomodoro-sound"
+                  label={t.alarmSoundLabel}
+                  checked={editSound}
+                  onChange={setEditSound}
+                />
               </div>
 
               <div className="flex gap-2 pt-3 border-t justify-end">

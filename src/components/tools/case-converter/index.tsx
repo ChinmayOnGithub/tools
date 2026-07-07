@@ -1,41 +1,38 @@
 'use client';
 
-import { useState, useEffect, useRef, ChangeEvent, DragEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import t from './locales/en.json';
 import { convertCase } from './utils';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { validateFile } from '@/lib/file-processor';
+import { TextInputArea } from '@/components/ui/TextInputArea';
 import { 
   trackToolLaunch, 
-  trackToolCompletion, 
-  trackValidationError, 
-  trackDownloadAction 
+  trackToolCompletion
 } from '@/lib/analytics';
 
 const STYLES = [
-  { id: 'upper', label: t.upper },
-  { id: 'lower', label: t.lower },
-  { id: 'title', label: t.titleCase },
-  { id: 'sentence', label: t.sentence },
-  { id: 'camel', label: t.camel },
-  { id: 'pascal', label: t.pascal },
-  { id: 'snake', label: t.snake },
-  { id: 'kebab', label: t.kebab },
-  { id: 'train', label: t.train },
-  { id: 'dot', label: t.dot },
+  { id: 'upper', label: 'UPPERCASE' },
+  { id: 'lower', label: 'lowercase' },
+  { id: 'title', label: 'Title Case' },
+  { id: 'sentence', label: 'Sentence Case' },
+  { id: 'camel', label: 'camelCase' },
+  { id: 'pascal', label: 'PascalCase' },
+  { id: 'snake', label: 'snake_case' },
+  { id: 'kebab', label: 'kebab-case' },
+  { id: 'alternate', label: 'aLtErNaTiNg CaSe' },
+  { id: 'train', label: 'Train-Case' },
+  { id: 'dot', label: 'dot.case' }
 ];
 
 export default function CaseConverter() {
   const [mounted, setMounted] = useState(false);
   const [input, setInput] = useState('');
   const [style, setStyle] = useState('upper');
-  const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { copied, copy } = useCopyToClipboard('case-converter');
 
   // Track initial tool page view launch
   useEffect(() => {
@@ -73,14 +70,12 @@ export default function CaseConverter() {
   const processUploadedFile = (file: File) => {
     setFileError(null);
 
-    // Standardized file validation
     const check = validateFile(file, {
       maxSize: 2 * 1024 * 1024, // 2MB limit
     });
 
     if (!check.isValid) {
       setFileError(check.error || 'File validation failed.');
-      trackValidationError('case-converter', 'file_validation_failed');
       return;
     }
 
@@ -97,33 +92,10 @@ export default function CaseConverter() {
     processUploadedFile(file);
   };
 
-  const handleDragOver = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-    processUploadedFile(file);
-  };
-
   const output = convertCase(input, style);
 
   const handleDownload = () => {
     if (!output) return;
-    trackDownloadAction('case-converter');
     const blob = new Blob([output], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -136,7 +108,7 @@ export default function CaseConverter() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border-2 border-border" />;
   }
 
   return (
@@ -153,14 +125,14 @@ export default function CaseConverter() {
         </span>
         <span className="flex items-center gap-1.5">
           <span className="text-primary text-[9px] select-none">■</span>
-          Free & Secure Forever
+          Free &amp; Secure Forever
         </span>
       </div>
 
       {/* Action controls panel */}
-      <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 rounded-lg border">
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-card p-3 border-2 border-border rounded-none">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-none border-2">
             Upload Text File
           </Button>
           <input
@@ -171,38 +143,46 @@ export default function CaseConverter() {
             className="hidden"
             aria-label="Upload text file for casing conversion"
           />
-          <Button variant="outline" size="sm" onClick={handleLoadSample}>
+          <Button variant="outline" size="sm" onClick={handleLoadSample} className="rounded-none border-2">
             {t.loadSampleButton}
           </Button>
-          <Button variant="outline" size="sm" onClick={handleClear} disabled={!input}>
+          <Button variant="outline" size="sm" onClick={handleClear} disabled={!input} className="rounded-none border-2">
             {t.clearButton}
           </Button>
         </div>
+
+        {output && (
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" size="sm" onClick={handleDownload} className="rounded-none border-2">
+              Download Output
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* File error notification */}
       {fileError && (
-        <div className="p-3 rounded-lg text-xs font-semibold border bg-destructive/10 text-destructive border-destructive/20">
+        <div className="p-3 text-xs font-semibold border-2 bg-destructive/5 text-destructive border-destructive/20 rounded-none">
           {fileError}
         </div>
       )}
 
       {/* Casing styles grid selector card */}
-      <Card>
-        <CardHeader className="py-3 px-4 border-b bg-muted/10">
-          <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+      <Card className="rounded-none border-2 border-border card-depth-2">
+        <CardHeader className="py-2.5 px-4 border-b border-border bg-muted/10">
+          <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground">
             Select Casing Style
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
             {STYLES.map((st) => (
               <Button
                 key={st.id}
                 variant={style === st.id ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setStyle(st.id)}
-                className="w-full text-[11px] h-8 font-semibold"
+                className="w-full text-[10px] h-8 font-extrabold rounded-none border-2"
               >
                 {st.label}
               </Button>
@@ -212,67 +192,27 @@ export default function CaseConverter() {
       </Card>
 
       {/* Dual workspaces textareas grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Input Card */}
-        <Card 
-          className={`flex flex-col h-full relative transition-all duration-200 ${
-            isDragging ? 'border-primary bg-primary/5 ring-1 ring-primary' : ''
-          }`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          <CardHeader className="py-3.5 px-4 border-b">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {t.inputLabel}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 flex-1 relative">
-            {isDragging && (
-              <div className="absolute inset-0 bg-background/95 flex flex-col items-center justify-center z-10 text-center p-4">
-                <p className="text-xs font-bold text-primary">Drop File Here</p>
-                <p className="text-[10px] text-muted-foreground mt-1">Accepts text files under 2MB</p>
-              </div>
-            )}
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={t.placeholder}
-              rows={12}
-              className="w-full h-full min-h-[250px] border-none bg-transparent p-4 text-sm outline-none focus:ring-0 resize-y"
-              aria-label="Input raw text for case conversions"
-            />
-          </CardContent>
-        </Card>
+        <TextInputArea 
+          value={input}
+          onChange={setInput}
+          placeholder={t.placeholder}
+          label={t.inputLabel}
+          onFileDrop={processUploadedFile}
+          rows={12}
+          showStats={true}
+        />
 
         {/* Output Card */}
-        <Card className="flex flex-col h-full">
-          <CardHeader className="py-3.5 px-4 border-b flex flex-row justify-between items-center space-y-0">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {t.outputLabel}
-            </CardTitle>
-            {output && (
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={handleDownload}>
-                  {t.downloadButton}
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => copy(output)}>
-                  {copied ? t.copiedFeedback : t.copyButton}
-                </Button>
-              </div>
-            )}
-          </CardHeader>
-          <CardContent className="p-0 flex-1">
-            <textarea
-              readOnly
-              value={output}
-              placeholder="Converted casing text output will be rendered here..."
-              rows={12}
-              className="w-full h-full min-h-[250px] border-none bg-muted/20 p-4 text-sm outline-none focus:ring-0 resize-y"
-              aria-label="Converted text output area"
-            />
-          </CardContent>
-        </Card>
+        <TextInputArea 
+          value={output}
+          readOnly={true}
+          placeholder="Converted casing text output will be rendered here..."
+          label={t.outputLabel}
+          rows={12}
+          showStats={true}
+        />
       </div>
     </div>
   );

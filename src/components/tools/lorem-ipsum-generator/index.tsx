@@ -6,7 +6,9 @@ import { generateLorem } from './utils';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
+import { CheckboxField } from '@/components/ui/CheckboxField';
+import { TextInputArea } from '@/components/ui/TextInputArea';
 import { 
   trackToolLaunch, 
   trackToolCompletion, 
@@ -20,8 +22,6 @@ export default function LoremIpsumGenerator() {
   const [format, setFormat] = useState<'text' | 'html'>('text');
   const [startWithLorem, setStartWithLorem] = useState(true);
   const [output, setOutput] = useState('');
-
-  const { copied, copy } = useCopyToClipboard('lorem-ipsum-generator');
 
   // Track initial tool page view launch
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function LoremIpsumGenerator() {
   return (
     <div className="space-y-6 w-full">
       {/* Trust pledge indicators banner */}
-      <div className="bg-muted/30 border-2 border-border p-3 rounded-none text-[10px] sm:text-xs font-bold text-muted-foreground flex flex-wrap gap-x-4 gap-y-1.5">
+      <div className="bg-muted/30 border-2 border-border p-3 rounded-none text-[10px] sm:text-xs font-bold text-muted-foreground flex flex-wrap gap-x-4 gap-y-1.5 animate-fade-in">
         <span className="flex items-center gap-1.5">
           <span className="text-primary text-[9px] select-none">■</span>
           100% Client-Side Generator
@@ -95,21 +95,16 @@ export default function LoremIpsumGenerator() {
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                 {t.typeLabel}
               </label>
-              <div className="flex gap-1 bg-muted p-0.5 rounded-md">
-                {(['words', 'sentences', 'paragraphs'] as const).map((tType) => (
-                  <button
-                    key={tType}
-                    onClick={() => setType(tType)}
-                    className={`flex-1 text-[11px] font-bold py-1 px-2.5 rounded-md transition-all duration-200 ${
-                      type === tType 
-                        ? 'bg-background text-foreground shadow-sm' 
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {tType === 'words' ? t.words : tType === 'sentences' ? t.sentences : t.paragraphs}
-                  </button>
-                ))}
-              </div>
+              <SegmentedControl
+                options={[
+                  { value: 'words', label: t.words },
+                  { value: 'sentences', label: t.sentences },
+                  { value: 'paragraphs', label: t.paragraphs },
+                ]}
+                value={type}
+                onChange={(val) => setType(val as 'words' | 'sentences' | 'paragraphs')}
+                className="h-8"
+              />
             </div>
 
             {/* Quantity Count Input */}
@@ -137,7 +132,7 @@ export default function LoremIpsumGenerator() {
                 id="format-select"
                 value={format}
                 onChange={(e) => setFormat(e.target.value as 'text' | 'html')}
-                className="bg-background border border-input rounded-md px-2.5 py-1 text-xs font-semibold h-8 focus:outline-none focus:ring-1 focus:ring-ring"
+                className="bg-background border-2 border-input px-2.5 py-1 text-xs font-semibold h-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
               >
                 <option value="text">{t.plainText}</option>
                 <option value="html">{t.html}</option>
@@ -147,21 +142,18 @@ export default function LoremIpsumGenerator() {
           </div>
 
           <div className="flex flex-wrap gap-4 items-center pt-2 border-t justify-between">
-            <label className="flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={startWithLorem}
-                onChange={(e) => setStartWithLorem(e.target.checked)}
-                className="h-3.5 w-3.5 rounded border-muted text-primary focus:ring-primary accent-primary"
-              />
-              {t.startWithLoremLabel}
-            </label>
+            <CheckboxField
+              id="lorem-start"
+              label={t.startWithLoremLabel}
+              checked={startWithLorem}
+              onChange={setStartWithLorem}
+            />
 
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={handleClear} disabled={!output}>
+              <Button variant="outline" size="sm" onClick={handleClear} disabled={!output} className="h-8 text-xs">
                 {t.clearButton}
               </Button>
-              <Button size="sm" onClick={handleGenerate}>
+              <Button size="sm" onClick={handleGenerate} className="h-8 text-xs">
                 {t.generateButton}
               </Button>
             </div>
@@ -170,33 +162,23 @@ export default function LoremIpsumGenerator() {
       </Card>
 
       {/* Output Panel display */}
-      <Card className="flex flex-col h-full">
-        <CardHeader className="py-3.5 px-4 border-b flex flex-row justify-between items-center space-y-0">
-          <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            {t.outputLabel}
-          </CardTitle>
-          {output && (
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={handleDownload}>
-                {t.downloadButton}
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => copy(output)}>
-                {copied ? t.copiedFeedback : t.copyButton}
-              </Button>
-            </div>
-          )}
-        </CardHeader>
-        <CardContent className="p-0 flex-1">
-          <textarea
-            readOnly
-            value={output}
-            placeholder="Placeholder text will be rendered here..."
-            rows={14}
-            className="w-full h-full min-h-[300px] border-none bg-muted/20 p-4 text-sm outline-none focus:ring-0 resize-y"
-            aria-label="Generated Lorem Ipsum placeholder output text area"
-          />
-        </CardContent>
-      </Card>
+      <div className="relative">
+        {output && (
+          <div className="absolute right-4 top-3 z-10 flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleDownload} className="h-8 text-xs">
+              {t.downloadButton}
+            </Button>
+          </div>
+        )}
+        <TextInputArea
+          value={output}
+          label={t.outputLabel}
+          readOnly={true}
+          showStats={true}
+          placeholder="Placeholder text will be rendered here..."
+          rows={14}
+        />
+      </div>
     </div>
   );
 }

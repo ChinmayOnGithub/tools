@@ -57,12 +57,12 @@ export default function ContactPage() {
             href="https://github.com/ChinmayOnGithub/tools/issues" 
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-9 items-center justify-center bg-primary text-primary-foreground text-xs font-bold px-4 py-2 border-2 border-primary hover:bg-primary/95 transition-colors w-full sm:w-auto"
+            className="inline-flex h-9 items-center justify-center bg-primary text-primary-foreground text-xs font-bold px-4 py-2 border-2 border-primary transition-all hover:bg-primary/90 hover:scale-105 active:scale-95 w-full sm:w-auto"
           >
             Open GitHub Issue Tracker
           </a>
         </div>
-
+ 
         {/* GitHub Box */}
         <div className="bg-card border-2 border-border p-6 card-depth-1 flex flex-col justify-between space-y-4">
           <div className="space-y-3">
@@ -78,7 +78,7 @@ export default function ContactPage() {
             href="https://github.com/ChinmayOnGithub/tools" 
             target="_blank" 
             rel="noreferrer" 
-            className="inline-flex h-9 items-center justify-center bg-transparent border-2 border-border hover:border-primary hover:bg-accent text-xs font-bold px-4 py-2 transition-colors w-full sm:w-auto"
+            className="inline-flex h-9 items-center justify-center bg-transparent border-2 border-border hover:border-primary hover:bg-accent text-xs font-bold px-4 py-2 transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
           >
             Visit GitHub Repository
           </a>

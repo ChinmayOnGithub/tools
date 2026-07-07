@@ -14,6 +14,7 @@ This document defines the strict engineering, quality, and workflow rules that g
 
 ## 2. File & Component Rules
 
+*   **Component-Based Approach**: Enforce a strict component-based architecture for all UI developments. Before creating a new UI layout or interactive control (such as file uploaders, segmented toggles, status banners, or text editors), verify if a matching component is already created in `src/components/ui/` or `src/components/shared/` and use it. Build a new one only when none exists.
 *   **File Scope**: One clear responsibility per file. Avoid duplicate configuration files. Keep files concise and split them only when it improves readability.
 *   **React Server Components**: Make components Server Components by default. Convert to Client Components (`'use client'`) only when interactive state, local storage, or browser APIs are required.
 *   **Hydration Guards**: Client Components that interact with browser-only APIs or local settings must defer rendering/execution until mounted (using state triggers) to prevent React hydration mismatches on static pre-renders.
