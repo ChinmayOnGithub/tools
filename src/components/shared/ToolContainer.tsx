@@ -125,6 +125,14 @@ const TOOLS_COMPONENTS: Record<string, ComponentType> = {
     loading: toolLoader,
     ssr: false,
   }),
+  'timestamp-explorer': dynamic(() => import('@/components/tools/timestamp-explorer'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
+  'unicode-inspector': dynamic(() => import('@/components/tools/unicode-inspector'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
 };
 
 interface ToolContainerProps {

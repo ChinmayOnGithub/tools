@@ -7,6 +7,7 @@ import SkipNavLink from '@/components/shared/SkipNavLink';
 import Navigation from '@/components/shared/Navigation';
 import AnalyticsTracker from '@/components/shared/AnalyticsTracker';
 import CookieConsent from '@/components/shared/CookieConsent';
+import PwaRegister from '@/components/shared/PwaRegister';
 import { SITE_URL } from '@/config/site';
 import './globals.css';
 
@@ -161,6 +162,7 @@ export default function RootLayout({
               </p>
             </div>
           </footer>
+          <PwaRegister />
           <CookieConsent />
         </ThemeProvider>
       </body>

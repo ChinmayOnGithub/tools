@@ -184,3 +184,32 @@ body {
   scrollbar-color: hsl(var(--foreground)) hsl(var(--muted));
 }
 
+/* Reduced Motion Settings */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
+
+/* High Contrast Settings */
+@media (prefers-contrast: more) {
+  :root {
+    --border: 0 0% 0%;
+    --muted-foreground: 240 10% 10%;
+  }
+  .dark {
+    --border: 0 0% 100%;
+    --muted-foreground: 240 5% 95%;
+  }
+  * {
+    border-width: 2px !important;
+  }
+}
+
+

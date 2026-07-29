@@ -1,0 +1,14 @@
+{
+  "title": "Timestamp Explorer",
+  "description": "Convert Unix epoch timestamps to ISO-8601, RFC3339, Relative Time offsets, and local dates instantly.",
+  "epochLabel": "Unix Epoch Timestamp (Seconds or Milliseconds)",
+  "dateLabel": "Calendar Date & Time",
+  "invalidFormat": "Invalid Date or Timestamp value.",
+  "copySuccess": "Copied value to clipboard!",
+  "sampleButton": "Load Current Time",
+  "iso8601": "ISO 8601 Format",
+  "rfc3339": "RFC 3339 Format",
+  "utcDate": "UTC Date String",
+  "localDate": "Local Date String",
+  "relativeTime": "Relative Time Offset"
+}

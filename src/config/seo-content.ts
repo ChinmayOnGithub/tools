@@ -367,5 +367,31 @@ export const SEO_CONTENT_MAP: Record<string, SeoToolContent> = {
       { q: 'Are imperial units supported?', a: 'Yes. Feet, inches, yards, miles, pounds, ounces, gallons, and quarts are supported.' },
       { q: 'Does it work offline?', a: 'Yes! All unit calculators are loaded in your browser memory and work 100% offline.' }
     ]
+  },
+  'timestamp-explorer': {
+    heading: 'Secure Unix Epoch Timestamp & Date Converter',
+    explanation: 'Convert Unix epoch timestamps in seconds or milliseconds to ISO 8601, RFC 3339, UTC, local, and relative date formats.',
+    whenToUse: 'Perfect for debugging database epochs, verifying token exp times, formatting date logs, or analyzing log files.',
+    howItWorks: 'Utilizes JS Date parsing functions locally in your browser memory to map timestamps to standard international layout strings.',
+    privacyExplanation: 'Epoch inputs and dates are processed locally. Your server logs and database IDs are never uploaded or shared.',
+    exampleInput: 'Timestamp: 1719600000',
+    exampleOutput: 'ISO 8601: 2024-06-28T18:40:00.000Z',
+    faqs: [
+      { q: 'What is a Unix epoch?', a: 'The Unix epoch is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT), not counting leap seconds.' },
+      { q: 'Does it support milliseconds?', a: 'Yes. The converter detects lengths greater than 10 digits and parses them as milliseconds automatically.' }
+    ]
+  },
+  'unicode-inspector': {
+    heading: 'Secure Unicode Code Point & Character Inspector',
+    explanation: 'Analyze strings to inspect Unicode code points, hex values, and type properties. Instantly find hidden spaces, zero-width characters, emojis, and control symbols.',
+    whenToUse: 'Excellent for debugging paste bugs, cleaning copy-paste text fields, inspecting localized characters, or identifying trailing spaces.',
+    howItWorks: 'Iterates through string surrogate pairs to identify code points and maps them to Unicode blocks in your browser memory.',
+    privacyExplanation: 'All strings are processed in-memory locally. No text is sent to the network or stored.',
+    exampleInput: 'Text: Hi 👋',
+    exampleOutput: 'Char: H (U+0048), Char: i (U+0069), Char: 👋 (U+1F44B)',
+    faqs: [
+      { q: 'What is a zero-width space?', a: 'A zero-width space (ZWSP) is a non-printing character used in computerized typesetting to indicate word boundaries where line-breaks are permissible.' },
+      { q: 'Does it support multi-byte emojis?', a: 'Yes. The analyzer correctly splits supplementary Unicode characters and emojis using standard surrogate pair checks.' }
+    ]
   }
 };

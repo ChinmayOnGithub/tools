@@ -17,6 +17,11 @@ import {
   trackDownloadAction 
 } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
+import CopyShareToast from '@/components/shared/CopyShareToast';
+import { useWorkspace } from '@/hooks/useWorkspace';
+import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
+import { useSmartActions } from '@/hooks/useSmartActions';
+import { addHistoryEntry } from '@/lib/history';
 
 const SAMPLE_JSON = `{
   "name": "CoolTools Platform",
@@ -43,17 +48,72 @@ export default function JSONFormatter() {
   const [indent, setIndent] = useState<number>(2); // 2 spaces by default, 0 represents Tabs
   const [viewMode, setViewMode] = useState<'text' | 'tree'>('text');
   const [parsedData, setParsedData] = useState<unknown>(null);
+  const [showToast, setShowToast] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { copied, copy } = useCopyToClipboard('json-formatter');
+  const { addRecent } = useWorkspace();
+
+  const handleFocusInput = () => {
+    const textarea = document.querySelector('textarea[aria-label="JSON input text"]') as HTMLTextAreaElement;
+    if (textarea) textarea.focus();
+  };
+
+  useGlobalShortcuts({
+    onRun: () => handleBeautify(),
+    onCopy: () => handleCopyOutput(),
+    onClear: () => handleClear(),
+    onFocusInput: handleFocusInput,
+  });
+
+  useSmartActions({
+    value: input,
+    onPasteAction: (text) => setInput(text),
+    focusSelector: 'textarea[aria-label="JSON input text"]',
+  });
+
+  const handleCopyOutput = () => {
+    if (!output) return;
+    copy(output);
+    setShowToast(true);
+  };
+
+  const handleSortKeys = () => {
+    if (!input.trim()) return;
+    try {
+      const parsed = JSON.parse(input);
+      const sortObj = (obj: unknown): unknown => {
+        if (Array.isArray(obj)) return obj.map(sortObj);
+        if (obj !== null && typeof obj === 'object') {
+          return Object.keys(obj as Record<string, unknown>)
+            .sort()
+            .reduce((acc, key) => {
+              acc[key] = sortObj((obj as Record<string, unknown>)[key]);
+              return acc;
+            }, {} as Record<string, unknown>);
+        }
+        return obj;
+      };
+      const sorted = sortObj(parsed);
+      const formatted = JSON.stringify(sorted, null, indent);
+      setInput(formatted);
+      setOutput(formatted);
+      setParsedData(sorted);
+      setIsValid(true);
+      setErrorMsg(null);
+    } catch {
+      setErrorMsg('Invalid JSON string cannot be sorted.');
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true);
       trackToolLaunch('json-formatter');
+      addRecent('json-formatter');
     }, 0);
     return () => clearTimeout(timer);
-  }, []);
+  }, [addRecent]);
 
   const runValidation = useCallback(() => {
     try {
@@ -96,6 +156,14 @@ export default function JSONFormatter() {
   }, [input, mounted, runValidation]);
 
   const handleBeautify = () => {
+    if (!input.trim()) {
+      setOutput('');
+      setIsValid(null);
+      setErrorMsg(null);
+      setParsedData(null);
+      return;
+    }
+
     if (input.length > 5000000) {
       setOutput('');
       setIsValid(false);
@@ -104,14 +172,25 @@ export default function JSONFormatter() {
       return;
     }
 
-    const result = beautifyJSON(input, indent === 0 ? 9 : indent); // 9 represents tab spacing inside beautifyJSON mock or custom formatting
+    const result = beautifyJSON(input, indent === 0 ? 9 : indent);
     if (result.success) {
-      const parsed = JSON.parse(input);
-      setParsedData(parsed);
-      setOutput(JSON.stringify(parsed, null, indent === 0 ? '\t' : indent));
-      setErrorMsg(null);
-      setIsValid(true);
-      trackToolCompletion('json-formatter');
+      try {
+        const parsed = JSON.parse(input);
+        setParsedData(parsed);
+        setOutput(JSON.stringify(parsed, null, indent === 0 ? '\t' : indent));
+        setErrorMsg(null);
+        setIsValid(true);
+        trackToolCompletion('json-formatter');
+        const sizeKb = (new Blob([input]).size / 1024).toFixed(2) + ' KB';
+        addHistoryEntry('json-formatter', 'JSON Formatter', 'Beautified JSON', `Size: ${sizeKb}`);
+      } catch (err) {
+        setOutput('');
+        setIsValid(false);
+        setParsedData(null);
+        const errMsg = err instanceof Error ? err.message : 'Invalid JSON';
+        setErrorMsg(`JSON Parse Error: ${errMsg}`);
+        trackValidationError('json-formatter', 'syntax_error');
+      }
     } else {
       setOutput('');
       setIsValid(false);
@@ -127,6 +206,14 @@ export default function JSONFormatter() {
   };
 
   const handleMinify = () => {
+    if (!input.trim()) {
+      setOutput('');
+      setIsValid(null);
+      setErrorMsg(null);
+      setParsedData(null);
+      return;
+    }
+
     if (input.length > 5000000) {
       setOutput('');
       setIsValid(false);
@@ -137,12 +224,23 @@ export default function JSONFormatter() {
 
     const result = minifyJSON(input);
     if (result.success) {
-      const parsed = JSON.parse(input);
-      setParsedData(parsed);
-      setOutput(result.output);
-      setErrorMsg(null);
-      setIsValid(true);
-      trackToolCompletion('json-formatter');
+      try {
+        const parsed = JSON.parse(input);
+        setParsedData(parsed);
+        setOutput(result.output);
+        setErrorMsg(null);
+        setIsValid(true);
+        trackToolCompletion('json-formatter');
+        const sizeKb = (new Blob([result.output]).size / 1024).toFixed(2) + ' KB';
+        addHistoryEntry('json-formatter', 'JSON Formatter', 'Minified JSON', `Size: ${sizeKb}`);
+      } catch (err) {
+        setOutput('');
+        setIsValid(false);
+        setParsedData(null);
+        const errMsg = err instanceof Error ? err.message : 'Invalid JSON';
+        setErrorMsg(`JSON Parse Error: ${errMsg}`);
+        trackValidationError('json-formatter', 'syntax_error');
+      }
     } else {
       setOutput('');
       setIsValid(false);
@@ -251,7 +349,31 @@ export default function JSONFormatter() {
 
   return (
     <div className="space-y-6 w-full">
-      {/* Configuration Action Controls */}
+      {/* Quick Action Interactive Chips */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mr-1">Quick Tools:</span>
+        <button
+          type="button"
+          onClick={handleBeautify}
+          className="px-2.5 py-1 bg-card border-2 border-border hover:border-primary text-xs font-bold text-foreground cursor-pointer transition-colors"
+        >
+          ✨ Format & Beautify
+        </button>
+        <button
+          type="button"
+          onClick={handleMinify}
+          className="px-2.5 py-1 bg-card border-2 border-border hover:border-primary text-xs font-bold text-foreground cursor-pointer transition-colors"
+        >
+          ⚡ Minify JSON
+        </button>
+        <button
+          type="button"
+          onClick={handleSortKeys}
+          className="px-2.5 py-1 bg-card border-2 border-border hover:border-primary text-xs font-bold text-foreground cursor-pointer transition-colors"
+        >
+          🔤 Sort Keys A-Z
+        </button>
+      </div>
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-card p-3 rounded-none border-2 border-border">
         <div className="flex flex-wrap gap-2 items-center">
           <Button variant="outline" size="sm" onClick={handleLoadSample} className="rounded-none border-2">
@@ -395,7 +517,7 @@ export default function JSONFormatter() {
                 <Button variant="outline" size="sm" onClick={handleDownload} className="rounded-none border-2 h-7 text-[10px]">
                   {t.downloadButton}
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => copy(output)} className="rounded-none border-2 h-7 text-[10px] w-20">
+                <Button variant="outline" size="sm" onClick={handleCopyOutput} className="rounded-none border-2 h-7 text-[10px] w-20">
                   {copied ? t.copiedFeedback : t.copyButton}
                 </Button>
               </div>
@@ -416,6 +538,8 @@ export default function JSONFormatter() {
           </CardContent>
         </Card>
       </div>
+
+      <CopyShareToast show={showToast} onClose={() => setShowToast(false)} />
     </div>
   );
 }

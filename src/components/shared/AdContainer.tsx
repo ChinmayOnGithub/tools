@@ -54,15 +54,20 @@ export function AdContainer({ slot = 'middle', className = '' }: AdContainerProp
   }
 
   return (
-    <div className={`w-full ${sizeClasses[slot]} my-6 flex justify-center items-center overflow-hidden ${className}`}>
-      <ins
-        className="adsbygoogle"
-        style={{ display: 'block', width: '100%', height: '100%' }}
-        data-ad-client={adClient}
-        data-ad-slot={adSlot}
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      />
+    <div className={`w-full ${sizeClasses[slot]} my-8 flex flex-col items-center justify-center overflow-hidden border border-border/10 bg-muted/5 p-4 rounded-none ${className}`}>
+      <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-3 block select-none">
+        Advertisement
+      </span>
+      <div className="w-full flex justify-center items-center">
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block', width: '100%', height: '100%' }}
+          data-ad-client={adClient}
+          data-ad-slot={adSlot}
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        />
+      </div>
     </div>
   );
 }

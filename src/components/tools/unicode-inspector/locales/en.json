@@ -1,0 +1,11 @@
+{
+  "title": "Unicode Inspector",
+  "description": "Analyze string characters, inspect code points, and identify hidden characters or zero-width symbols.",
+  "inputLabel": "Enter Text to Inspect",
+  "emptyState": "Enter some text to inspect code points.",
+  "charHeader": "Char",
+  "codePointHeader": "Code Point",
+  "nameHeader": "Type / Name",
+  "hexHeader": "Hex Representation",
+  "copySuccess": "Copied value to clipboard!"
+}
