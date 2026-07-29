@@ -45,11 +45,31 @@ export function Navigation() {
             
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1 text-sm font-medium">
-              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50" href="/contact">
-                Contact & Feedback
+              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50 font-bold text-xs uppercase tracking-wider" href="/docs">
+                Docs & Guides
               </Link>
-              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50" href="/privacy">
-                Privacy Policy
+              <div className="relative group">
+                <button className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50 font-bold text-xs uppercase tracking-wider flex items-center gap-1">
+                  <span>Categories</span>
+                  <span className="text-[10px]">▼</span>
+                </button>
+                <div className="absolute top-full left-0 hidden group-hover:flex flex-col bg-background border-2 border-border p-2 shadow-lg min-w-[180px] z-50 card-depth-2">
+                  {CATEGORIES.map((cat) => (
+                    <Link
+                      key={cat.slug}
+                      href={`/categories/${cat.slug}`}
+                      className="px-3 py-2 text-xs hover:bg-primary/10 hover:text-primary transition-colors text-foreground font-semibold"
+                    >
+                      {cat.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50 text-xs font-bold uppercase tracking-wider" href="/contact">
+                Contact & Support
+              </Link>
+              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50 text-xs font-bold uppercase tracking-wider" href="/privacy">
+                Privacy
               </Link>
             </nav>
           </div>
@@ -108,11 +128,18 @@ export function Navigation() {
             </div>
             <div className="border-t-2 border-border pt-4 flex flex-col gap-2">
               <Link
+                href="/docs"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-3 py-2.5 border-2 border-border text-sm hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors font-medium"
+              >
+                Documentation & Guides
+              </Link>
+              <Link
                 href="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-3 py-2.5 border-2 border-border text-sm hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors font-medium"
               >
-                Contact & Feedback
+                Contact & Support
               </Link>
               <Link
                 href="/privacy"

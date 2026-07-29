@@ -147,6 +147,7 @@ export default function RootLayout({
                   <span className="font-extrabold tracking-tight">TOOLS</span>
                 </div>
                 <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm justify-center md:justify-end">
+                  <Link href="/docs" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Documentation</Link>
                   <Link href="/about" className="text-muted-foreground hover:text-foreground font-medium transition-colors">About</Link>
                   <Link href="/contact" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Contact</Link>
                   <Link href="/privacy" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Privacy Policy</Link>

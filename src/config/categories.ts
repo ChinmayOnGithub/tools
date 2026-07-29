@@ -7,6 +7,9 @@ export interface CategoryEntry {
   color: string; // Tailwind styling color variables prefix (e.g. 'purple', 'emerald')
   seoTitle: string;
   seoDescription: string;
+  longDescription?: string;
+  benefits?: string[];
+  faqs?: { q: string; a: string }[];
 }
 
 export const CATEGORIES: CategoryEntry[] = [

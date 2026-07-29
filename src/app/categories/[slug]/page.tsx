@@ -85,8 +85,21 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const availableTools = matchingTools.filter((t) => t.status === 'published');
   const upcomingTools = matchingTools.filter((t) => t.status !== 'published');
 
+  const collectionSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: category.title,
+    description: category.seoDescription,
+    url: `${SITE_URL}/categories/${category.slug}`,
+  };
+
   return (
     <div className="flex flex-col gap-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+      />
+
       {/* Breadcrumb */}
       <nav className="text-xs text-muted-foreground flex gap-2 items-center" aria-label="Breadcrumb">
         <Link href="/" className="hover:underline">Home</Link>
@@ -134,6 +147,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               <p className="text-xs text-muted-foreground mt-1">Check upcoming tools below or explore other categories.</p>
             </div>
           )}
+        </div>
+
+        {/* Educational Guarantee Section */}
+        <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-3">
+          <h2 className="text-sm font-extrabold text-foreground uppercase tracking-wider">
+            Why Use Client-Side {category.title}?
+          </h2>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            All utilities in the <strong className="text-foreground">{category.title}</strong> category operate 100% locally inside your web browser. No document streams, binary files, API keys, or text inputs are transmitted to external servers, providing mathematical data privacy and zero cloud retention risk.
+          </p>
         </div>
 
         {/* Upcoming Tools */}

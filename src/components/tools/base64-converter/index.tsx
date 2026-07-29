@@ -210,6 +210,23 @@ export default function Base64Converter() {
         </button>
       </div>
 
+      {/* Quick Action Presets */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <button
+          type="button"
+          onClick={() => {
+            if (mode === 'encode') {
+              setInput('Hello, World! CoolTools browser-native Base64 conversion.');
+            } else {
+              setInput('SGVsbG8sIFdvcmxkISBDb29sVG9vbHMgYnJvd3Nlci1uYXRpdmUgQmFzZTY0IGNvbnZlcnNpb24u');
+            }
+          }}
+          className="px-3 py-1 bg-card border-2 border-border hover:border-primary text-xs font-bold text-foreground cursor-pointer transition-colors"
+        >
+          Load Sample Demo
+        </button>
+      </div>
+
       {/* Validation Message Box */}
       {errorMsg && (
         <div className="p-3 text-xs font-semibold border-2 bg-destructive/5 text-destructive border-destructive/20 rounded-none">

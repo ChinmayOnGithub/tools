@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import { CATEGORIES } from '@/config/categories';
+import { DOCS_ARTICLES } from '@/config/docs-data';
 import { SITE_URL } from '@/config/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -12,6 +13,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 1.0,
+    },
+    {
+      url: `${siteUrl}/docs`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
     },
     {
       url: `${siteUrl}/about`,
@@ -52,6 +59,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
+  const docRoutes = DOCS_ARTICLES.map((article) => ({
+    url: `${siteUrl}/docs/${article.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }));
+
   const toolRoutes = TOOLS_REGISTRY.filter((t) => t.status === 'published').map((tool) => ({
     url: `${siteUrl}/tools/${tool.id}`,
     lastModified: new Date(),
@@ -59,5 +73,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...routes, ...categoryRoutes, ...toolRoutes];
+  return [...routes, ...categoryRoutes, ...docRoutes, ...toolRoutes];
 }
