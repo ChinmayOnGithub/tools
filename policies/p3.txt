@@ -1,0 +1,103 @@
+Title: Understand the Google Publisher Policies and Google Publisher Restrictions
+
+URL Source: https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC
+
+Markdown Content:
+Google helps to enable a free and open Internet by helping publishers monetise their content and advertisers reach prospective customers with useful, relevant products and services. Maintaining trust in the ads ecosystem requires setting limits on what we will monetise.
+
+All publishers are required to adhere to our policies, so please read them carefully. If you fail to comply with these policies, we reserve the right to disable ad serving on your site or close your account at any time. If your account is closed, you will not be eligible for further participation in the AdSense programme.
+
+In accordance with our online [Terms and Conditions](https://adsense.google.com/adsense/terms), it's your responsibility to keep up to date with, and adhere to, the policies posted here.
+
+[Google Publisher Policies and Restrictions Explained](https://www.youtube.com/watch?v=wjn3XzQxVoY)
+
+For subtitles in your language, turn on YouTube captions. Select the Settings icon ![Image 1: Image of YouTube settings icon](https://storage.googleapis.com/support-kms-prod/UrHzzlx74G5ig5vYXo9Nk43r7NM5fj72Tbu1) found in the video player, then select **Subtitles/CC** and choose your language.
+
+* * *
+
+**In this article:**
+
+*   [What are Google Publisher Policies?](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#what-are-google-publisher-policies)
+*   [What are Google Publisher Restrictions?](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#what-are-google-publisher-restrictions)
+*   [What is the difference between Google Publisher Policies and Google Publisher Restrictions?](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#what-is-the-difference-between-google-publisher-policies-and-google-publisher-restrictions)
+*   [Where can I see issues that may affect ad serving?](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#where-can-I-see-issues-that-may-affect-ad-serving)
+*   [How to resolve a Google Publisher Policy violation?](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#how-to-resolve-a-google-publisher-policy-violation)
+*   [How to resolve Google Publisher Restrictions?](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#how-to-resolve-google-publisher-restrictions)
+*   [Google Publisher Policies and Google Publisher Restrictions FAQs](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#google-publisher-policies-and-google-publisher-restrictions-faqs)
+
+## What are Google Publisher Policies?
+
+When you monetise your content with Google ad code, you’re required to adhere to the [Google Publisher Policies](https://support.google.com/adsense/answer/9335564). By content we mean anything present on your page or app – including user-generated content like comment sections, other advertisements, and links to other sites or apps. Attempting to monetise policy-violating content and failure to comply with these policies may result in Google blocking ads from appearing against your content, or your account being suspended or terminated.
+
+These policies apply in addition to any other policies governing your use of Google publisher products.
+
+## What are Google Publisher Restrictions?
+
+[Google Publisher Restrictions](https://support.google.com/adsense/answer/9335567) identify content that is restricted from receiving certain sources of advertising. By content, we mean anything present on your page or app – including other advertisements and links to other sites or apps.
+
+Monetising content that falls under the Google Publisher Restrictions is not a policy violation; instead, we restrict advertising on that content as appropriate, based on the preferences of each advertising product or advertisers’ individual preferences. Sometimes this will mean that no advertising sources are bidding on your inventory and no ads will appear on this restricted content.
+
+We have buyers from multiple sources, which can include Google Ads, Authorised Buyers, DV360, reservations and others. You may therefore receive limited ads from some of these other sources, but note that Google Ads (formerly AdWords) ads will not serve on content labelled with these restrictions.
+
+So, while you can choose to monetise content covered by the Google Publisher Restrictions, doing so will mean you’ll likely receive less advertising on this restricted content than you would receive on other, non-restricted content.
+
+These restrictions apply in addition to any other policies governing your use of Google publisher products.
+
+## What is the difference between Google Publisher Policies and Google Publisher Restrictions?
+
+[Google Publisher Policies](https://support.google.com/adsense/answer/9335564) outline the types of content that we won’t monetise through any of our publisher products. These include policies against illegal content, dangerous or derogatory content, and sexually explicit content, among others. This is content that will never be allowed to show ads.
+
+[Google Publisher Restrictions](https://support.google.com/adsense/answer/9335567), by contrast, outline the types of content, such as tobacco or recreational drugs, that don’t necessarily violate policy but that may not be appealing for all advertisers. This means publishers will not receive policy violations, but instead the content will be labelled with an inventory restriction and will likely receive less advertising, or sometimes no advertising, as the advertisers determine the demand.
+
+The [Policy centre](https://support.google.com/adsense/answer/9485926) displays all of the current enforcements on your sites. Enforcements can either block all advertising (for example, 'Ad serving disabled') or restrict which advertisers can bid on your inventory (for example, 'Restricted ad serving').
+
+You may receive enforcements due to various issues with your content:
+
+*   Google Publisher Policy must be fixed. Policy violations are enforced with either 'Ad serving disabled' or 'Restricted ad serving'.
+*   Google Publisher Restrictions are not policy violations, so you don't need to change your content or ad requests. However, content with publisher restrictions receives 'Restricted ad serving'.
+
+**Tip**: To find out if you need to take action on an enforcement, check the 'Issues' column. An issue will have a '[Policy issue](https://support.google.com/adsense/answer/15689616#policy-issues)' label if an enforcement is due to a policy violation. It will have an '[Advertiser preference](https://support.google.com/adsense/answer/15689616#advertiser-preferences)' label if it's a publisher restriction.
+
+## How to resolve a Google Publisher Policy violation?
+
+1.   Access the Policy centre, which gives you detailed information about issues that may restrict ads from appearing on your sites, site sections, pages or apps, and the steps to resolve issues with ad serving and request reviews after you've made changes. The main page of the Policy centre provides an overview of your affected sites.
+2.   If an issue is labelled as a 'Policy issue', one of your sites, site sections or pages is not currently in compliance with [Programme policies](https://support.google.com/adsense/answer/48182) and in this case [Google Publisher Policies](https://support.google.com/adsense/answer/9335564), as a result, an enforcement has been taken. When the action is taken on a page, then the page is violating policy. When the action is taken on a site or site section, then there are multiple pages within the site or site section that are violating policy. When this occurs, you need to check your entire site or site section and make changes to bring it into compliance with our policies.
+3.   After you address the policy violations on your site, site section or pages, you may [request a review](https://support.google.com/adsense/answer/7003627#request_review). 
+Alternatively, if you want to stop serving ads on the policy violating sites, site sections or pages, you can remove the AdSense ad code from those sites, site sections or pages. The policy violations will then be automatically removed from the Policy centre within 7–10 days.
+
+## How to resolve Google Publisher Restrictions?
+
+1.   Access the Policy centre, which gives you detailed information about issues that may restrict ads from appearing on your sites, site sections or pages, as well as the steps to resolve issues with ad serving and request reviews after you've made changes.
+2.   If an issue is labelled as an 'Advertiser preference', it means that your site has content that falls under the [Google Publisher Restrictions](https://support.google.com/adsense/answer/9335567). While you can choose to monetise this type of content, you’ll likely receive reduced advertising as not all ad sources will be able to bid on it.
+3.   If you address any of the publisher restrictions on your site, site section or pages, you may [request a review](https://support.google.com/adsense/answer/7003627#request_review). Alternatively, if you want to stop serving ads on the pages, you can remove the AdSense ad code from your pages and they’ll be automatically removed from the Policy centre within 7–10 days.
+
+## Google Publisher Policies and Google Publisher Restrictions FAQs
+
+Here are the answers to some frequently asked questions about [Google Publisher Policies](https://support.google.com/adsense/answer/9335564) and [Google Publisher Restrictions](https://support.google.com/adsense/answer/9335567):
+
+### I have an issue that's an 'Advertiser preference', what does this mean?
+
+If an issue is labelled as an 'Advertiser preference', it means that your site has content that falls under the Google Publisher Restrictions. We have buyers from multiple sources, which can include Google Ads, Authorised Buyers, DV360, reservations and others. So while you can choose to monetise this type of content, you may receive limited ads from some of these other sources but note that Google Ads (formerly AdWords) ads will not serve on content labelled with these restrictions.
+
+### If I want to continue serving ads on the restricted page (i.e. falls under the Google Publisher Restrictions), will my account be at risk of getting suspended or terminated?
+
+Monetising content that falls under the Google Publisher Restrictions will not be a policy violation; instead, we’ll restrict advertising on that content as outlined above. So while you can choose to monetise content covered by the Google Publisher Restrictions, doing so will mean that you’ll likely receive less advertising revenue on restricted content than you would receive on other, non-restricted content.
+
+### Why would advertisers choose not to advertise on my page with content violating Google Publisher Restrictions?
+
+We understand that advertisers may not find the types of content listed under Google Publisher Restrictions to be appealing, or a good association with their brand, which is why we let them decide. Our advertisers have various categories that they can choose from, and not all will opt into sensitive categories. Therefore, the end result is that content labelled as a restriction may receive limited or no monetisation; however, it’s not a policy violation.
+
+### I’ve removed my content after receiving the page level enforcement and requested a review. Now I’ve received a new 'no content' policy violation. What are the recommended actions to fix the violations?
+
+Everything we do is designed to protect our publishers, our users and our advertisers. Where you choose to remove non-compliant content on pages, you should also remove any related ad code from that page so that ads are not served next to a blank space.
+
+We understand that it may be an effort on your end to determine if any pages of your site are in violation of policies, but we're also responsible to our advertisers and users, and in order to keep them confident in the ecosystem, we must uphold our policies.
+
+To be perfectly clear, we are not censoring publishers' content through the removal of any content on their sites. We simply request the removal of our ad code on non-compliant pages.
+
+### Can I hide/remove the restrictions that I do not want to fix? I don’t want to keep seeing the old restrictions or new restrictions on certain pages.
+
+You can use the filter and download options in the Policy centre to help you find and manage policy violations and publisher restrictions:
+
+*   Click filter ![Image 2](https://lh3.googleusercontent.com/EDVWrvgAzmQNiiSCHXeuD0Z9FpnNFlZU5PBpUUYsXxgiEM2sW0wVFztmAL_NkOodVw=w24) to only see certain sites or site statuses, or to only see certain enforcement dates.
+*   Click Download ![Image 3: Download](https://lh3.googleusercontent.com/kKFRnyTzAFUjbchkxDTbK42sl_frYeuIu9YL2kKV0XuAvCxmU8ebGmJ_dP9y0AJwPuQX=h48) to download a CSV file of all pages or sections with violations for all sites or individual sites.

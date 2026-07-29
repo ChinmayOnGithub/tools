@@ -6,6 +6,10 @@ export interface SeoToolContent {
   privacyExplanation: string;
   exampleInput: string;
   exampleOutput: string;
+  technicalOverview?: string;
+  stepByStepGuide?: string[];
+  useCases?: string[];
+  troubleshooting?: string[];
   faqs: { q: string; a: string }[];
 }
 

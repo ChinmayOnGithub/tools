@@ -48,22 +48,9 @@ export function AdContainer({ slot = 'middle', className = '' }: AdContainerProp
     bottom: 'min-h-[90px] max-w-4xl mx-auto', // Leaderboard 728x90
   };
 
-  // If live AdSense is not configured, show a visual placeholder block for layout preview
+  // If live AdSense is not configured, do not render placeholder blocks to prevent under-construction layout appearance
   if (!showAds) {
-    return (
-      <div 
-        className={`w-full ${sizeClasses[slot]} bg-muted/15 border-2 border-dashed border-muted flex flex-col items-center justify-center my-6 relative overflow-hidden ${className}`}
-        aria-hidden="true" 
-      >
-        <span className="absolute top-2 left-3 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-          Advertisement
-        </span>
-        <div className="text-center p-4">
-          <p className="text-xs text-muted-foreground font-bold">Google AdSense: {slot.toUpperCase()} Slot Placeholder</p>
-          <p className="text-[10px] text-muted-foreground/60 mt-1">Responsive framework ready. Configure env variables to activate live ads.</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

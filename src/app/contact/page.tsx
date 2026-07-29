@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Mail, AlertCircle, Sparkles } from 'lucide-react';
 import AdContainer from '@/components/shared/AdContainer';
+import ContactForm from '@/components/shared/ContactForm';
 
 const Github = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -20,7 +21,7 @@ const Github = (props: React.SVGProps<SVGSVGElement>) => (
 
 export const metadata: Metadata = {
   title: 'Contact Support & Feedback - CoolTools',
-  description: 'Get in touch with the CoolTools team. Learn how to report bugs, submit feature requests, or browse our open-source codebase on GitHub.',
+  description: 'Get in touch with the CoolTools team. Learn how to report bugs, submit feature requests, contact support, or browse our open-source codebase on GitHub.',
   alternates: {
     canonical: 'https://tools.chinmaypatil.com/contact',
   },
@@ -32,13 +33,16 @@ export default function ContactPage() {
       {/* Header section */}
       <section className="space-y-3 text-center sm:text-left">
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          Contact Us
+          Contact Us & Support
         </h1>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Encountered a bug, have a feature idea, or want to explore the code? 
-          Since all operations run client-side in your browser, we manage all feedback and updates transparently through GitHub.
+          Have questions, policy inquiries, bug reports, or feature ideas? 
+          Submit a message using the form below or reach out via email.
         </p>
       </section>
+
+      {/* Interactive Contact Form */}
+      <ContactForm />
 
       {/* Support Methods Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,0 +1,47 @@
+Title: Ad serving limits - Google AdSense Help
+
+URL Source: https://support.google.com/adsense/answer/9437976?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC
+
+Markdown Content:
+## Policies
+
+[](https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104)[Next: Limited ad serving vs limited ads](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104)
+
+Google works hard to maintain an ads ecosystem that protects advertisers, publishers and users from fraud and bad ad experiences. As a result, Google may sometimes place a limit on the number of ads that your AdSense account can show. This might be a temporary ad serving limit while we get to know you and evaluate your traffic quality, or it might be because we've identified [invalid traffic](https://support.google.com/adsense/answer/16737) concerns in your AdSense account.
+
+If your ad serving has been limited, you can learn more about what it means and what you can do below.To better understand what may have caused the ad serving limit, visit our [Guide for ad serving limits](https://support.google.com/adsense/troubleshooter/12368721).
+
+**Note**: While this ad serving limit typically impacts publishers for less than 30 days, it may take longer in some cases.
+
+## [](https://support.google.com/adsense/answer/9437976?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC)Account being assessed
+
+Ad serving on your account is being temporarily limited while we assess your traffic quality. We'll automatically review and update this limit as we continue to monitor your traffic. Unfortunately, we can’t say how long this will take.
+
+### What you can do
+
+Continue to build your content and audience while we assess your site traffic. Also make sure that you’re complying with the [AdSense programme policies](https://support.google.com/adsense/answer/48182).
+
+In the meantime, your account is still fully accessible and you can view details about this account-level enforcement in your[Policy centre](https://support.google.com/adsense/answer/9485926). We encourage you to be proactive and make sure that your account complies with our [programme policies](https://support.google.com/adsense/answer/48182).
+
+## [](https://support.google.com/adsense/answer/9437976?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC)Invalid traffic concerns
+
+Ad serving on your account is currently being limited due to [invalid traffic](https://support.google.com/adsense/answer/16737) concerns. We’ll automatically review and update this limit as we continue to monitor your traffic.
+
+### What you can do
+
+Your account is still fully accessible and you can view details about this account level enforcement in your[Policy center](https://support.google.com/adsense/answer/9485926). We encourage you to be proactive and make sure that your ad traffic complies with the [AdSense programme policies](https://support.google.com/adsense/answer/48182).
+
+In the meantime, we recommend that you review these resources on invalid traffic:
+
+*   [How Google prevents invalid traffic](https://support.google.com/adsense/answer/1348752)
+*   [How you can help to prevent invalid traffic](https://support.google.com/adsense/answer/1112983)
+*   Learn how to [segment your traffic](https://support.google.com/adsense/answer/2583698)
+*   Learn more about [purchasing traffic](https://support.google.com/adsense/answer/1348722)
+
+**Note:** If we do detect invalid activity on your account or if any other issues are found, your account may be subject to further enforcement actions or may be permanently closed.
+
+[](https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104)[Next: Limited ad serving vs limited ads](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104)
+
+## Was this helpful?
+
+How can we improve it?

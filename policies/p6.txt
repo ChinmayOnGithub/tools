@@ -1,0 +1,272 @@
+Title: Limited ad serving vs limited ads
+
+URL Source: https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC
+
+Markdown Content:
+[Skip to main content](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#search-form)
+
+[](https://support.google.com/?tab=uu)
+
+[](https://support.google.com/?tab=uu)
+
+[Google AdSense Help](https://support.google.com/adsense)
+
+[](https://www.google.com/intl/en-GB/about/products?tab=uh)
+
+[Sign in](https://accounts.google.com/ServiceLogin?hl=en-GB&passive=true&continue=http://support.google.com/adsense/answer/14668281%3Fhl%3Den-GB%26ref_topic%3D1250104%26sjid%3D5169671761552421753-NC&ec=GAZAdQ)
+
+Send feedback on…
+
+This help content & information 
+
+General Help Centre experience 
+
+Next
+
+*   [Help Center](https://support.google.com/adsense/?hl=en-GB)
+*   [Community](https://support.google.com/adsense/community?hl=en-GB&help_center_link=CPmj_wYSIUxpbWl0ZWQgYWQgc2VydmluZyB2cyBsaW1pdGVkIGFkcw)
+*   [Announcements](https://support.google.com/adsense/announcements/9189068)
+
+[Google AdSense](https://www.google.com/adsense/start/)
+
+Notification
+
+Please make sure that you visit[Your AdSense Page](https://support.google.com/adsense/answer/10568458), where you can find personalised information about your account to help you succeed with AdSense.
+
+## Policies
+
+# Limited ad serving vs limited ads
+
+[](https://support.google.com/adsense/answer/9437976?hl=en-GB&ref_topic=1250104)[Next: Account suspended for invalid traffic or policy reasons](https://support.google.com/adsense/answer/2659114?hl=en-GB&ref_topic=1250104)
+
+There are a few places in your account where you may come across 'limited ad serving' or 'limited ads'. Though they sound similar, these affect you differently: one limits the number of ads served on your sites or apps, whereas the other limits what data can be used to serve ads. This article describes the differences between these two terms.
+
+## Limited ad serving
+
+Google may sometimes place a limit on the number of ads your account can show. This might be a temporary ad serving limit while we get to know you and evaluate your traffic quality, or it might be because we've identified invalid traffic concerns in your account.
+
+You’ll be notified in the Policy centre of your account if your ad serving has been limited. You’ll see an ad serving status of 'limited ad serving'.
+
+**Tip**: If your ad serving has been limited, you can learn more about [what it means](https://support.google.com/adsense/answer/9437976) and what you can do. To better understand what may have caused the ad serving limit, visit our [guide for ad serving limits](https://support.google.com/adsense/troubleshooter/12368721).
+
+## Limited ads
+
+Limited ads (LTD) allow you to serve ads in a limited way. Limited ads disable the collection, sharing and use of personal data for personalisation of ads. Learn more about [limited ads](https://support.google.com/adsense/answer/14210870).
+
+Give feedback about this article
+
+Choose a section to give feedback on
+
+[](https://support.google.com/adsense/answer/9437976?hl=en-GB&ref_topic=1250104)[Next: Account suspended for invalid traffic or policy reasons](https://support.google.com/adsense/answer/2659114?hl=en-GB&ref_topic=1250104)
+
+## Was this helpful?
+
+How can we improve it?
+
+Yes No
+
+Submit
+
+## Need more help?
+
+### Try these next steps:
+
+[Post to the Help Community Get answers from community members](https://support.google.com/adsense/community?hl=en-GB&help_center_link=CPmj_wYSIUxpbWl0ZWQgYWQgc2VydmluZyB2cyBsaW1pdGVkIGFkcw)[Contact us Tell us more and we’ll help you get there](https://support.google.com/adsense/gethelp)
+
+true
+
+## [Policies](https://support.google.com/adsense/topic/1250104?hl=en-GB&ref_topic=3367197)
+
+*   1 of 7 [Fix policy issues](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#)
+    *   1 of 7 [Discover the Policy centre](https://support.google.com/adsense/answer/11628214?hl=en-GB&ref_topic=1250104)
+    *   2 of 7 [Overview of the Policy centre](https://support.google.com/adsense/answer/9485926?hl=en-GB&ref_topic=1250104)
+    *   3 of 7 [Understand policy issues, regulatory issues, advertiser preferences and ad serving statuses](https://support.google.com/adsense/answer/15689616?hl=en-GB&ref_topic=1250104)
+    *   4 of 7 [Fix policy issues that affect ad serving](https://support.google.com/adsense/answer/7003627?hl=en-GB&ref_topic=1250104)
+    *   5 of 7 [View examples of your policy issues, regulatory issues and advertiser preferences](https://support.google.com/adsense/answer/13998398?hl=en-GB&ref_topic=1250104)
+    *   6 of 7 [Policy centre FAQs](https://support.google.com/adsense/answer/11071207?hl=en-GB&ref_topic=1250104)
+    *   7 of 7 [View historical data about policy issues in your reports](https://support.google.com/adsense/answer/16656456?hl=en-GB&ref_topic=1250104)
+
+*   2 of 7 [Beginner's Guide](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#)
+    *   1 of 3 [AdSense policies: a beginner's guide](https://support.google.com/adsense/answer/23921?hl=en-GB&ref_topic=1250104)
+    *   2 of 3 [Stay compliant with our policies](https://support.google.com/adsense/answer/1261929?hl=en-GB&ref_topic=1250104)
+    *   3 of 3 [How AdSense policies are enforced](https://support.google.com/adsense/answer/1282103?hl=en-GB&ref_topic=1250104)
+
+*   3 of 7 [Programme policies](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#)
+    *   1 of 8 [AdSense programme policies](https://support.google.com/adsense/answer/48182?hl=en-GB&ref_topic=1250104)
+    *   2 of 8 [Families](https://support.google.com/adsense/topic/9020627?hl=en-GB&ref_topic=1250104)
+    *   3 of 8 [Monetisation and ads](https://support.google.com/adsense/topic/9886078?hl=en-GB&ref_topic=1250104)
+    *   4 of 8 [Privacy and security](https://support.google.com/adsense/topic/9886175?hl=en-GB&ref_topic=1250104)
+    *   5 of 8 [Lei Geral de Proteção de Dados (LGPD)](https://support.google.com/adsense/topic/9930900?hl=en-GB&ref_topic=1250104)
+    *   6 of 8 [Ad implementation guidelines](https://support.google.com/adsense/topic/1271508?hl=en-GB&ref_topic=1250104)
+    *   7 of 8 [Product-specific policies](https://support.google.com/adsense/topic/1271509?hl=en-GB&ref_topic=1250104)
+    *   8 of 8 [AdSense policy FAQ](https://support.google.com/adsense/answer/3394713?hl=en-GB&ref_topic=1250104)
+
+*   4 of 7 [Publisher Policies and Publisher Restrictions](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#)
+    *   1 of 3 [Google Publisher Policies](https://support.google.com/adsense/answer/10502938?hl=en-GB&ref_topic=1250104)
+    *   2 of 3 [Google Publisher Restrictions](https://support.google.com/adsense/answer/10437795?hl=en-GB&ref_topic=1250104)
+    *   3 of 3 [Understand the Google Publisher Policies and Google Publisher Restrictions](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104)
+
+*   5 of 7 [Policy enforcements](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#)
+    *   1 of 9 [Policy notification asking you to make changes to your site](https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104)
+    *   2 of 9 [Ad serving limits](https://support.google.com/adsense/answer/9437976?hl=en-GB&ref_topic=1250104)
+    *   3 of 9 [Limited ad serving vs limited ads](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#)
+    *   4 of 9 [Account suspended for invalid traffic or policy reasons](https://support.google.com/adsense/answer/2659114?hl=en-GB&ref_topic=1250104)
+    *   5 of 9 [Top invalid traffic and policy violations that lead to account closure](https://support.google.com/adsense/answer/2660562?hl=en-GB&ref_topic=1250104)
+    *   6 of 9 [Your AdSense account is at risk of being closed for policy reasons](https://support.google.com/adsense/answer/1217847?hl=en-GB&ref_topic=1250104)
+    *   7 of 9 [Ad serving was disabled on your page or site](https://support.google.com/adsense/answer/113061?hl=en-GB&ref_topic=1250104)
+    *   8 of 9 [AdSense account closed by Google for invalid traffic](https://support.google.com/adsense/answer/57153?hl=en-GB&ref_topic=1250104)
+    *   9 of 9 [AdSense account closed by Google for policy reasons](https://support.google.com/adsense/answer/2576043?hl=en-GB&ref_topic=1250104)
+
+*   6 of 7 [Ad format specific policies](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#)
+    *   1 of 1 [Policies for ad units that offer rewards](https://support.google.com/adsense/answer/9121589?hl=en-GB&ref_topic=1250104)
+
+*   7 of 7 [AdSense policy change log](https://support.google.com/adsense/answer/9336650?hl=en-GB&ref_topic=1250104)
+
+[![Image 1](https://storage.googleapis.com/support-kms-prod/tBoxgtGdnXCTYLb8ONyyV7o1WMJ0nbFXhS0L)](https://support.google.com/adsense/answer/10568458?hl=en-GB&ref_topic=1250106)
+
+[Unlock your revenue with personalised tips today!](https://support.google.com/adsense/answer/10568458?hl=en-GB&ref_topic=1250106)
+Visit the 'Optimisation tips for AdSense' page to see personalised suggestions to maximise your revenue.
+
+[Unlock now](https://support.google.com/adsense/answer/10568458)
+
+ ©2026 Google 
+*   [Privacy Policy](https://www.google.com/intl/en-GB/privacy.html)
+*   [Terms of Service](https://www.google.com/accounts/TOS)
+
+ Language  
+
+English (United Kingdom)‎
+1.   català‎
+2.   dansk‎
+3.   Deutsch‎
+4.   English‎
+5.   español‎
+6.   español (Latinoamérica)‎
+7.   Filipino‎
+8.   français‎
+9.   hrvatski‎
+10.   Indonesia‎
+11.   italiano‎
+12.   latviešu‎
+13.   lietuvių‎
+14.   magyar‎
+15.   Melayu‎
+16.   Nederlands‎
+17.   norsk‎
+18.   polski‎
+19.   português‎
+20.   português (Brasil)‎
+21.   română‎
+22.   slovenčina‎
+23.   suomi‎
+24.   svenska‎
+25.   Tiếng Việt‎
+26.   Türkçe‎
+27.   čeština‎
+28.   Ελληνικά‎
+29.   български‎
+30.   русский‎
+31.   српски‎
+32.   українська‎
+33.   ‏עברית
+34.   ‏اردو
+35.   ‏العربية
+36.   मराठी‎
+37.   हिन्दी‎
+38.   বাংলা‎
+39.   ਪੰਜਾਬੀ‎
+40.   ગુજરાતી‎
+41.   தமிழ்‎
+42.   తెలుగు‎
+43.   ಕನ್ನಡ‎
+44.   മലയാളം‎
+45.   ไทย‎
+46.   中文（简体）‎
+47.   中文（繁體）‎
+48.   日本語‎
+49.   한국어‎
+50.   English (United Kingdom)‎
+
+Enable Dark Mode
+
+Send feedback on…
+
+This help content & information General Help Centre experience
+
+Search
+
+Clear search
+
+Close search
+
+Google apps
+
+Main menu
+
+18165736474033307711
+
+true
+
+Search Help Centre
+
+false
+
+true
+
+true
+
+true
+
+[Google Help](https://support.google.com/)
+
+[* Help Center](https://support.google.com/adsense/?hl=en-GB)[* Community](https://support.google.com/adsense/community?hl=en-GB&help_center_link=CPmj_wYSIUxpbWl0ZWQgYWQgc2VydmluZyB2cyBsaW1pdGVkIGFkcw)[* Google AdSense](https://www.google.com/adsense/start/)
+
+[* Privacy Policy](https://www.google.com/intl/en-GB/privacy.html)[* Terms of Service](https://www.google.com/accounts/TOS)[* Submit feedback](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC)
+
+true
+
+true
+
+157
+
+false
+
+false
+
+## What's the issue with this selection?
+
+What's the issue with this selection?
+
+Inaccurate – doesn't match what I see in the product 
+
+Hard to understand – unclear or translation is wrong 
+
+Missing info – relevant but not comprehensive 
+
+Irrelevant – doesn’t match the title and/or my expectations 
+
+Minor errors – formatting issues, typos and/or broken links 
+
+Other suggestions – ideas to improve the content 
+
+## Share additional info or suggestions
+
+​
+
+ ​
+
+ 
+
+Do not share any personal info
+
+Cancel
+
+Submit
+
+By continuing, you agree Google uses your answers, [account & system info](https://support.google.com/adsense/answer/14668281?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#) to improve services, per our [Privacy](https://myaccount.google.com/privacypolicy?hl=en-GB)&[Terms](https://policies.google.com/terms?hl=en-GB).
+
+false
+
+false
+
+false

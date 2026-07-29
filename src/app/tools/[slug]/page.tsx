@@ -134,15 +134,16 @@ export default async function ToolWrapperPage({ params }: PageProps) {
     ],
   };
 
-  // 2. Software Application Schema
+  // 2. Software & Web Application Schema
   const softwareAppSchema = {
     '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+    '@type': ['SoftwareApplication', 'WebApplication'],
     'name': tool.name,
+    'url': `${siteUrl}/tools/${tool.id}`,
     'description': tool.description,
-    'applicationCategory': 'DeveloperApplication',
-    'operatingSystem': 'All',
-    'browserRequirements': 'Requires an HTML5-capable web browser.',
+    'applicationCategory': category?.title || 'UtilityApplication',
+    'operatingSystem': 'Any',
+    'browserRequirements': 'Requires modern web browser with HTML5 and JavaScript enabled.',
     'offers': {
       '@type': 'Offer',
       'price': '0',
@@ -305,6 +306,40 @@ export default async function ToolWrapperPage({ params }: PageProps) {
             </div>
           </div>
 
+          {/* Technical Specifications & Standards */}
+          {seoContent.technicalOverview && (
+            <div className="bg-card border-2 border-border p-4 space-y-2 text-xs">
+              <h2 className="text-sm font-bold text-foreground">Technical Specifications & Standards</h2>
+              <p className="text-muted-foreground leading-relaxed">{seoContent.technicalOverview}</p>
+            </div>
+          )}
+
+          {/* Step-by-Step Operating Guide & Common Professional Use Cases */}
+          {((seoContent.stepByStepGuide && seoContent.stepByStepGuide.length > 0) || (seoContent.useCases && seoContent.useCases.length > 0)) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              {seoContent.stepByStepGuide && seoContent.stepByStepGuide.length > 0 && (
+                <div className="space-y-2 border-2 border-border p-4 bg-muted/20">
+                  <h2 className="text-sm font-bold text-foreground">Step-by-Step Operating Guide</h2>
+                  <ol className="list-decimal list-inside space-y-1.5 text-muted-foreground font-medium">
+                    {seoContent.stepByStepGuide.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+              {seoContent.useCases && seoContent.useCases.length > 0 && (
+                <div className="space-y-2 border-2 border-border p-4 bg-muted/20">
+                  <h2 className="text-sm font-bold text-foreground">Common Professional Use Cases</h2>
+                  <ul className="list-disc list-inside space-y-1.5 text-muted-foreground font-medium">
+                    {seoContent.useCases.map((useCase, idx) => (
+                      <li key={idx}>{useCase}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Example Input / Output mockup */}
           <div className="bg-muted/30 border-2 border-border p-4 space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Example Conversions</h2>
@@ -319,6 +354,18 @@ export default async function ToolWrapperPage({ params }: PageProps) {
               </div>
             </div>
           </div>
+
+          {/* Troubleshooting & Error Handling */}
+          {seoContent.troubleshooting && seoContent.troubleshooting.length > 0 && (
+            <div className="space-y-2 border-2 border-border p-4 bg-card">
+              <h2 className="text-sm font-bold text-foreground">Troubleshooting & Edge-Case Guidance</h2>
+              <ul className="list-disc list-inside space-y-1 text-xs text-muted-foreground">
+                {seoContent.troubleshooting.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* FAQs section */}
           {seoContent.faqs.length > 0 && (

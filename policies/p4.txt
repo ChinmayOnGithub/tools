@@ -1,0 +1,53 @@
+Title: Policy notification asking you to make changes to your site
+
+URL Source: https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC
+
+Markdown Content:
+## Policies
+
+[](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104)[Next: Ad serving limits](https://support.google.com/adsense/answer/9437976?hl=en-GB&ref_topic=1250104)
+
+If we detect that any of your sites have policy issues, we'll notify you in your [Policy centre](https://support.google.com/adsense/answer/9485926) and via email.
+
+#### On this page:
+
+*   [I received a notification. What do I need to do next?](https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#q1)
+*   [What happens if I don't make changes?](https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#q2)
+*   [I need clarification regarding the policy that my site is violating. What should I do?](https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC#q5)
+
+### [](https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC)I received a notification. What do I need to do next?
+
+The notification contains details about the policy issue and an example URL where we found the issue. Some issues may also have associated [screenshots](https://support.google.com/adsense/answer/13998398) in the Policy centre. Read the notification carefully and make the appropriate changes to your site to resolve the issue.
+
+Sometimes an issue can be resolved by removing violating content or removing Google ads from those pages. In other cases, it may require changing the implementation of your ads. Bear in mind that the example URL is just one example. Review your entire site to ensure that the same issue doesn't exist on other pages.
+
+Once you've fixed the issue, you can [request a review](https://support.google.com/adsense/answer/7003627#request_review) of your site.
+
+For subtitles in your language, turn on YouTube captions. Select the Settings icon ![Image 1: Image of YouTube settings icon](https://storage.googleapis.com/support-kms-prod/UrHzzlx74G5ig5vYXo9Nk43r7NM5fj72Tbu1) found in the video player, then select **Subtitles/CC** and choose your language.
+
+* * *
+
+### [](https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC)What happens if I don't make changes?
+
+If you do not make changes to bring your site into compliance, [ad serving will be disabled](https://support.google.com/adsense/answer/113061) on your site.
+
+If you missed the deadline and ad serving has already been disabled on your site, please make the appropriate changes and then [request a review](https://support.google.com/adsense/answer/7003627#request_review) of your site.
+
+### [](https://support.google.com/adsense/answer/1378153?hl=en-GB&ref_topic=1250104&sjid=5169671761552421753-NC)I need more info about the policy that my site is violating. What should I do?
+
+To learn more about a policy issue, visit your [Policy centre](https://support.google.com/adsense/answer/9485926), find the issue in the table and click **Fix** in the 'Action' column. This will take you to the 'Issue details' page where you’ll find a link to the policy, a description of the issue and instructions on how to resolve it.
+
+If you'd like further clarification or to view examples of our policies, visit our resources:
+
+*   [AdSense Terms and Conditions](https://www.google.com/adsense/localized-terms)
+*   [AdSense programme policies](https://support.google.com/adsense/topic/1261918)
+*   [Publisher Policies Help Centre](https://support.google.com/publisherpolicies)
+*   [Google Publisher Policies video playlist](https://youtube.com/playlist?list=PLbAFD4oU9YcrAzTajFeSp0iYFf6a4BJZ9&si=ldV5H-rkbQc-3pIt)
+*   [AdSense Help Community](https://support.google.com/adsense/community)
+*   [Google Search Essentials](https://developers.google.com/search/docs/essentials)[](https://developers.google.com/search/docs/essentials)
+
+[](https://support.google.com/adsense/answer/10008391?hl=en-GB&ref_topic=1250104)[Next: Ad serving limits](https://support.google.com/adsense/answer/9437976?hl=en-GB&ref_topic=1250104)
+
+## Was this helpful?
+
+How can we improve it?

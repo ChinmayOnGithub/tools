@@ -91,6 +91,19 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Publisher Identity & Editorial Standards */}
+      <section className="bg-card border-2 border-border p-6 space-y-4 card-depth-1">
+        <h2 className="text-lg font-extrabold text-foreground">Publisher Identity & Editorial Commitment</h2>
+        <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
+          <p>
+            <strong className="text-foreground">CoolTools Platform</strong> is designed, maintained, and published independently by <strong className="text-foreground">Chinmay Patil</strong>. Our primary mission is to eliminate data privacy concerns associated with server-side online utilities by providing open-source, client-side web tools.
+          </p>
+          <p>
+            Every utility on this platform adheres to strict quality benchmarks: zero background data collection, 100% browser sandbox isolation, RFC/ISO standard compliance, and transparent open-source code verification.
+          </p>
+        </div>
+      </section>
+
       <section className="text-center pt-4">
         <Link 
           href="/" 
