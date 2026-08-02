@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/validate-tools.js",
+    "copy:worker": "node scripts/copy-pdf-worker.js",
+    "postinstall": "node scripts/copy-pdf-worker.js",
+    "prebuild": "node scripts/validate-tools.js && node scripts/copy-pdf-worker.js",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

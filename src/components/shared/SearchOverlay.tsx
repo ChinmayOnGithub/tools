@@ -109,7 +109,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             <div className="text-center py-10">
               <p className="text-sm text-muted-foreground">Type to search tools by name, tag, or utility...</p>
               <div className="mt-4 flex flex-wrap justify-center gap-2 max-w-md mx-auto">
-                {['PDF', 'Image', 'JSON', 'Word Count', 'Base64'].map((s) => (
+                {['PDF', 'Image', 'JSON', 'Base64', 'Timer', 'QR Code', 'Color', 'Converter'].map((s) => (
                   <button 
                     key={s} 
                     onClick={() => setQuery(s)}

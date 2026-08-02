@@ -172,9 +172,9 @@ export default function Home() {
                 {/* Quick filter tag chips */}
                 <div className="flex flex-wrap gap-2 pt-1 items-center">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mr-1">
-                    Filters:
+                    Quick filters:
                   </span>
-                  {['All', 'JSON', 'PDF', 'Image', 'Base64', 'Hash', 'Text'].map((tag) => {
+                  {['All', 'JSON', 'PDF', 'Image', 'Text', 'Base64', 'Hash', 'QR', 'Timer', 'Color', 'Converter', 'Calculator'].map((tag) => {
                     const isActive = (tag === 'All' && !searchQuery) || searchQuery.toLowerCase() === tag.toLowerCase();
                     return (
                       <button

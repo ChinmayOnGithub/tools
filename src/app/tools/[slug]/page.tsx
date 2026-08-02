@@ -104,10 +104,18 @@ export default async function ToolWrapperPage({ params }: PageProps) {
   const colors = CATEGORY_COLOR_MAP[category?.color || 'orange'] || CATEGORY_COLOR_MAP.orange;
   const seoContent = SEO_CONTENT_MAP[slug];
 
-  // Filter related tools that are published and active
-  const relatedPublished = TOOLS_REGISTRY.filter(
-    (t) => tool.relatedTools.includes(t.id) && t.status === 'published'
+  // Build related tools: start with explicit list, then backfill from same category (max 3, never self)
+  const explicitRelated = TOOLS_REGISTRY.filter(
+    (t) => tool.relatedTools.includes(t.id) && t.status === 'published' && t.id !== slug
   );
+  const categoryFill = TOOLS_REGISTRY.filter(
+    (t) =>
+      t.category === tool.category &&
+      t.status === 'published' &&
+      t.id !== slug &&
+      !explicitRelated.some((r) => r.id === t.id)
+  );
+  const relatedPublished = [...explicitRelated, ...categoryFill].slice(0, 3);
 
   const siteUrl = SITE_URL;
 
@@ -400,10 +408,20 @@ export default async function ToolWrapperPage({ params }: PageProps) {
         {/* Related Utilities Showcase */}
         {relatedPublished.length > 0 && (
           <section className="border-t-2 border-border pt-6 mt-4">
-            <h2 className="text-lg font-bold tracking-tight text-foreground mb-4">
-              Related Tools
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold tracking-tight text-foreground">
+                You might also need
+              </h2>
+              {category && (
+                <Link
+                  href={`/categories/${category.slug}`}
+                  className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                >
+                  More {category.title} →
+                </Link>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {relatedPublished.map((relTool) => (
                 <ToolCard key={relTool.id} tool={relTool} trackingLabel={`${tool.id} -> ${relTool.id}`} />
               ))}
