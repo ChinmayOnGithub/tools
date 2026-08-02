@@ -1,13 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Settings, RefreshCw } from 'lucide-react';
-import t from './locales/en.json';
+import { Copy } from 'lucide-react';
 import { convertUnit, CONVERSIONS } from './utils';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+
+// Primitives
+import ToolLayout from '@/components/shared/ToolLayout';
+import InputPanel from '@/components/shared/InputPanel';
+import OutputPanel from '@/components/shared/OutputPanel';
+import ActionBar from '@/components/shared/ActionBar';
+import PipeButton from '@/components/shared/PipeButton';
+import CopyShareToast from '@/components/shared/CopyShareToast';
+
+// Hooks
+import { useUrlQueryInput } from '@/hooks/useUrlQueryInput';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { trackToolLaunch, trackToolCompletion } from '@/lib/analytics';
-import FaqSection from '@/components/shared/FaqSection';
 
 export default function UnitConverterComponent() {
   const [mounted, setMounted] = useState(false);
@@ -15,6 +25,12 @@ export default function UnitConverterComponent() {
   const [inputValue, setInputValue] = useState('1');
   const [fromUnit, setFromUnit] = useState('km');
   const [toUnit, setToUnit] = useState('m');
+  const [showToast, setShowToast] = useState(false);
+
+  const { copy } = useCopyToClipboard('unit-converter');
+
+  // URL query parameter piping hook
+  useUrlQueryInput(setInputValue);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -41,7 +57,7 @@ export default function UnitConverterComponent() {
       setFromUnit('c');
       setToUnit('f');
     } else {
-      const keys = Object.keys(CONVERSIONS[cat].factors);
+      const keys = Object.keys(CONVERSIONS[cat]?.factors || {});
       setFromUnit(keys[3] || keys[0]);
       setToUnit(keys[0]);
     }
@@ -72,113 +88,131 @@ export default function UnitConverterComponent() {
     return String(parseFloat(converted.toFixed(6)));
   };
 
+  const result = calculateResult();
+
+  const handleCopyResult = () => {
+    if (!result) return;
+    copy(result);
+    setShowToast(true);
+  };
+
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 w-full border-2 border-border rounded-none" />;
+    return <div className="animate-pulse bg-muted h-64 w-full border border-border rounded-none" />;
   }
 
+  const categoryOptions = (
+    <select
+      value={category}
+      onChange={(e) => handleCategoryChange(e.target.value)}
+      className="h-7 border border-border px-2 bg-background text-[10px] font-bold uppercase text-foreground focus-visible:outline-none rounded-none cursor-pointer"
+    >
+      <option value="length">Length</option>
+      <option value="weight">Weight & Mass</option>
+      <option value="area">Area</option>
+      <option value="volume">Volume</option>
+      <option value="temperature">Temperature</option>
+      <option value="speed">Speed</option>
+    </select>
+  );
+
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
-      <Card className="card-depth-2 rounded-none border-2 border-border">
-        <CardHeader className="border-b-2 border-border py-3.5 px-4">
-          <CardTitle className="text-lg font-bold text-foreground">
-            {t.title}
-          </CardTitle>
-        </CardHeader>
-        
-        <CardContent className="p-4 space-y-6">
-          {/* Category Selector dropdown */}
-          <div className="space-y-1.5">
-            <label htmlFor="category-select" className="text-xs font-bold text-muted-foreground">{t.categoryLabel}</label>
-            <select
-              id="category-select"
-              value={category}
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full h-10 border-2 border-border px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-none"
-            >
-              <option value="length">Length</option>
-              <option value="weight">Weight & Mass</option>
-              <option value="area">Area</option>
-              <option value="volume">Volume</option>
-              <option value="time">Time</option>
-              <option value="speed">Speed</option>
-              <option value="temperature">Temperature</option>
-            </select>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-border pt-4">
-            {/* Input card parameters */}
+    <div className="space-y-6 w-full">
+      <ToolLayout>
+        {/* Input Panel */}
+        <div className="space-y-6">
+          <InputPanel 
+            title="Convert Inputs" 
+            actions={categoryOptions}
+            onPasteClick={async () => {
+              try {
+                const text = await navigator.clipboard.readText();
+                if (text && !isNaN(parseFloat(text))) {
+                  setInputValue(text.trim());
+                }
+              } catch {
+                const el = document.getElementById('value-input');
+                if (el) el.focus();
+              }
+            }}
+          >
             <div className="space-y-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Settings className="h-4 w-4" /> Input settings
-              </span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                  <label htmlFor="value-input" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Value</label>
+                  <Input
+                    id="value-input"
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder="e.g. 100"
+                    className="h-9 text-xs font-semibold rounded-none border border-border bg-card"
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <label htmlFor="val-input" className="text-xs font-bold text-muted-foreground">{t.inputValueLabel}</label>
-                <Input
-                  id="val-input"
-                  type="number"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  className="h-10 text-xs font-semibold rounded-none border-2 border-border"
-                  aria-label="Input value for conversion"
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="from-select" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">From</label>
+                  <select
+                    id="from-select"
+                    value={fromUnit}
+                    onChange={(e) => setFromUnit(e.target.value)}
+                    className="w-full h-9 border border-border px-2 bg-background text-xs font-semibold text-foreground focus-visible:outline-none rounded-none cursor-pointer"
+                  >
+                    {getUnitsForCategory().map((u) => (
+                      <option key={u.val} value={u.val}>{u.label}</option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className="space-y-1.5">
-                <label htmlFor="from-select" className="text-xs font-bold text-muted-foreground">{t.fromLabel}</label>
-                <select
-                  id="from-select"
-                  value={fromUnit}
-                  onChange={(e) => setFromUnit(e.target.value)}
-                  className="w-full h-10 border-2 border-border px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-none"
-                >
-                  {getUnitsForCategory().map((u) => (
-                    <option key={u.val} value={u.val}>{u.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Output conversion result */}
-            <div className="space-y-4 border-t-2 border-border md:border-t-0 md:border-l-2 md:pl-6 pt-4 md:pt-0">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <RefreshCw className="h-4 w-4" /> Result details
-              </span>
-
-              <div className="space-y-1.5">
-                <label htmlFor="res-output" className="text-xs font-bold text-muted-foreground">{t.outputValueLabel}</label>
-                <Input
-                  id="res-output"
-                  type="text"
-                  readOnly
-                  value={calculateResult()}
-                  className="h-10 text-xs font-bold bg-muted/20 text-primary border-2 border-primary/20 rounded-none"
-                  aria-label="Converted output value read-only"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="to-select" className="text-xs font-bold text-muted-foreground">{t.toLabel}</label>
-                <select
-                  id="to-select"
-                  value={toUnit}
-                  onChange={(e) => setToUnit(e.target.value)}
-                  className="w-full h-10 border-2 border-border px-3 bg-background text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-none"
-                >
-                  {getUnitsForCategory().map((u) => (
-                    <option key={u.val} value={u.val}>{u.label}</option>
-                  ))}
-                </select>
+                <div className="space-y-1.5">
+                  <label htmlFor="to-select" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">To</label>
+                  <select
+                    id="to-select"
+                    value={toUnit}
+                    onChange={(e) => setToUnit(e.target.value)}
+                    className="w-full h-9 border border-border px-2 bg-background text-xs font-semibold text-foreground focus-visible:outline-none rounded-none cursor-pointer"
+                  >
+                    {getUnitsForCategory().map((u) => (
+                      <option key={u.val} value={u.val}>{u.label}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </InputPanel>
+        </div>
 
-      {/* FAQ accordion */}
-      <Card className="p-4 space-y-4 rounded-none border-2 border-border">
-        <FaqSection faqs={t.faq} />
-      </Card>
+        {/* Output Panel */}
+        <div className="space-y-6">
+          {!!result && (
+            <OutputPanel title="Converted Result">
+              <div className="space-y-4">
+                <div className="border border-border bg-card px-4 py-6 text-center">
+                  <div className="text-3xl font-mono font-bold tracking-tight text-foreground select-all break-all">
+                    {result}
+                  </div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-2">
+                    {toUnit}
+                  </div>
+                </div>
+
+                <ActionBar>
+                  <div className="flex gap-2">
+                    <PipeButton value={result} />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleCopyResult}>
+                      <Copy className="h-3.5 w-3.5 mr-1" />
+                      Copy Result
+                    </Button>
+                  </div>
+                </ActionBar>
+              </div>
+            </OutputPanel>
+          )}
+        </div>
+      </ToolLayout>
+
+      <CopyShareToast show={showToast} onClose={() => setShowToast(false)} message="Copied conversion result to clipboard." />
     </div>
   );
 }
