@@ -272,9 +272,11 @@ export default async function ToolWrapperPage({ params }: PageProps) {
             <PrivacyCard toolId={tool.id} />
 
             {/* Sidebar High eCPM Ad Container (300x600) */}
-            <div className="bg-card border-2 border-border p-2 card-depth-1 overflow-hidden">
-              <AdContainer slot="sidebar" />
-            </div>
+            {!!(process.env.NEXT_PUBLIC_ADSENSE_CLIENT && process.env.NEXT_PUBLIC_ADSENSE_SLOT_SIDEBAR) && (
+              <div className="bg-card border-2 border-border p-2 card-depth-1 overflow-hidden">
+                <AdContainer slot="sidebar" />
+              </div>
+            )}
 
             {/* Security & Privacy Guarantee Widget */}
             <div className="bg-card border-2 border-border p-5 space-y-3 card-depth-1">

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { 
-  FileText, 
   AlertTriangle,
   RefreshCw,
   Download,
@@ -20,6 +19,8 @@ import OutputPanel from '@/components/shared/OutputPanel';
 import ActionBar from '@/components/shared/ActionBar';
 import CopyShareToast from '@/components/shared/CopyShareToast';
 import FileDropzone from '@/components/shared/FileDropzone';
+import SelectedFileCard from '@/components/shared/SelectedFileCard';
+import ProcessingOverlay from '@/components/shared/ProcessingOverlay';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 
 type PresetKey = 'screen' | 'ebook' | 'printer' | 'prepress';
@@ -182,24 +183,13 @@ export default function PdfCompressComponent() {
                   descriptionText="Select a PDF to compress locally (up to 50MB)"
                 />
               ) : (
-                <div className="flex items-center justify-between p-3 border border-border bg-card">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <FileText className="h-8 w-8 text-primary shrink-0" />
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-bold text-foreground truncate max-w-[150px] md:max-w-[220px]">
-                        {file.name}
-                      </span>
-                      <span className="text-[9px] text-muted-foreground">
-                        {formatBytes(file.size)}
-                      </span>
-                    </div>
-                  </div>
-                  {!loading && !success && (
-                    <Button variant="outline" size="sm" onClick={removeFile} className="text-destructive hover:bg-destructive/5 rounded-none h-8 text-[10px] font-bold uppercase tracking-wider">
-                      Remove
-                    </Button>
-                  )}
-                </div>
+                <SelectedFileCard
+                  file={file}
+                  formattedSize={formatBytes(file.size)}
+                  iconType="document"
+                  disableRemove={loading || success}
+                  onRemove={removeFile}
+                />
               )}
 
               {/* Compression presets */}
@@ -254,11 +244,7 @@ export default function PdfCompressComponent() {
             <div className="space-y-4">
               {/* Loader visual status */}
               {loading && (
-                <div className="bg-muted/30 border border-border p-5 text-center space-y-3 rounded-none">
-                  <RefreshCw className="h-6 w-6 text-primary animate-spin mx-auto" />
-                  <p className="text-xs font-bold text-foreground">{t.compressing}</p>
-                  <p className="text-[9px] text-muted-foreground font-mono truncate">{progressMessage}</p>
-                </div>
+                <ProcessingOverlay message={progressMessage || t.compressing} />
               )}
 
               {/* Success metrics */}

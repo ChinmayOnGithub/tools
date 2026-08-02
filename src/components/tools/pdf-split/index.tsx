@@ -2,18 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  FileText, 
   AlertTriangle,
   RefreshCw,
   Sliders,
   Sparkles,
-  Download
+  Download,
+  FileText
 } from 'lucide-react';
 import t from './locales/en.json';
 import { parsePageRanges, splitPdfBuffer } from './utils';
 import { getPdfPageThumbnail } from '@/lib/pdf-core';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { PDFDocument } from 'pdf-lib';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
@@ -23,8 +21,11 @@ import ToolLayout from '@/components/shared/ToolLayout';
 import InputPanel from '@/components/shared/InputPanel';
 import OutputPanel from '@/components/shared/OutputPanel';
 import ActionBar from '@/components/shared/ActionBar';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import CopyShareToast from '@/components/shared/CopyShareToast';
 import FileDropzone from '@/components/shared/FileDropzone';
+import SelectedFileCard from '@/components/shared/SelectedFileCard';
 
 // Helper to convert array of 1-indexed numbers to range string
 function indicesToRangeString(pages: number[]): string {
@@ -264,23 +265,13 @@ export default function PdfSplitComponent() {
                   descriptionText="Select a PDF to extract pages locally"
                 />
               ) : (
-                <div className="flex items-center justify-between p-3 border border-border bg-card">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <FileText className="h-8 w-8 text-primary shrink-0" />
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-bold text-foreground truncate max-w-[200px]">
-                        {sourceFile.name}
-                      </span>
-                      <span className="text-[9px] text-muted-foreground flex gap-2">
-                        <span>{formatSize(sourceFile.size)}</span>
-                        {totalPages && <span className="text-primary font-semibold">({totalPages} pages)</span>}
-                      </span>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={removeFile} className="text-destructive hover:bg-destructive/5 rounded-none h-8 text-[10px] font-bold uppercase tracking-wider">
-                    Remove
-                  </Button>
-                </div>
+                <SelectedFileCard
+                  file={sourceFile}
+                  formattedSize={formatSize(sourceFile.size)}
+                  meta={totalPages ? `${totalPages} pages` : undefined}
+                  iconType="document"
+                  onRemove={removeFile}
+                />
               )}
 
               {/* Configurations */}

@@ -20,6 +20,8 @@ import OutputPanel from '@/components/shared/OutputPanel';
 import ActionBar from '@/components/shared/ActionBar';
 import CopyShareToast from '@/components/shared/CopyShareToast';
 import FileDropzone from '@/components/shared/FileDropzone';
+import SelectedFileCard from '@/components/shared/SelectedFileCard';
+import ProcessingOverlay from '@/components/shared/ProcessingOverlay';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
 import { SliderInput } from '@/components/ui/SliderInput';
@@ -183,31 +185,13 @@ export default function ImageCompressorComponent() {
                 />
               ) : (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 border border-border bg-card">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="h-10 w-10 border rounded-none overflow-hidden shrink-0 bg-muted/20 flex items-center justify-center">
-                        {previewUrl && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img 
-                            src={previewUrl} 
-                            alt="Preview thumbnail" 
-                            className="h-full w-full object-cover"
-                          />
-                        )}
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-xs font-bold text-foreground truncate max-w-[150px] md:max-w-[200px]">
-                          {sourceFile.name}
-                        </span>
-                        <span className="text-[9px] text-muted-foreground">
-                          {t.originalSize}: {formatByteSize(sourceFile.size)}
-                        </span>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={clearSelection} className="text-destructive hover:bg-destructive/5 rounded-none h-8 text-[10px] font-bold uppercase tracking-wider">
-                      Remove
-                    </Button>
-                  </div>
+                  <SelectedFileCard
+                    file={sourceFile}
+                    formattedSize={formatByteSize(sourceFile.size)}
+                    previewUrl={previewUrl ?? undefined}
+                    iconType="image"
+                    onRemove={clearSelection}
+                  />
 
                   {/* Sliders Configuration */}
                   <div className="space-y-4 pt-4 border-t border-border/40">
@@ -250,10 +234,7 @@ export default function ImageCompressorComponent() {
             <div className="space-y-4">
               {/* Loader */}
               {loading && (
-                <div className="bg-muted/30 border border-border p-5 text-center space-y-3 rounded-none">
-                  <RefreshCw className="h-6 w-6 text-primary animate-spin mx-auto" />
-                  <p className="text-xs font-bold text-foreground">{t.compressingStatus}</p>
-                </div>
+                <ProcessingOverlay message={t.compressingStatus} />
               )}
 
               {/* Result Metrics */}
