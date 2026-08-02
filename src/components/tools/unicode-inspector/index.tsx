@@ -3,14 +3,22 @@
 import { useState, useEffect, useCallback } from 'react';
 import t from './locales/en.json';
 import { inspectText } from './utils';
-import { Button } from '@/components/ui/Button';
-import { TextInputArea } from '@/components/ui/TextInputArea';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+
+// Primitives
+import ToolLayout from '@/components/shared/ToolLayout';
+import InputPanel from '@/components/shared/InputPanel';
+import OutputPanel from '@/components/shared/OutputPanel';
+import ActionBar from '@/components/shared/ActionBar';
+import PipeButton from '@/components/shared/PipeButton';
+import CopyShareToast from '@/components/shared/CopyShareToast';
+
+// Hooks
+import { useUrlQueryInput } from '@/hooks/useUrlQueryInput';
 import { useWorkspace } from '@/hooks/useWorkspace';
 import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
+import { Button } from '@/components/ui/Button';
 import { addHistoryEntry } from '@/lib/history';
-import CopyShareToast from '@/components/shared/CopyShareToast';
-import { Eye, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 
 export default function UnicodeInspector() {
   const [mounted, setMounted] = useState(false);
@@ -19,6 +27,9 @@ export default function UnicodeInspector() {
   const [showToast, setShowToast] = useState(false);
 
   const { addRecent } = useWorkspace();
+
+  // URL query parameter piping hook
+  useUrlQueryInput(setInput);
 
   const handleFocusInput = () => {
     const el = document.querySelector('textarea') as HTMLTextAreaElement;
@@ -49,7 +60,9 @@ export default function UnicodeInspector() {
     const timer = setTimeout(() => {
       setMounted(true);
       addRecent('unicode-inspector');
-      setInput('Hello 👋\u200b');
+      if (!window.location.search.includes('input=') && !window.location.search.includes('data=')) {
+        setInput('Hello 👋\u200b');
+      }
     }, 0);
     return () => clearTimeout(timer);
   }, [addRecent]);
@@ -65,61 +78,74 @@ export default function UnicodeInspector() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border-2 border-border" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border border-border" />;
   }
 
   return (
     <div className="space-y-6 w-full">
-      {/* Action Configuration Panel */}
-      <div className="flex flex-wrap gap-2 items-center bg-card p-3 border-2 border-border rounded-none justify-between">
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleClear} className="rounded-none border-2" disabled={!input}>
-            Clear Input
-          </Button>
+      {/* Workspace Layout */}
+      <ToolLayout>
+        {/* Input Panel */}
+        <div className="space-y-6">
+          <InputPanel 
+            title={t.inputLabel}
+            onPasteClick={async () => {
+              try {
+                const text = await navigator.clipboard.readText();
+                if (text) setInput(text);
+              } catch {
+                handleFocusInput();
+              }
+            }}
+          >
+            <div className="space-y-4">
+              <div className="border border-border bg-card p-1">
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Paste or type text to inspect..."
+                  aria-label="Input text for Unicode inspection"
+                  className="w-full h-40 bg-transparent text-xs font-mono p-3 focus:outline-none resize-y border-none outline-none focus:ring-0 text-foreground"
+                />
+              </div>
+
+              <ActionBar>
+                <div className="flex gap-2" />
+                <div className="flex gap-2">
+                  <PipeButton value={input} />
+                  <Button variant="outline" size="sm" onClick={handleClear} disabled={!input}>
+                    Clear Input
+                  </Button>
+                </div>
+              </ActionBar>
+            </div>
+          </InputPanel>
         </div>
-      </div>
 
-      {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 gap-6">
-        {/* Input Card */}
-        <TextInputArea
-          label={t.inputLabel}
-          value={input}
-          onChange={setInput}
-          placeholder="Paste or type text to inspect..."
-          rows={4}
-          showStats={false}
-        />
-
-        {/* Results Card */}
-        <Card className="rounded-none border-2">
-          <CardHeader className="py-3 px-4 border-b">
-            <CardTitle className="text-xs font-black uppercase tracking-wider flex items-center gap-1.5 text-foreground">
-              <Eye className="h-4 w-4 text-primary" /> Character Mapping Matrix
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
+        {/* Character Mapping Matrix Panel */}
+        <div className="space-y-6">
+          <OutputPanel title="Character Mapping Matrix">
             {chars.length === 0 ? (
-              <div className="py-12 text-center text-xs font-bold text-muted-foreground uppercase">
+              <div className="py-12 text-center text-xs font-bold text-muted-foreground uppercase border border-dashed border-border">
                 {t.emptyState}
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto border border-border">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="border-b-2 border-border bg-muted/40 font-black uppercase tracking-wider text-[10px] text-muted-foreground">
-                      <th className="p-2 border-r border-border">Idx</th>
-                      <th className="p-2 border-r border-border">{t.charHeader}</th>
-                      <th className="p-2 border-r border-border">{t.codePointHeader}</th>
-                      <th className="p-2 border-r border-border">{t.hexHeader}</th>
+                      <th className="p-2 border-r border-border w-12">Idx</th>
+                      <th className="p-2 border-r border-border w-20 text-center">{t.charHeader}</th>
+                      <th className="p-2 border-r border-border w-24">{t.codePointHeader}</th>
+                      <th className="p-2 border-r border-border w-36">{t.hexHeader}</th>
                       <th className="p-2">{t.nameHeader}</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border/60">
                     {chars.map((item, idx) => (
                       <tr
                         key={idx}
-                        className={`border-b border-border/60 hover:bg-muted/10 ${
+                        className={`hover:bg-muted/10 transition-colors ${
                           item.isHidden ? 'bg-amber-500/5' : ''
                         }`}
                       >
@@ -136,21 +162,25 @@ export default function UnicodeInspector() {
                           )}
                         </td>
                         <td className="p-2 border-r border-border font-mono">{item.codePoint}</td>
-                        <td className="p-2 border-r border-border font-mono flex items-center justify-between gap-2">
+                        <td className="p-2 border-r border-border font-mono flex items-center justify-between gap-1.5">
                           <span>{item.hex}</span>
-                          <button
-                            onClick={() => handleCopyValue(`hex-${idx}`, item.hex)}
-                            className="p-1 hover:border-primary text-muted-foreground hover:text-foreground transition-colors cursor-pointer border border-transparent"
-                            title="Copy code point hex"
-                          >
-                            {copiedField === `hex-${idx}` ? (
-                              <Check className="h-3.5 w-3.5 text-emerald-500" />
-                            ) : (
-                              <Copy className="h-3.5 w-3.5" />
-                            )}
-                          </button>
+                          <div className="flex items-stretch shrink-0 h-6">
+                            <button
+                              onClick={() => handleCopyValue(`hex-${idx}`, item.hex)}
+                              className="px-2 border-l border-border/40 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                              title="Copy code point hex"
+                              type="button"
+                            >
+                              {copiedField === `hex-${idx}` ? (
+                                <Check className="h-3.5 w-3.5 text-emerald-500" />
+                              ) : (
+                                <Copy className="h-3.5 w-3.5" />
+                              )}
+                            </button>
+                            <PipeButton value={item.hex} iconOnly={true} className="h-full border-t-0 border-b-0 border-r-0 border-l border-border/40 bg-transparent text-muted-foreground hover:text-primary hover:bg-muted font-bold text-[9px] uppercase tracking-wider rounded-none px-2" />
+                          </div>
                         </td>
-                        <td className="p-2 font-bold text-foreground">
+                        <td className="p-2 font-bold text-foreground truncate max-w-[200px]" title={item.name}>
                           {item.name}
                         </td>
                       </tr>
@@ -159,9 +189,9 @@ export default function UnicodeInspector() {
                 </table>
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </OutputPanel>
+        </div>
+      </ToolLayout>
 
       <CopyShareToast show={showToast} onClose={() => setShowToast(false)} />
     </div>

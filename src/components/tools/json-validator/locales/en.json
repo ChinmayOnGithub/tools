@@ -1,6 +1,6 @@
 {
-  "title": "JSON Formatter",
-  "description": "Validate, pretty-print, minify, and parse JSON code securely in your web browser. Trace syntax errors instantly with line and column numbers.",
+  "title": "JSON Validator",
+  "description": "Validate, parse, and verify JSON code securely in your web browser. Trace syntax errors instantly with line and column numbers.",
   "inputLabel": "Input JSON",
   "outputLabel": "Output",
   "uploadButton": "Upload File",

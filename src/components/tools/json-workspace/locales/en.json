@@ -1,5 +1,5 @@
 {
-  "title": "JSON Formatter",
+  "title": "JSON Formatter & Validator",
   "description": "Validate, pretty-print, minify, and parse JSON code securely in your web browser. Trace syntax errors instantly with line and column numbers.",
   "inputLabel": "Input JSON",
   "outputLabel": "Output",

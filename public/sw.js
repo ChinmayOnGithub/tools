@@ -1,82 +1,102 @@
 const CACHE_NAME = 'cooltools-cache-v1';
-const ASSETS_TO_CACHE = [
+
+const STATIC_ASSETS = [
   '/',
   '/about',
   '/contact',
   '/privacy',
   '/terms',
-  '/cookies',
-  '/docs',
+  '/manifest.webmanifest',
   '/icon.svg',
-  '/manifest.webmanifest'
 ];
 
-// Install Event - cache core static shell assets
+// Install event: cache initial shell assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return cache.addAll(STATIC_ASSETS);
+    }).then(() => {
+      return self.skipWaiting();
     })
   );
-  self.skipWaiting();
 });
 
-// Activate Event - clear old cache versions
+// Activate event: clean up outdated cache configurations
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
+        cacheNames.map((name) => {
+          if (name !== CACHE_NAME) {
+            return caches.delete(name);
           }
         })
       );
+    }).then(() => {
+      return self.clients.claim();
     })
   );
-  self.clients.claim();
 });
 
-// Fetch Event - network-first caching model for assets
+// Fetch event: serve assets locally or fall back offline
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests and local domains
-  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
+  // Only intercept standard GET requests
+  if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+
+  // Skip tracking scripts or external ads
+  if (
+    url.hostname.includes('google-analytics') || 
+    url.hostname.includes('doubleclick') || 
+    url.hostname.includes('googleadservices')
+  ) {
     return;
   }
 
+  // Network-First for main pages to ensure fresh SEO content, with offline cache fallback
+  if (
+    event.request.mode === 'navigate' ||
+    url.pathname.startsWith('/tools/') ||
+    url.pathname.startsWith('/categories/')
+  ) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) return cachedResponse;
+            // Fallback to offline home page shell if unavailable
+            return caches.match('/');
+          });
+        })
+    );
+    return;
+  }
+
+  // Cache-First for JS, CSS, images, and static assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Fetch fresh asset in background to update cache (stale-while-revalidate)
-        fetch(event.request).then((networkResponse) => {
-          if (networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, networkResponse);
-            });
-          }
-        }).catch(() => {/* Ignore network update errors */});
+      if (cachedResponse) return cachedResponse;
 
-        return cachedResponse;
-      }
-
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
+      return fetch(event.request).then((response) => {
+        // Cache valid responses only
+        if (!response || response.status !== 200 || response.type !== 'basic' && response.type !== 'cors') {
+          return response;
         }
 
-        const responseToCache = networkResponse.clone();
+        const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+          cache.put(event.request, responseClone);
         });
 
-        return networkResponse;
-      }).catch(async () => {
-        // Fallback for document navigation when offline
-        if (event.request.mode === 'navigate') {
-          const cache = await caches.open(CACHE_NAME);
-          return cache.match('/') || Response.error();
-        }
-        return Response.error();
+        return response;
       });
     })
   );

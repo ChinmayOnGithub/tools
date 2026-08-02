@@ -5,6 +5,7 @@
   "outputLabel": "Output",
   "encodeButton": "Encode",
   "decodeButton": "Decode",
+  "uploadButton": "Upload File",
   "copyButton": "Copy All",
   "clearButton": "Clear",
   "copiedFeedback": "Copied!",

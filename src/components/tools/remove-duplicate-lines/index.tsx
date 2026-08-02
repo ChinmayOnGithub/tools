@@ -1,20 +1,30 @@
 'use client';
 
-import { useState, useEffect, useRef, ChangeEvent, DragEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent, useMemo } from 'react';
+import { Upload, Trash, Copy, Download } from 'lucide-react';
 import t from './locales/en.json';
 import { removeDuplicateLines } from './utils';
-import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+
+// Primitives
+import ToolLayout from '@/components/shared/ToolLayout';
+import InputPanel from '@/components/shared/InputPanel';
+import OutputPanel from '@/components/shared/OutputPanel';
+import ActionBar from '@/components/shared/ActionBar';
+import PipeButton from '@/components/shared/PipeButton';
+import CopyShareToast from '@/components/shared/CopyShareToast';
+
+// Hooks
+import { useUrlQueryInput } from '@/hooks/useUrlQueryInput';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { Button } from '@/components/ui/Button';
 import { validateFile } from '@/lib/file-processor';
+import { CheckboxField } from '@/components/ui/CheckboxField';
 import { 
   trackToolLaunch, 
   trackToolCompletion, 
   trackValidationError, 
   trackDownloadAction 
 } from '@/lib/analytics';
-
-import TrustBanner from '@/components/shared/TrustBanner';
 
 const SAMPLE_LIST = `apple
 banana
@@ -33,9 +43,13 @@ export default function RemoveDuplicateLines() {
   const [sort, setSort] = useState<'none' | 'asc' | 'desc'>('none');
   const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { copied, copy } = useCopyToClipboard('remove-duplicate-lines');
+  const { copy } = useCopyToClipboard('remove-duplicate-lines');
+
+  // URL query parameter piping hook
+  useUrlQueryInput(setInput);
 
   // Track initial tool page view launch
   useEffect(() => {
@@ -73,7 +87,6 @@ export default function RemoveDuplicateLines() {
   const processUploadedFile = (file: File) => {
     setFileError(null);
 
-    // Standardized file validation
     const check = validateFile(file, {
       maxSize: 5 * 1024 * 1024, // 5MB limit
     });
@@ -97,29 +110,51 @@ export default function RemoveDuplicateLines() {
     processUploadedFile(file);
   };
 
-  const handleDragOver = (e: DragEvent) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragging(true);
   };
 
-  const handleDragLeave = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDragLeave = () => {
     setIsDragging(false);
   };
 
-  const handleDrop = (e: DragEvent) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragging(false);
-
     const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-    processUploadedFile(file);
+    if (file) {
+      processUploadedFile(file);
+    }
   };
 
-  const output = removeDuplicateLines(input, { caseSensitive, trimWhitespace, sort });
+  const handleFocusInput = () => {
+    const textarea = document.querySelector('textarea[aria-label="Lines input text"]') as HTMLTextAreaElement;
+    if (textarea) textarea.focus();
+  };
+
+  const handlePasteClick = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setInput(text);
+        setFileError(null);
+      }
+    } catch {
+      handleFocusInput();
+    }
+  };
+
+  const output = useMemo(() => {
+    if (!input.trim()) return '';
+    return removeDuplicateLines(input, { caseSensitive, trimWhitespace, sort });
+  }, [input, caseSensitive, trimWhitespace, sort]);
+
+  const handleCopyOutput = () => {
+    if (!output) return;
+    copy(output);
+    setShowToast(true);
+  };
 
   const handleDownload = () => {
     if (!output) return;
@@ -128,7 +163,7 @@ export default function RemoveDuplicateLines() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'cleaned_list.txt';
+    a.download = 'cleaned-lines.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -136,165 +171,153 @@ export default function RemoveDuplicateLines() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 w-full" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border border-border" />;
   }
 
-  // Count lines removed
-  const inputLines = input ? input.split(/\r?\n/).length : 0;
-  const outputLines = output ? output.split(/\r?\n/).length : 0;
-  const removedCount = inputLines - outputLines;
+  const optionToggles = (
+    <div className="flex flex-wrap gap-4 items-center">
+      <CheckboxField
+        id="case-sensitive-chk"
+        label="Case Sensitive"
+        checked={caseSensitive}
+        onChange={setCaseSensitive}
+      />
+      <CheckboxField
+        id="trim-whitespace-chk"
+        label="Trim Whitespace"
+        checked={trimWhitespace}
+        onChange={setTrimWhitespace}
+      />
+      
+      <div className="flex items-center gap-2 border-l border-border pl-4 h-6">
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sort:</span>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as 'none' | 'asc' | 'desc')}
+          className="h-6 border border-border px-1.5 bg-background text-[10px] font-bold uppercase text-foreground focus-visible:outline-none rounded-none cursor-pointer"
+        >
+          <option value="none">None</option>
+          <option value="asc">A-Z</option>
+          <option value="desc">Z-A</option>
+        </select>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6 w-full">
-      {/* Trust pledge indicators banner */}
-      <TrustBanner items={['Browser-Only Cleanups', 'Lists Never Uploaded', 'Free & Secure Forever']} />
-
-      {/* Action controls panel */}
-      <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 border-2 border-border">
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-            Upload List File
-          </Button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileUpload}
-            accept=".txt,.csv,.json,.md"
-            className="hidden"
-            aria-label="Upload list text file"
-          />
-          <Button variant="outline" size="sm" onClick={handleLoadSample}>
-            {t.loadSampleButton}
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleClear} disabled={!input}>
-            {t.clearButton}
-          </Button>
-        </div>
-      </div>
-
-      {/* File error notification */}
+      {/* 1. Validation error states */}
       {fileError && (
-        <div className="p-3 text-xs font-semibold border-2 bg-destructive/10 text-destructive border-destructive/20">
+        <div className="p-3 text-xs font-semibold border bg-destructive/5 text-destructive border-destructive/20 rounded-none animate-in fade-in duration-200">
           {fileError}
         </div>
       )}
 
-      {/* Option settings card */}
-      <Card>
-        <CardHeader className="py-3 px-4 border-b bg-muted/10">
-          <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Configuration Options
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 flex flex-col md:flex-row gap-6 md:items-center">
-          <label className="flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={caseSensitive}
-              onChange={(e) => setCaseSensitive(e.target.checked)}
-              className="h-3.5 w-3.5 rounded border-muted text-primary focus:ring-primary accent-primary"
-            />
-            {t.caseSensitiveLabel}
-          </label>
+      {/* 2. Workspace Layout */}
+      <ToolLayout>
+        {/* Workspace Inputs */}
+        <div className="space-y-6">
+          <InputPanel 
+            title={t.inputLabel} 
+            actions={optionToggles} 
+            onPasteClick={handlePasteClick}
+          >
+            <div className="space-y-4">
+              {/* Text Area Input */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`relative border border-border bg-card p-1 transition-all duration-200 ${
+                  isDragging ? 'border-primary bg-primary/5' : ''
+                }`}
+              >
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={t.placeholder}
+                  aria-label="Lines input text"
+                  className="w-full h-80 bg-transparent text-xs font-mono p-3 focus:outline-none resize-y border-none outline-none focus:ring-0 text-foreground"
+                />
+                
+                {isDragging && (
+                  <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center border-2 border-dashed border-primary pointer-events-none">
+                    <Upload className="h-8 w-8 text-primary animate-bounce mb-2" />
+                    <span className="text-xs font-bold text-foreground">Drop Text File to Load Content</span>
+                  </div>
+                )}
+              </div>
 
-          <label className="flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={trimWhitespace}
-              onChange={(e) => setTrimWhitespace(e.target.checked)}
-              className="h-3.5 w-3.5 rounded border-muted text-primary focus:ring-primary accent-primary"
-            />
-            {t.trimWhitespaceLabel}
-          </label>
+              {/* Action Operations */}
+              <ActionBar>
+                <div className="flex gap-2">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    aria-label="Upload text file"
+                  />
+                  <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                    <Upload className="h-3.5 w-3.5 mr-1" />
+                    Upload File
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleLoadSample}>
+                    {t.loadSampleButton}
+                  </Button>
+                </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {t.sortLabel}
-            </span>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as 'none' | 'asc' | 'desc')}
-              className="bg-background border-2 border-input px-2.5 py-1 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary"
-              aria-label="Output sorting options"
-            >
-              <option value="none">{t.sortNone}</option>
-              <option value="asc">{t.sortAsc}</option>
-              <option value="desc">{t.sortDesc}</option>
-            </select>
-          </div>
-        </CardContent>
-      </Card>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleClear} disabled={!input}>
+                    <Trash className="h-3.5 w-3.5 mr-1" />
+                    {t.clearButton}
+                  </Button>
+                </div>
+              </ActionBar>
+            </div>
+          </InputPanel>
 
-      {/* Cleaned counts summary box */}
-      {input && removedCount > 0 && (
-        <div className="p-3 text-xs font-bold border-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
-          {t.summaryText.replace('{count}', String(removedCount))}
+          {/* Outputs (Only displayed if output text exists) */}
+          {!!output && (
+            <OutputPanel title={t.outputLabel}>
+              <div className="space-y-4">
+                <div className="border border-border bg-card p-1">
+                  <textarea
+                    value={output}
+                    readOnly
+                    placeholder={t.placeholder}
+                    aria-label="Lines output text"
+                    className="w-full h-80 bg-transparent text-xs font-mono p-3 border-none outline-none focus:ring-0 text-foreground resize-y"
+                  />
+                </div>
+
+                <ActionBar>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={handleDownload}>
+                      <Download className="h-3.5 w-3.5 mr-1" />
+                      {t.downloadButton}
+                    </Button>
+                    <PipeButton value={output} />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleCopyOutput}>
+                      <Copy className="h-3.5 w-3.5 mr-1" />
+                      {t.copyButton}
+                    </Button>
+                  </div>
+                </ActionBar>
+              </div>
+            </OutputPanel>
+          )}
         </div>
-      )}
+      </ToolLayout>
 
-      {/* Dual textareas grid workspace */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Input Card */}
-        <Card 
-          className={`flex flex-col h-full relative transition-all duration-200 ${
-            isDragging ? 'border-primary bg-primary/5 ring-1 ring-primary' : ''
-          }`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          <CardHeader className="py-3.5 px-4 border-b">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {t.inputLabel}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 flex-1 relative">
-            {isDragging && (
-              <div className="absolute inset-0 bg-background/95 flex flex-col items-center justify-center z-10 text-center p-4">
-                <p className="text-xs font-bold text-primary">Drop File Here</p>
-                <p className="text-[10px] text-muted-foreground mt-1">Accepts text files under 5MB</p>
-              </div>
-            )}
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={t.placeholder}
-              rows={14}
-              className="w-full h-full min-h-[250px] border-none bg-transparent p-4 text-sm outline-none focus:ring-0 resize-y"
-              aria-label="Input raw list text area"
-            />
-          </CardContent>
-        </Card>
-
-        {/* Output Card */}
-        <Card className="flex flex-col h-full">
-          <CardHeader className="py-3.5 px-4 border-b flex flex-row justify-between items-center space-y-0">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {t.outputLabel}
-            </CardTitle>
-            {output && (
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={handleDownload}>
-                  {t.downloadButton}
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => copy(output)}>
-                  {copied ? t.copiedFeedback : t.copyButton}
-                </Button>
-              </div>
-            )}
-          </CardHeader>
-          <CardContent className="p-0 flex-1">
-            <textarea
-              readOnly
-              value={output}
-              placeholder="Deduplicated and sorted list output will be rendered here..."
-              rows={14}
-              className="w-full h-full min-h-[250px] border-none bg-muted/20 p-4 text-sm outline-none focus:ring-0 resize-y"
-              aria-label="Deduplicated list output area"
-            />
-          </CardContent>
-        </Card>
-      </div>
+      {/* Copy notification toast */}
+      <CopyShareToast 
+        show={showToast} 
+        onClose={() => setShowToast(false)} 
+        message="Copied duplicate-free lines to clipboard." 
+      />
     </div>
   );
 }

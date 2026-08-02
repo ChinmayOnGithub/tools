@@ -1,11 +1,22 @@
 'use client';
 
-import { useState, useEffect, useRef, ChangeEvent, DragEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent, useMemo } from 'react';
+import { FileText, Download, Copy, Trash, Sparkles, Upload } from 'lucide-react';
 import t from './locales/en.json';
 import { calculateTextStats } from './utils';
+
+// Primitives
+import ToolLayout from '@/components/shared/ToolLayout';
+import InputPanel from '@/components/shared/InputPanel';
+import ActionBar from '@/components/shared/ActionBar';
+import PipeButton from '@/components/shared/PipeButton';
+import CopyShareToast from '@/components/shared/CopyShareToast';
+
+// Hooks
+import { useUrlQueryInput } from '@/hooks/useUrlQueryInput';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { validateFile } from '@/lib/file-processor';
 import { 
   trackToolLaunch, 
@@ -13,8 +24,6 @@ import {
   trackValidationError, 
   trackDownloadAction 
 } from '@/lib/analytics';
-import { BarChart3, HelpCircle, FileText, Download, Copy, Trash, Sparkles, AlignLeft } from 'lucide-react';
-import TrustBanner from '@/components/shared/TrustBanner';
 
 const SAMPLE_TEXT = `JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object.
 
@@ -27,9 +36,13 @@ export default function WordCounter() {
   const [input, setInput] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { copied, copy } = useCopyToClipboard('word-counter');
+  const { copy } = useCopyToClipboard('word-counter');
+
+  // URL query parameter piping hook
+  useUrlQueryInput(setInput);
 
   // Track initial page load view launch
   useEffect(() => {
@@ -67,7 +80,6 @@ export default function WordCounter() {
   const processUploadedFile = (file: File) => {
     setFileError(null);
 
-    // Standardized file validation
     const check = validateFile(file, {
       maxSize: 5 * 1024 * 1024, // 5MB limit
     });
@@ -91,26 +103,45 @@ export default function WordCounter() {
     processUploadedFile(file);
   };
 
-  const handleDragOver = (e: DragEvent) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragging(true);
   };
 
-  const handleDragLeave = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDragLeave = () => {
     setIsDragging(false);
   };
 
-  const handleDrop = (e: DragEvent) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragging(false);
-
     const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-    processUploadedFile(file);
+    if (file) {
+      processUploadedFile(file);
+    }
+  };
+
+  const handleFocusInput = () => {
+    const textarea = document.querySelector('textarea[aria-label="Input text for counting analysis"]') as HTMLTextAreaElement;
+    if (textarea) textarea.focus();
+  };
+
+  const handlePasteClick = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setInput(text);
+        setFileError(null);
+      }
+    } catch {
+      handleFocusInput();
+    }
+  };
+
+  const handleCopyInput = () => {
+    if (!input) return;
+    copy(input);
+    setShowToast(true);
   };
 
   const handleDownload = () => {
@@ -120,187 +151,181 @@ export default function WordCounter() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'word_counter_text.txt';
+    a.download = 'word-counter-text.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-  // Quick case transformation functions
-  const transformToUppercase = () => {
-    setInput(input.toUpperCase());
-  };
-
-  const transformToLowercase = () => {
-    setInput(input.toLowerCase());
-  };
-
+  // Casing transformations
+  const transformToUppercase = () => setInput(input.toUpperCase());
+  const transformToLowercase = () => setInput(input.toLowerCase());
   const transformToTitleCase = () => {
-    const transformed = input.replace(/\w\S*/g, (txt) => {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-    setInput(transformed);
+    const str = input.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+    setInput(str);
   };
-
   const transformToSentenceCase = () => {
-    const transformed = input.toLowerCase().replace(/(^\s*|[.!?]\s+)([a-z])/g, (_m, separator, char) => {
-      return separator + char.toUpperCase();
-    });
-    setInput(transformed);
+    const str = input.toLowerCase().replace(/(^\s*|[.!?]\s+)([a-z])/g, (m) => m.toUpperCase());
+    setInput(str);
   };
 
-  // Text Clean-Up Panel operations
+  // Text clean-ups
   const cleanupExtraSpaces = () => {
     const cleaned = input.replace(/\s+/g, ' ').trim();
     setInput(cleaned);
   };
 
   const cleanupStripHTML = () => {
-    const cleaned = input.replace(/<[^>]*>/g, '');
+    const cleaned = input.replace(/<\/?[^>]+(>|$)/g, "");
     setInput(cleaned);
   };
 
   const cleanupAlphanumericOnly = () => {
-    const cleaned = input.replace(/[^a-zA-Z0-9\s]/g, '');
+    const cleaned = input.replace(/[^a-zA-Z0-9\s]/g, "");
     setInput(cleaned);
   };
 
+  // Statistics memoization
+  const stats = useMemo(() => {
+    return calculateTextStats(input);
+  }, [input]);
+
+  const linesCount = input ? input.split('\n').length : 0;
+
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border-2 border-border" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border border-border" />;
   }
 
-  const stats = calculateTextStats(input);
+  const caseModifiers = (
+    <div className="flex flex-wrap gap-1.5 justify-end">
+      <button
+        onClick={transformToUppercase}
+        disabled={!input.trim()}
+        className="px-2 py-0.5 text-[9px] font-extrabold border border-border hover:border-primary hover:text-primary bg-background disabled:opacity-40 disabled:pointer-events-none rounded-none cursor-pointer uppercase tracking-wider"
+      >
+        UPPERCASE
+      </button>
+      <button
+        onClick={transformToLowercase}
+        disabled={!input.trim()}
+        className="px-2 py-0.5 text-[9px] font-extrabold border border-border hover:border-primary hover:text-primary bg-background disabled:opacity-40 disabled:pointer-events-none rounded-none cursor-pointer uppercase tracking-wider"
+      >
+        lowercase
+      </button>
+      <button
+        onClick={transformToTitleCase}
+        disabled={!input.trim()}
+        className="px-2 py-0.5 text-[9px] font-extrabold border border-border hover:border-primary hover:text-primary bg-background disabled:opacity-40 disabled:pointer-events-none rounded-none cursor-pointer uppercase tracking-wider"
+      >
+        Title Case
+      </button>
+      <button
+        onClick={transformToSentenceCase}
+        disabled={!input.trim()}
+        className="px-2 py-0.5 text-[9px] font-extrabold border border-border hover:border-primary hover:text-primary bg-background disabled:opacity-40 disabled:pointer-events-none rounded-none cursor-pointer uppercase tracking-wider"
+      >
+        Sentence Case
+      </button>
+    </div>
+  );
 
   return (
     <div className="space-y-6 w-full">
-      {/* Trust pledge indicators banner */}
-      <TrustBanner />
-
-      {/* Action controls */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-card p-3 border-2 border-border rounded-none">
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-none border-2">
-            Upload Text File
-          </Button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileUpload}
-            accept=".txt,.json,.md,.js,.ts"
-            className="hidden"
-            aria-label="Upload text file for analysis"
-          />
-          <Button variant="outline" size="sm" onClick={handleLoadSample} className="rounded-none border-2">
-            {t.loadSampleButton}
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleClear} disabled={!input} className="rounded-none border-2 text-destructive hover:bg-destructive/5 flex items-center gap-1.5">
-            <Trash className="h-3.5 w-3.5" /> {t.clearButton}
-          </Button>
-        </div>
-
-        {input && (
-          <div className="flex gap-2 justify-end">
-            <Button variant="outline" size="sm" onClick={handleDownload} className="rounded-none border-2 flex items-center gap-1.5">
-              <Download className="h-3.5 w-3.5" /> {t.downloadButton}
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => copy(input)} className="rounded-none border-2 w-24 flex items-center justify-center gap-1.5">
-              <Copy className="h-3.5 w-3.5" /> {copied ? t.copiedFeedback : t.copyButton}
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* File error notification */}
+      {/* 1. File validation error states */}
       {fileError && (
-        <div className="p-3 text-xs font-semibold border-2 bg-destructive/5 text-destructive border-destructive/20 rounded-none">
+        <div className="p-3 text-xs font-semibold border bg-destructive/5 text-destructive border-destructive/20 rounded-none animate-in fade-in duration-200">
           {fileError}
         </div>
       )}
 
-      {/* Grid workspace */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left Column: Text Input area (2/3 width on desktop) */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card 
-            className={`flex flex-col h-full min-h-[380px] relative transition-all duration-200 rounded-none border-2 border-border card-depth-1 ${
-              isDragging ? 'border-primary bg-primary/5 ring-1 ring-primary' : ''
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
+      {/* 2. Workspace Layout */}
+      <ToolLayout>
+        {/* Workspace Inputs/Cleanups */}
+        <div className="space-y-6">
+          <InputPanel 
+            title={t.inputLabel} 
+            actions={caseModifiers} 
+            onPasteClick={handlePasteClick}
           >
-            <CardHeader className="py-3 px-4 border-b border-border bg-muted/10 flex flex-row justify-between items-center space-y-0">
-              <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <FileText className="h-4 w-4" /> {t.inputLabel}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0 flex-1 relative flex flex-col">
-              {isDragging && (
-                <div className="absolute inset-0 bg-background/95 flex flex-col items-center justify-center z-10 text-center p-4">
-                  <p className="text-xs font-bold text-primary">Drop File Here</p>
-                  <p className="text-[10px] text-muted-foreground mt-1">Accepts text files under 5MB</p>
-                </div>
-              )}
-              
-              {/* Quick Case Transformation bar */}
-              <div className="flex flex-wrap gap-1.5 p-2 bg-muted/10 border-b border-border">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground self-center mr-1">Case Modifiers:</span>
-                <button
-                  onClick={transformToUppercase}
-                  disabled={!input.trim()}
-                  className="px-2 py-0.5 text-[9px] font-bold border border-border hover:border-primary hover:text-primary bg-background disabled:opacity-40 disabled:pointer-events-none rounded-none cursor-pointer"
-                >
-                  UPPERCASE
-                </button>
-                <button
-                  onClick={transformToLowercase}
-                  disabled={!input.trim()}
-                  className="px-2 py-0.5 text-[9px] font-bold border border-border hover:border-primary hover:text-primary bg-background disabled:opacity-40 disabled:pointer-events-none rounded-none cursor-pointer"
-                >
-                  lowercase
-                </button>
-                <button
-                  onClick={transformToTitleCase}
-                  disabled={!input.trim()}
-                  className="px-2 py-0.5 text-[9px] font-bold border border-border hover:border-primary hover:text-primary bg-background disabled:opacity-40 disabled:pointer-events-none rounded-none cursor-pointer"
-                >
-                  Title Case
-                </button>
-                <button
-                  onClick={transformToSentenceCase}
-                  disabled={!input.trim()}
-                  className="px-2 py-0.5 text-[9px] font-bold border border-border hover:border-primary hover:text-primary bg-background disabled:opacity-40 disabled:pointer-events-none rounded-none cursor-pointer"
-                >
-                  Sentence Case
-                </button>
+            <div className="space-y-4">
+              {/* Text Area Input */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`relative border border-border bg-card p-1 transition-all duration-200 ${
+                  isDragging ? 'border-primary bg-primary/5' : ''
+                }`}
+              >
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={t.placeholder}
+                  aria-label="Input text for counting analysis"
+                  className="w-full h-96 bg-transparent text-xs font-mono p-3 focus:outline-none resize-y border-none outline-none focus:ring-0 text-foreground"
+                />
+                
+                {isDragging && (
+                  <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center border-2 border-dashed border-primary pointer-events-none">
+                    <FileText className="h-8 w-8 text-primary animate-bounce mb-2" />
+                    <span className="text-xs font-bold text-foreground">Drop File to Load Content</span>
+                  </div>
+                )}
               </div>
 
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={t.placeholder}
-                className="w-full flex-1 min-h-[300px] border-none bg-transparent p-4 text-sm outline-none focus:ring-0 resize-y"
-                aria-label="Input text for counting analysis"
-              />
-            </CardContent>
-          </Card>
+              {/* Action Operations */}
+              <ActionBar>
+                <div className="flex gap-2">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    aria-label="Upload text file"
+                  />
+                  <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                    <Upload className="h-3.5 w-3.5 mr-1" />
+                    Upload File
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleLoadSample}>
+                    {t.loadSampleButton}
+                  </Button>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleDownload} disabled={!input}>
+                    <Download className="h-3.5 w-3.5 mr-1" />
+                    {t.downloadButton}
+                  </Button>
+                  <PipeButton value={input} />
+                  <Button variant="outline" size="sm" onClick={handleClear} disabled={!input}>
+                    <Trash className="h-3.5 w-3.5 mr-1" />
+                    {t.clearButton}
+                  </Button>
+                  <Button onClick={handleCopyInput} disabled={!input}>
+                    <Copy className="h-3.5 w-3.5 mr-1" />
+                    {t.copyButton}
+                  </Button>
+                </div>
+              </ActionBar>
+            </div>
+          </InputPanel>
 
           {/* Premium Text Clean-Up Panel */}
-          <Card className="rounded-none border-2 border-border card-depth-1">
-            <CardHeader className="py-3 px-4 border-b border-border bg-muted/10">
+          <Card className="rounded-none border border-border card-depth-1">
+            <CardHeader className="py-2.5 px-4 border-b border-border bg-muted/10">
               <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Sparkles className="h-4 w-4 text-primary animate-pulse" /> Text Clean-Up Toolbar
+                <Sparkles className="h-4 w-4 text-primary" /> Text Clean-Up Toolbar
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-3.5 flex flex-wrap gap-2.5">
+            <CardContent className="p-3.5 flex flex-wrap gap-2.5 bg-card">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={cleanupExtraSpaces}
                 disabled={!input.trim()}
-                className="rounded-none border-2 text-[10px] h-8 font-bold flex items-center gap-1"
+                className="rounded-none text-[9px] font-extrabold uppercase tracking-wider"
               >
                 Collapse Whitespace
               </Button>
@@ -309,7 +334,7 @@ export default function WordCounter() {
                 size="sm"
                 onClick={cleanupStripHTML}
                 disabled={!input.trim()}
-                className="rounded-none border-2 text-[10px] h-8 font-bold flex items-center gap-1"
+                className="rounded-none text-[9px] font-extrabold uppercase tracking-wider"
               >
                 Strip HTML Tags
               </Button>
@@ -318,7 +343,7 @@ export default function WordCounter() {
                 size="sm"
                 onClick={cleanupAlphanumericOnly}
                 disabled={!input.trim()}
-                className="rounded-none border-2 text-[10px] h-8 font-bold flex items-center gap-1"
+                className="rounded-none text-[9px] font-extrabold uppercase tracking-wider"
               >
                 Remove Special Chars
               </Button>
@@ -326,133 +351,71 @@ export default function WordCounter() {
           </Card>
         </div>
 
-        {/* Right Column: Statistics panels (1/3 width on desktop) */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Main Counters Panel */}
-          <Card className="rounded-none border-2 border-border card-depth-1">
-            <CardHeader className="py-3 px-4 border-b border-border bg-muted/10">
-              <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <BarChart3 className="h-4 w-4" /> {t.statsLabel}
+        {/* Right Column: Statistics panels */}
+        <div className="space-y-6">
+          <Card className="rounded-none border border-border card-depth-2">
+            <CardHeader className="py-2.5 px-4 border-b border-border bg-muted/10">
+              <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+                Text Statistics
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-4 space-y-4">
-              {/* Primary metrics boxes */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-primary/5 p-3 border-2 border-primary/20 flex flex-col items-center justify-center text-center rounded-none">
-                  <span className="text-2xl font-extrabold text-primary font-mono leading-none">{stats.words}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-2">
-                    {t.words}
-                  </span>
-                </div>
-                
-                <div className="bg-muted/10 p-3 border-2 border-border flex flex-col items-center justify-center text-center rounded-none">
-                  <span className="text-2xl font-extrabold text-foreground font-mono leading-none">{stats.characters}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-2">
-                    {t.characters}
-                  </span>
-                </div>
-
-                <div className="bg-muted/10 p-3 border-2 border-border flex flex-col items-center justify-center text-center rounded-none">
-                  <span className="text-xl font-extrabold text-foreground font-mono leading-none">{stats.sentences}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-2">
-                    {t.sentences}
-                  </span>
-                </div>
-
-                <div className="bg-muted/10 p-3 border-2 border-border flex flex-col items-center justify-center text-center rounded-none">
-                  <span className="text-xl font-extrabold text-foreground font-mono leading-none">{stats.paragraphs}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-2">
-                    {t.paragraphs}
-                  </span>
-                </div>
+            <CardContent className="p-0 bg-card divide-y divide-border/40 font-mono text-xs select-text">
+              <div className="flex justify-between items-center py-2.5 px-4">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Characters</span>
+                <span className="font-bold text-foreground">{stats.characters}</span>
               </div>
-
-              {/* Secondary details */}
-              <div className="border-t-2 border-border/40 pt-3 space-y-2.5 text-xs font-semibold">
-                <div className="flex justify-between border-b border-border/40 pb-1.5">
-                  <span className="text-muted-foreground">{t.charactersNoSpaces}</span>
-                  <span className="font-mono font-bold text-foreground">{stats.charactersNoSpaces}</span>
-                </div>
-                
-                <div className="flex justify-between border-b border-border/40 pb-1.5">
-                  <span className="text-muted-foreground">{t.readingTime}</span>
-                  <span className="text-foreground">{stats.readingTime}</span>
-                </div>
-
-                <div className="flex justify-between border-b border-border/40 pb-1.5">
-                  <span className="text-muted-foreground">{t.speakingTime}</span>
-                  <span className="text-foreground">{stats.speakingTime}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground flex items-center gap-1">
-                    Readability Grade <span title="Calculated using the Automated Readability Index (ARI)" className="cursor-help"><HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60" /></span>
-                  </span>
-                  <span className="text-primary font-bold">{stats.readabilityGrade}</span>
-                </div>
+              <div className="flex justify-between items-center py-2.5 px-4">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Words</span>
+                <span className="font-bold text-foreground">{stats.words}</span>
+              </div>
+              <div className="flex justify-between items-center py-2.5 px-4">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Lines</span>
+                <span className="font-bold text-foreground">{linesCount}</span>
+              </div>
+              <div className="flex justify-between items-center py-2.5 px-4">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Paragraphs</span>
+                <span className="font-bold text-foreground">{stats.paragraphs}</span>
+              </div>
+              <div className="flex justify-between items-center py-2.5 px-4">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Reading Time</span>
+                <span className="font-bold text-primary">{stats.readingTime}</span>
+              </div>
+              <div className="flex justify-between items-center py-2.5 px-4">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Speaking Time</span>
+                <span className="font-bold text-primary">{stats.speakingTime}</span>
               </div>
             </CardContent>
           </Card>
 
-          {/* Premium Detailed Character Breakdown */}
-          <Card className="rounded-none border-2 border-border card-depth-1">
-            <CardHeader className="py-3 px-4 border-b border-border bg-muted/10">
-              <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <AlignLeft className="h-4 w-4" /> Character Breakdown
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 space-y-2.5 text-xs font-bold font-mono">
-              <div className="flex justify-between border-b border-border/40 pb-1">
-                <span className="text-muted-foreground font-semibold">Total Letters:</span>
-                <span className="text-foreground">{stats.charBreakdown.letters} <span className="text-[10px] font-normal text-muted-foreground/60">({stats.charBreakdown.vowels}v / {stats.charBreakdown.consonants}c)</span></span>
-              </div>
-              <div className="flex justify-between border-b border-border/40 pb-1">
-                <span className="text-muted-foreground font-semibold">Numbers:</span>
-                <span className="text-foreground">{stats.charBreakdown.numbers}</span>
-              </div>
-              <div className="flex justify-between border-b border-border/40 pb-1">
-                <span className="text-muted-foreground font-semibold">Whitespaces:</span>
-                <span className="text-foreground">{stats.charBreakdown.whitespaces}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground font-semibold">Symbols/Other:</span>
-                <span className="text-foreground">{stats.charBreakdown.symbols}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Keyword Density Panel */}
-          {stats.keywords.length > 0 && (
-            <Card className="rounded-none border-2 border-border card-depth-1 animate-in fade-in duration-200">
-              <CardHeader className="py-3 px-4 border-b border-border bg-muted/10">
+          {/* Density analysis card */}
+          {stats.keywords && stats.keywords.length > 0 && (
+            <Card className="rounded-none border border-border card-depth-2">
+              <CardHeader className="py-2.5 px-4 border-b border-border bg-muted/10">
                 <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground">
-                  Keyword Density (Top 5)
+                  Keyword Density
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 space-y-3.5">
-                {stats.keywords.map((kw, i) => (
-                  <div key={i} className="space-y-1.5 text-xs">
-                    <div className="flex justify-between font-bold">
-                      <span className="text-foreground">{kw.word}</span>
-                      <span className="text-muted-foreground font-mono text-[11px]">
-                        {kw.count}x ({kw.percentage}%)
-                      </span>
-                    </div>
-                    {/* Brutalist progress bar track */}
-                    <div className="h-2 w-full border-2 border-border bg-muted/10 rounded-none overflow-hidden">
-                      <div 
-                        className="h-full bg-primary transition-all duration-300"
-                        style={{ width: `${Math.min(100, kw.percentage * 2.5)}%` }} // Scaled relative size for short densities
-                      />
-                    </div>
+              <CardContent className="p-0 bg-card divide-y divide-border/40 font-mono text-xs select-text">
+                {stats.keywords.slice(0, 8).map((item: { word: string; count: number; percentage: number }, idx: number) => (
+                  <div key={idx} className="flex justify-between items-center py-2 px-4">
+                    <span className="font-bold text-foreground truncate max-w-[120px]">{item.word}</span>
+                    <span className="text-muted-foreground font-semibold">
+                      {item.count} ({item.percentage}%)
+                    </span>
                   </div>
                 ))}
               </CardContent>
             </Card>
           )}
         </div>
+      </ToolLayout>
 
-      </div>
+      {/* Copy notification toast */}
+      <CopyShareToast 
+        show={showToast} 
+        onClose={() => setShowToast(false)} 
+        message="Copied analyzed text to clipboard." 
+      />
     </div>
   );
 }

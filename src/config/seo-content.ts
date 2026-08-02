@@ -40,6 +40,19 @@ export const SEO_CONTENT_MAP: Record<string, SeoToolContent> = {
       { q: 'Can I upload files to format?', a: 'Yes. You can upload files under 5MB, which are processed entirely client-side using browser FileReader APIs.' }
     ]
   },
+  'json-validator': {
+    heading: 'Secure JSON Validator & Syntax Checker',
+    explanation: 'Validate your JSON string syntax online in real-time. Highlights exact syntax errors with line/column details, trailing commas, unmatched brackets, and invalid character escapes.',
+    whenToUse: 'Use this validator when your JSON parsing fails in a codebase and you need to quickly locate syntax errors or confirm compliance with RFC 8259 specifications.',
+    howItWorks: 'The validator parses inputs using client-side JavaScript compilers, catching parse exceptions to extract exact error line numbers and column offsets.',
+    privacyExplanation: 'No JSON payload is ever transmitted over the network. All syntax checking is done locally within your browser tab.',
+    exampleInput: '{\n  "name": "Jane",\n  "age": 30,\n}',
+    exampleOutput: 'Syntax Error: Unexpected token } in JSON at position 28 (line 4, column 1) - Trailing comma detected.',
+    faqs: [
+      { q: 'Why is my JSON invalid?', a: 'Common syntax issues include missing quotes around keys, trailing commas in objects or arrays, using single quotes instead of double quotes, or unmatched brackets/curly braces.' },
+      { q: 'Is there a size limit for validation?', a: 'No strict limit for simple validation, but files up to 5MB are fully supported and run instantly in your browser.' }
+    ]
+  },
   'word-counter': {
     heading: 'Live Text Statistics & Word Counter',
     explanation: 'Analyze text statistics in real-time. Counts words, characters, characters without spaces, paragraphs, sentences, estimated reading times, and speaking times.',

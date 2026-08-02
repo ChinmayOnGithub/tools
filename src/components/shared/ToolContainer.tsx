@@ -16,7 +16,7 @@ const toolLoader = () => <ToolSkeleton />;
 
 // Client-side dynamic loader registry.
 // Register all newly developed tools here to compile them in the client bundle.
-const TOOLS_COMPONENTS: Record<string, ComponentType> = {
+const TOOLS_COMPONENTS: Record<string, ComponentType<{ slug?: string }>> = {
   'uuid-generator': dynamic(() => import('@/components/tools/uuid-generator'), {
     loading: toolLoader,
     ssr: false,
@@ -26,6 +26,10 @@ const TOOLS_COMPONENTS: Record<string, ComponentType> = {
     ssr: false,
   }),
   'json-formatter': dynamic(() => import('@/components/tools/json-formatter'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
+  'json-validator': dynamic(() => import('@/components/tools/json-validator'), {
     loading: toolLoader,
     ssr: false,
   }),
@@ -157,7 +161,7 @@ export function ToolContainer({ slug }: ToolContainerProps) {
     }
   }, [slug]);
 
-  return <ToolComponent />;
+  return <ToolComponent key={slug} slug={slug} />;
 }
 
 export default ToolContainer;

@@ -11,6 +11,8 @@ import ToolContainer from '@/components/shared/ToolContainer';
 import ToolCard from '@/components/shared/ToolCard';
 import FaqSection from '@/components/shared/FaqSection';
 import PrivacyCard from '@/components/shared/PrivacyCard';
+import ToolLayout from '@/components/shared/ToolLayout';
+import ToolHeader from '@/components/shared/ToolHeader';
 
 export async function generateStaticParams() {
   return TOOLS_REGISTRY.map((tool) => ({
@@ -227,7 +229,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto w-full">
+    <div className="max-w-7xl mx-auto w-full space-y-6">
       {/* Schema.org Structured Data */}
       <script
         type="application/ld+json"
@@ -244,191 +246,171 @@ export default async function ToolWrapperPage({ params }: PageProps) {
         />
       )}
 
-      {/* Main Grid: 2 Cols Left Workspace, 1 Col Right Sticky Sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        
-        {/* Main Left Workspace Column */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Breadcrumb Navigation */}
-          <nav className="text-xs text-muted-foreground flex gap-2 items-center mb-1" aria-label="Breadcrumb">
-            <Link href="/" className="hover:underline">Home</Link>
-            <span>/</span>
-            <Link href={`/categories/${tool.category}`} className={`hover:underline capitalize font-bold ${colors.text}`}>{category?.title || tool.category}</Link>
-            <span>/</span>
-            <span className="font-semibold text-foreground">{tool.name}</span>
-          </nav>
+      {/* Breadcrumb Navigation */}
+      <nav className="text-xs text-muted-foreground flex gap-2 items-center mb-1" aria-label="Breadcrumb">
+        <Link href="/" className="hover:underline">Home</Link>
+        <span>/</span>
+        <Link href={`/categories/${tool.category}`} className={`hover:underline capitalize font-bold ${colors.text}`}>{category?.title || tool.category}</Link>
+        <span>/</span>
+        <span className="font-semibold text-foreground">{tool.name}</span>
+      </nav>
 
-          {/* Hero Title Header */}
-          <section className="relative bg-card border-2 border-border p-6 card-depth-1 overflow-hidden">
-            {/* Top accent bar matching category */}
-            <div className={`absolute top-0 left-0 right-0 h-1 ${colors.bar}`} />
-            
-            <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-              {tool.name}
-            </h1>
-            <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed max-w-2xl">
-              {tool.description}
-            </p>
-          </section>
+      {/* Standardized Hero Title Header */}
+      <ToolHeader 
+        title={tool.name} 
+        description={tool.description} 
+        categoryColorBar={colors.bar}
+        categoryBadgeClass={colors.badge}
+        githubUrl={tool.id === 'json-formatter' || tool.id === 'json-validator' ? 'https://github.com/ChinmayOnGithub/tools/tree/main/src/components/tools/json-workspace' : undefined}
+      />
 
-          {/* Local trust indicators */}
-          <div className="flex flex-wrap gap-2 select-none">
-            {['Local Processing', 'Privacy Safe', 'No Uploads', '100% Free', 'Instant'].map((text) => (
-              <span 
-                key={text} 
-                className={`inline-flex items-center px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest border ${colors.badge}`}
-              >
-                {text}
-              </span>
-            ))}
-          </div>
+      {/* Standardized Layout Wrapper */}
+      <ToolLayout
+        sidebar={
+          <>
+            {/* Sidebar Privacy Inspector Widget */}
+            <PrivacyCard toolId={tool.id} />
 
-          <AdContainer slot="top" />
-
-          {/* Dynamic Client Tool component */}
-          <main className="min-h-[300px]">
-            <ErrorBoundary>
-              <ToolContainer slug={slug} />
-            </ErrorBoundary>
-          </main>
-
-          {/* In-Result High Viewability Ad Container */}
-          <AdContainer slot="middle" />
-
-          {/* Dynamic SEO Resource Content Block */}
-          {seoContent && (
-            <article className="border-t pt-8 mt-6 space-y-8">
-              
-              {/* Explanation, How it Works, Privacy Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs leading-relaxed">
-                <div className="space-y-2">
-                  <h2 className="text-sm font-bold text-foreground">What is this tool?</h2>
-                  <p className="text-muted-foreground">{seoContent.explanation}</p>
-                </div>
-                <div className="space-y-2">
-                  <h2 className="text-sm font-bold text-foreground">When to use it?</h2>
-                  <p className="text-muted-foreground">{seoContent.whenToUse}</p>
-                </div>
-                <div className="space-y-2">
-                  <h2 className="text-sm font-bold text-foreground">How does it work?</h2>
-                  <p className="text-muted-foreground">{seoContent.howItWorks}</p>
-                </div>
-              </div>
-
-              {/* Technical Specifications & Standards */}
-              {seoContent.technicalOverview && (
-                <div className="bg-card border-2 border-border p-4 space-y-2 text-xs">
-                  <h2 className="text-sm font-bold text-foreground">Technical Specifications & Standards</h2>
-                  <p className="text-muted-foreground leading-relaxed">{seoContent.technicalOverview}</p>
-                </div>
-              )}
-
-              {/* Step-by-Step Operating Guide & Common Professional Use Cases */}
-              {((seoContent.stepByStepGuide && seoContent.stepByStepGuide.length > 0) || (seoContent.useCases && seoContent.useCases.length > 0)) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                  {seoContent.stepByStepGuide && seoContent.stepByStepGuide.length > 0 && (
-                    <div className="space-y-2 border-2 border-border p-4 bg-muted/20">
-                      <h2 className="text-sm font-bold text-foreground">Step-by-Step Operating Guide</h2>
-                      <ol className="list-decimal list-inside space-y-1.5 text-muted-foreground font-medium">
-                        {seoContent.stepByStepGuide.map((step, idx) => (
-                          <li key={idx}>{step}</li>
-                        ))}
-                      </ol>
-                    </div>
-                  )}
-                  {seoContent.useCases && seoContent.useCases.length > 0 && (
-                    <div className="space-y-2 border-2 border-border p-4 bg-muted/20">
-                      <h2 className="text-sm font-bold text-foreground">Common Professional Use Cases</h2>
-                      <ul className="list-disc list-inside space-y-1.5 text-muted-foreground font-medium">
-                        {seoContent.useCases.map((useCase, idx) => (
-                          <li key={idx}>{useCase}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Example Input / Output mockup */}
-              <div className="bg-muted/30 border-2 border-border p-4 space-y-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Example Conversions</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div className="space-y-1">
-                    <span className="text-muted-foreground">Sample Input:</span>
-                    <pre className="p-2.5 bg-background border-2 border-border font-mono text-[11px] overflow-auto max-h-32 whitespace-pre-wrap">{seoContent.exampleInput}</pre>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-muted-foreground">Sample Output:</span>
-                    <pre className="p-2.5 bg-background border-2 border-border font-mono text-[11px] overflow-auto max-h-32 whitespace-pre-wrap">{seoContent.exampleOutput}</pre>
-                  </div>
-                </div>
-              </div>
-
-              {/* Troubleshooting & Error Handling */}
-              {seoContent.troubleshooting && seoContent.troubleshooting.length > 0 && (
-                <div className="space-y-2 border-2 border-border p-4 bg-card">
-                  <h2 className="text-sm font-bold text-foreground">Troubleshooting & Edge-Case Guidance</h2>
-                  <ul className="list-disc list-inside space-y-1 text-xs text-muted-foreground">
-                    {seoContent.troubleshooting.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* FAQs section */}
-              {seoContent.faqs.length > 0 && (
-                <FaqSection faqs={seoContent.faqs} />
-              )}
-            </article>
-          )}
-
-          {/* Related Utilities Showcase */}
-          {relatedPublished.length > 0 && (
-            <section className="border-t-2 border-border pt-6 mt-4">
-              <h2 className="text-lg font-bold tracking-tight text-foreground mb-4">
-                Related Tools
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {relatedPublished.map((relTool) => (
-                  <ToolCard key={relTool.id} tool={relTool} trackingLabel={`${tool.id} -> ${relTool.id}`} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          <AdContainer slot="bottom" />
-        </div>
-
-        {/* Right Desktop Sticky Sidebar Column */}
-        <aside className="hidden lg:block lg:col-span-1 sticky top-24 space-y-6">
-          {/* Sidebar Privacy Inspector Widget */}
-          <PrivacyCard toolId={tool.id} />
-
-          {/* Sidebar High eCPM Ad Container (300x600) */}
-          <div className="bg-card border-2 border-border p-2 card-depth-1 overflow-hidden">
-            <AdContainer slot="sidebar" />
-          </div>
-
-          {/* Security & Privacy Guarantee Widget */}
-          <div className="bg-card border-2 border-border p-5 space-y-3 card-depth-1">
-            <div className="flex items-center gap-2 font-extrabold text-xs text-foreground uppercase tracking-wider">
-              <span className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span>Zero Server Uploads</span>
+            {/* Sidebar High eCPM Ad Container (300x600) */}
+            <div className="bg-card border-2 border-border p-2 card-depth-1 overflow-hidden">
+              <AdContainer slot="sidebar" />
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              All computations on CoolTools execute 100% inside your local browser memory tab. Your confidential files, tokens, and documents never touch remote servers.
-            </p>
-            <Link
-              href="/docs/security-network-audit"
-              className="text-xs font-bold text-primary hover:underline block pt-1"
-            >
-              Learn how to audit with DevTools →
-            </Link>
-          </div>
-        </aside>
 
-      </div>
+            {/* Security & Privacy Guarantee Widget */}
+            <div className="bg-card border-2 border-border p-5 space-y-3 card-depth-1">
+              <div className="flex items-center gap-2 font-extrabold text-xs text-foreground uppercase tracking-wider">
+                <span className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
+                <span>Zero Server Uploads</span>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                All computations on CoolTools execute 100% inside your local browser memory tab. Your confidential files, tokens, and documents never touch remote servers.
+              </p>
+              <Link
+                href="/docs/security-network-audit"
+                className="text-xs font-bold text-primary hover:underline block pt-1"
+              >
+                Learn how to audit with DevTools →
+              </Link>
+            </div>
+          </>
+        }
+      >
+        <AdContainer slot="top" />
+
+        {/* Dynamic Client Tool component */}
+        <main className="min-h-[300px]">
+          <ErrorBoundary>
+            <ToolContainer slug={slug} />
+          </ErrorBoundary>
+        </main>
+
+        {/* In-Result High Viewability Ad Container */}
+        <AdContainer slot="middle" />
+
+        {/* Dynamic SEO Resource Content Block */}
+        {seoContent && (
+          <article className="border-t pt-8 mt-6 space-y-8">
+            
+            {/* Explanation, How it Works, Privacy Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs leading-relaxed">
+              <div className="space-y-2">
+                <h2 className="text-sm font-bold text-foreground">What is this tool?</h2>
+                <p className="text-muted-foreground">{seoContent.explanation}</p>
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-sm font-bold text-foreground">When to use it?</h2>
+                <p className="text-muted-foreground">{seoContent.whenToUse}</p>
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-sm font-bold text-foreground">How does it work?</h2>
+                <p className="text-muted-foreground">{seoContent.howItWorks}</p>
+              </div>
+            </div>
+
+            {/* Technical Specifications & Standards */}
+            {seoContent.technicalOverview && (
+              <div className="bg-card border-2 border-border p-4 space-y-2 text-xs">
+                <h2 className="text-sm font-bold text-foreground">Technical Specifications & Standards</h2>
+                <p className="text-muted-foreground leading-relaxed">{seoContent.technicalOverview}</p>
+              </div>
+            )}
+
+            {/* Step-by-Step Operating Guide & Common Professional Use Cases */}
+            {((seoContent.stepByStepGuide && seoContent.stepByStepGuide.length > 0) || (seoContent.useCases && seoContent.useCases.length > 0)) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                {seoContent.stepByStepGuide && seoContent.stepByStepGuide.length > 0 && (
+                  <div className="space-y-2 border-2 border-border p-4 bg-muted/20">
+                    <h2 className="text-sm font-bold text-foreground">Step-by-Step Operating Guide</h2>
+                    <ol className="list-decimal list-inside space-y-1.5 text-muted-foreground font-medium">
+                      {seoContent.stepByStepGuide.map((step, idx) => (
+                        <li key={idx}>{step}</li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+                {seoContent.useCases && seoContent.useCases.length > 0 && (
+                  <div className="space-y-2 border-2 border-border p-4 bg-muted/20">
+                    <h2 className="text-sm font-bold text-foreground">Common Professional Use Cases</h2>
+                    <ul className="list-disc list-inside space-y-1.5 text-muted-foreground font-medium">
+                      {seoContent.useCases.map((useCase, idx) => (
+                        <li key={idx}>{useCase}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Example Input / Output mockup */}
+            <div className="bg-muted/30 border-2 border-border p-4 space-y-3">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Example Conversions</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div className="space-y-1">
+                  <span className="text-muted-foreground">Sample Input:</span>
+                  <pre className="p-2.5 bg-background border-2 border-border font-mono text-[11px] overflow-auto max-h-32 whitespace-pre-wrap">{seoContent.exampleInput}</pre>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-muted-foreground">Sample Output:</span>
+                  <pre className="p-2.5 bg-background border-2 border-border font-mono text-[11px] overflow-auto max-h-32 whitespace-pre-wrap">{seoContent.exampleOutput}</pre>
+                </div>
+              </div>
+            </div>
+
+            {/* Troubleshooting & Error Handling */}
+            {seoContent.troubleshooting && seoContent.troubleshooting.length > 0 && (
+              <div className="space-y-2 border-2 border-border p-4 bg-card">
+                <h2 className="text-sm font-bold text-foreground">Troubleshooting & Edge-Case Guidance</h2>
+                <ul className="list-disc list-inside space-y-1 text-xs text-muted-foreground">
+                  {seoContent.troubleshooting.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* FAQs section */}
+            {seoContent.faqs.length > 0 && (
+              <FaqSection faqs={seoContent.faqs} />
+            )}
+          </article>
+        )}
+
+        {/* Related Utilities Showcase */}
+        {relatedPublished.length > 0 && (
+          <section className="border-t-2 border-border pt-6 mt-4">
+            <h2 className="text-lg font-bold tracking-tight text-foreground mb-4">
+              Related Tools
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {relatedPublished.map((relTool) => (
+                <ToolCard key={relTool.id} tool={relTool} trackingLabel={`${tool.id} -> ${relTool.id}`} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <AdContainer slot="bottom" />
+      </ToolLayout>
     </div>
   );
 }

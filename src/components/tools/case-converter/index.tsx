@@ -1,17 +1,27 @@
 'use client';
 
 import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { Upload, Trash, Copy, Download } from 'lucide-react';
 import t from './locales/en.json';
 import { convertCase } from './utils';
+
+// Primitives
+import ToolLayout from '@/components/shared/ToolLayout';
+import InputPanel from '@/components/shared/InputPanel';
+import OutputPanel from '@/components/shared/OutputPanel';
+import ActionBar from '@/components/shared/ActionBar';
+import PipeButton from '@/components/shared/PipeButton';
+import CopyShareToast from '@/components/shared/CopyShareToast';
+
+// Hooks
+import { useUrlQueryInput } from '@/hooks/useUrlQueryInput';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { validateFile } from '@/lib/file-processor';
-import { TextInputArea } from '@/components/ui/TextInputArea';
 import { 
   trackToolLaunch, 
   trackToolCompletion
 } from '@/lib/analytics';
-import TrustBanner from '@/components/shared/TrustBanner';
 
 const STYLES = [
   { id: 'upper', label: 'UPPERCASE' },
@@ -32,8 +42,14 @@ export default function CaseConverter() {
   const [input, setInput] = useState('');
   const [style, setStyle] = useState('upper');
   const [fileError, setFileError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { copy } = useCopyToClipboard('case-converter');
+
+  // URL query parameter piping hook
+  useUrlQueryInput(setInput);
 
   // Track initial tool page view launch
   useEffect(() => {
@@ -93,7 +109,48 @@ export default function CaseConverter() {
     processUploadedFile(file);
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processUploadedFile(file);
+    }
+  };
+
+  const handleFocusInput = () => {
+    const textarea = document.querySelector('textarea[aria-label="Casing input text"]') as HTMLTextAreaElement;
+    if (textarea) textarea.focus();
+  };
+
+  const handlePasteClick = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setInput(text);
+        setFileError(null);
+      }
+    } catch {
+      handleFocusInput();
+    }
+  };
+
   const output = convertCase(input, style);
+
+  const handleCopyOutput = () => {
+    if (!output) return;
+    copy(output);
+    setShowToast(true);
+  };
 
   const handleDownload = () => {
     if (!output) return;
@@ -101,7 +158,7 @@ export default function CaseConverter() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `cased_${style}_text.txt`;
+    a.download = 'converted-text.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -109,99 +166,141 @@ export default function CaseConverter() {
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border-2 border-border" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border border-border" />;
   }
+
+  const caseToggles = (
+    <div className="flex flex-wrap gap-1.5 max-w-lg justify-end">
+      {STYLES.map((opt) => (
+        <button
+          key={opt.id}
+          onClick={() => setStyle(opt.id)}
+          className={`px-2 py-0.5 border text-[9px] font-extrabold uppercase tracking-wider cursor-pointer rounded-none transition-colors ${
+            style === opt.id
+              ? 'border-primary bg-primary/10 text-primary'
+              : 'border-border bg-background hover:border-primary/50 text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <div className="space-y-6 w-full">
-      {/* Trust pledge indicators banner */}
-      <TrustBanner items={['100% Client-Side Casing', 'Text Never Sent to Servers', 'Free & Secure Forever']} />
-
-      {/* Action controls panel */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-card p-3 border-2 border-border rounded-none">
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-none border-2">
-            Upload Text File
-          </Button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileUpload}
-            accept=".txt,.json,.md,.js,.ts"
-            className="hidden"
-            aria-label="Upload text file for casing conversion"
-          />
-          <Button variant="outline" size="sm" onClick={handleLoadSample} className="rounded-none border-2">
-            {t.loadSampleButton}
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleClear} disabled={!input} className="rounded-none border-2">
-            {t.clearButton}
-          </Button>
-        </div>
-
-        {output && (
-          <div className="flex gap-2 justify-end">
-            <Button variant="outline" size="sm" onClick={handleDownload} className="rounded-none border-2">
-              Download Output
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* File error notification */}
+      {/* 1. File Error Message */}
       {fileError && (
-        <div className="p-3 text-xs font-semibold border-2 bg-destructive/5 text-destructive border-destructive/20 rounded-none">
+        <div className="p-3 text-xs font-semibold border bg-destructive/5 text-destructive border-destructive/20 rounded-none animate-in fade-in duration-200">
           {fileError}
         </div>
       )}
 
-      {/* Casing styles grid selector card */}
-      <Card className="rounded-none border-2 border-border card-depth-2">
-        <CardHeader className="py-2.5 px-4 border-b border-border bg-muted/10">
-          <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground">
-            Select Casing Style
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
-            {STYLES.map((st) => (
-              <Button
-                key={st.id}
-                variant={style === st.id ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStyle(st.id)}
-                className="w-full text-[10px] h-8 font-extrabold rounded-none border-2"
+      {/* 2. Workspace Layout */}
+      <ToolLayout>
+        {/* Workspace Inputs/Outputs */}
+        <div className="space-y-6">
+          <InputPanel 
+            title={t.inputLabel} 
+            actions={caseToggles} 
+            onPasteClick={handlePasteClick}
+          >
+            <div className="space-y-4">
+              {/* Text Area Input */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`relative border border-border bg-card p-1 transition-all duration-200 ${
+                  isDragging ? 'border-primary bg-primary/5' : ''
+                }`}
               >
-                {st.label}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={t.placeholder}
+                  aria-label="Casing input text"
+                  className="w-full h-80 bg-transparent text-xs font-mono p-3 focus:outline-none resize-y border-none outline-none focus:ring-0 text-foreground"
+                />
+                
+                {isDragging && (
+                  <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center border-2 border-dashed border-primary pointer-events-none">
+                    <Upload className="h-8 w-8 text-primary animate-bounce mb-2" />
+                    <span className="text-xs font-bold text-foreground">Drop Text File to Load Content</span>
+                  </div>
+                )}
+              </div>
 
-      {/* Dual workspaces textareas grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Input Card */}
-        <TextInputArea 
-          value={input}
-          onChange={setInput}
-          placeholder={t.placeholder}
-          label={t.inputLabel}
-          onFileDrop={processUploadedFile}
-          rows={12}
-          showStats={true}
-        />
+              {/* Action Operations */}
+              <ActionBar>
+                <div className="flex gap-2">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    aria-label="Upload text file"
+                  />
+                  <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                    <Upload className="h-3.5 w-3.5 mr-1" />
+                    Upload File
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleLoadSample}>
+                    {t.loadSampleButton}
+                  </Button>
+                </div>
 
-        {/* Output Card */}
-        <TextInputArea 
-          value={output}
-          readOnly={true}
-          placeholder="Converted casing text output will be rendered here..."
-          label={t.outputLabel}
-          rows={12}
-          showStats={true}
-        />
-      </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleClear} disabled={!input}>
+                    <Trash className="h-3.5 w-3.5 mr-1" />
+                    {t.clearButton}
+                  </Button>
+                </div>
+              </ActionBar>
+            </div>
+          </InputPanel>
+
+          {/* Outputs (Only displayed if output text exists) */}
+          {!!output && (
+            <OutputPanel title={t.outputLabel}>
+              <div className="space-y-4">
+                <div className="border border-border bg-card p-1">
+                  <textarea
+                    value={output}
+                    readOnly
+                    placeholder={t.placeholder}
+                    aria-label="Casing output text"
+                    className="w-full h-80 bg-transparent text-xs font-mono p-3 border-none outline-none focus:ring-0 text-foreground resize-y"
+                  />
+                </div>
+
+                <ActionBar>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={handleDownload}>
+                      <Download className="h-3.5 w-3.5 mr-1" />
+                      {t.downloadButton}
+                    </Button>
+                    <PipeButton value={output} />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleCopyOutput}>
+                      <Copy className="h-3.5 w-3.5 mr-1" />
+                      {t.copyButton}
+                    </Button>
+                  </div>
+                </ActionBar>
+              </div>
+            </OutputPanel>
+          )}
+        </div>
+      </ToolLayout>
+
+      {/* Copy notification toast */}
+      <CopyShareToast 
+        show={showToast} 
+        onClose={() => setShowToast(false)} 
+        message="Copied converted text casing output to clipboard." 
+      />
     </div>
   );
 }

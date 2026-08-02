@@ -8,6 +8,7 @@
   "copyButton": "Copy",
   "downloadButton": "Download Hash",
   "clearButton": "Clear",
+  "uploadButton": "Upload File",
   "loadSampleButton": "Load Sample",
   "algorithmLabel": "Cryptographic Hash Algorithm",
   "validationError": "Hash calculation failed: {message}",

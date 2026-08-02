@@ -3,6 +3,13 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import t from './locales/en.json';
 import { generateUUIDs, inspectUUID } from './utils';
+
+// Primitives
+import ToolLayout from '@/components/shared/ToolLayout';
+import ActionBar from '@/components/shared/ActionBar';
+import PipeButton from '@/components/shared/PipeButton';
+
+// Hooks
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
@@ -94,7 +101,6 @@ export default function UUIDGenerator() {
   // Inspect the currently selected UUID
   const inspection = useMemo(() => {
     if (!selectedUuid) return null;
-    // Strip prefix/suffix for pure UUID inspection if added
     let pureUuid = selectedUuid;
     if (prefix && pureUuid.startsWith(prefix)) {
       pureUuid = pureUuid.slice(prefix.length);
@@ -106,20 +112,18 @@ export default function UUIDGenerator() {
   }, [selectedUuid, prefix, suffix]);
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-96 rounded-none w-full border-2 border-border" />;
+    return <div className="animate-pulse bg-muted h-96 rounded-none w-full border border-border" />;
   }
 
   return (
     <div className="space-y-6 w-full">
-      {/* Configuration & Output Grid layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        
-        {/* Left Column: Generator configurations */}
-        <div className="lg:col-span-1 space-y-6">
-          <Card className="rounded-none border-2 border-border card-depth-2">
-            <CardHeader className="py-3.5 px-4 border-b border-border bg-muted/10">
+      <ToolLayout>
+        {/* Input Parameters panel */}
+        <div className="space-y-6">
+          <Card className="rounded-none border border-border card-depth-2">
+            <CardHeader className="py-2.5 px-4 border-b border-border bg-muted/10">
               <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Settings className="h-4 w-4" /> Parameters
+                <Settings className="h-4 w-4 text-primary" /> Parameters
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
@@ -132,7 +136,7 @@ export default function UUIDGenerator() {
                   id="version-select"
                   value={version}
                   onChange={(e) => setVersion(e.target.value as 'v4' | 'v1' | 'v7')}
-                  className="w-full h-9 border-2 border-border px-2 bg-background text-xs font-semibold text-foreground focus-visible:outline-none rounded-none cursor-pointer"
+                  className="w-full h-9 border border-border px-2 bg-background text-xs font-semibold text-foreground focus-visible:outline-none rounded-none cursor-pointer"
                 >
                   <option value="v4">Version 4 (Random)</option>
                   <option value="v7">Version 7 (Time-ordered)</option>
@@ -152,7 +156,7 @@ export default function UUIDGenerator() {
                   max={500}
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, Math.min(500, parseInt(e.target.value) || 1)))}
-                  className="h-9 text-xs font-semibold rounded-none border-2 border-border"
+                  className="h-9 text-xs font-semibold rounded-none border border-border bg-card"
                   aria-label="Quantity of UUIDs to generate"
                 />
               </div>
@@ -168,7 +172,7 @@ export default function UUIDGenerator() {
                   placeholder="e.g. prefix_"
                   value={prefix}
                   onChange={(e) => setPrefix(e.target.value)}
-                  className="h-9 text-xs font-semibold rounded-none border-2 border-border"
+                  className="h-9 text-xs font-semibold rounded-none border border-border bg-card"
                   aria-label="Prefix text to prepend"
                 />
               </div>
@@ -184,7 +188,7 @@ export default function UUIDGenerator() {
                   placeholder="e.g. _suffix"
                   value={suffix}
                   onChange={(e) => setSuffix(e.target.value)}
-                  className="h-9 text-xs font-semibold rounded-none border-2 border-border"
+                  className="h-9 text-xs font-semibold rounded-none border border-border bg-card"
                   aria-label="Suffix text to append"
                 />
               </div>
@@ -198,7 +202,7 @@ export default function UUIDGenerator() {
                   id="delimiter-select"
                   value={delimiter}
                   onChange={(e) => setDelimiter(e.target.value as 'newline' | 'comma' | 'semicolon' | 'space')}
-                  className="w-full h-9 border-2 border-border px-2 bg-background text-xs font-semibold text-foreground focus-visible:outline-none rounded-none cursor-pointer"
+                  className="w-full h-9 border border-border px-2 bg-background text-xs font-semibold text-foreground focus-visible:outline-none rounded-none cursor-pointer"
                 >
                   <option value="newline">New Line (\n)</option>
                   <option value="comma">Comma (,)</option>
@@ -208,7 +212,7 @@ export default function UUIDGenerator() {
               </div>
 
               {/* Binary Switches Checkboxes */}
-              <div className="flex flex-col gap-2.5 pt-2 border-t-2 border-border/40">
+              <div className="flex flex-col gap-2.5 pt-2 border-t border-border/40">
                 <CheckboxField
                   id="opt-upper"
                   label={t.uppercaseLabel}
@@ -223,8 +227,8 @@ export default function UUIDGenerator() {
                 />
               </div>
 
-              <div className="pt-4 border-t-2 border-border/40">
-                <Button onClick={handleGenerate} className="w-full rounded-none border-2 border-primary">
+              <div className="pt-4 border-t border-border/40">
+                <Button onClick={handleGenerate} className="w-full rounded-none">
                   {t.generateButton}
                 </Button>
               </div>
@@ -232,17 +236,17 @@ export default function UUIDGenerator() {
           </Card>
         </div>
 
-        {/* Right Column: Generated lists, toggles and inspect actions */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="rounded-none border-2 border-border card-depth-2">
-            <CardHeader className="py-3 px-4 border-b border-border bg-muted/10 flex flex-row justify-between items-center space-y-0">
+        {/* Outputs and Inspector cards */}
+        <div className="space-y-6">
+          <Card className="rounded-none border border-border card-depth-2">
+            <CardHeader className="py-2.5 px-4 border-b border-border bg-muted/10 flex flex-row justify-between items-center space-y-0">
               <div className="flex items-center gap-3">
                 <CardTitle className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                  <RefreshCw className="h-4 w-4" /> Generated Output
+                  <RefreshCw className="h-4 w-4 text-primary animate-spin-slow" /> Generated Output
                 </CardTitle>
                 
                 {/* Format toggle tabs */}
-                <div className="flex border-2 border-border rounded-none overflow-hidden h-7">
+                <div className="flex border border-border rounded-none overflow-hidden h-7">
                   <button
                     onClick={() => setViewFormat('list')}
                     className={`px-2.5 flex items-center gap-1 text-[10px] font-bold cursor-pointer transition-colors border-r border-border ${
@@ -265,28 +269,33 @@ export default function UUIDGenerator() {
                   </button>
                 </div>
               </div>
-              
-              {output.length > 0 && (
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={handleDownload} className="rounded-none border-2 h-7 text-[10px] flex items-center gap-1">
-                    <FileDown className="h-3 w-3" /> Export List
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={handleCopyAll} className="rounded-none border-2 h-7 text-[10px] w-20 flex items-center justify-center gap-1">
-                    <Copy className="h-3 w-3" /> {copied ? t.copiedFeedback : t.copyButton}
-                  </Button>
-                </div>
-              )}
             </CardHeader>
             <CardContent className="p-0">
               {viewFormat === 'raw' ? (
-                <textarea
-                  readOnly
-                  value={output.join(getDelimiterChar())}
-                  placeholder={t.placeholder}
-                  rows={12}
-                  className="w-full h-[320px] border-none bg-muted/10 p-4 font-mono text-xs outline-none focus:ring-0 resize-y"
-                  aria-label="Generated UUID outputs list text area"
-                />
+                <div className="space-y-0">
+                  <textarea
+                    readOnly
+                    value={output.join(getDelimiterChar())}
+                    placeholder={t.placeholder}
+                    className="w-full h-[320px] border-none bg-muted/5 p-4 font-mono text-xs outline-none focus:ring-0 resize-y text-foreground"
+                    aria-label="Generated UUID outputs list text area"
+                  />
+                  <ActionBar className="border-t border-border">
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={handleDownload}>
+                        <FileDown className="h-3.5 w-3.5 mr-1" />
+                        Export List
+                      </Button>
+                      <PipeButton value={output.join(getDelimiterChar())} />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={handleCopyAll}>
+                        <Copy className="h-3.5 w-3.5 mr-1" />
+                        {copied ? t.copiedFeedback : t.copyButton}
+                      </Button>
+                    </div>
+                  </ActionBar>
+                </div>
               ) : (
                 <div className="h-[320px] overflow-y-auto p-3 bg-muted/5 divide-y divide-border/40 font-mono text-xs select-text">
                   {output.map((uuid, i) => (
@@ -300,14 +309,15 @@ export default function UUIDGenerator() {
                       }`}
                     >
                       <span className="truncate">{uuid}</span>
-                      <div className="flex gap-2 shrink-0">
+                      <div className="flex items-stretch shrink-0">
                         <button
                           onClick={(e) => handleCopyItem(uuid, e)}
-                          className="p-1 hover:text-primary transition-colors cursor-pointer"
+                          className="px-2 hover:text-primary transition-colors cursor-pointer"
                           title="Copy UUID"
                         >
                           {copiedItem === uuid ? <Check className="h-3.5 w-3.5 text-emerald-500 animate-in zoom-in-50 duration-200" /> : <Copy className="h-3.5 w-3.5" />}
                         </button>
+                        <PipeButton value={uuid} iconOnly={true} className="h-full border-t-0 border-b-0 border-r-0 border-l border-border/40 bg-transparent text-muted-foreground hover:text-primary hover:bg-muted font-bold text-[9px] uppercase tracking-wider rounded-none px-2" />
                       </div>
                     </div>
                   ))}
@@ -318,8 +328,8 @@ export default function UUIDGenerator() {
 
           {/* Interactive UUID Metadata Inspector Panel */}
           {selectedUuid && inspection && (
-            <Card className="rounded-none border-2 border-border card-depth-2 animate-in fade-in slide-in-from-bottom-2 duration-200">
-              <CardHeader className="py-3 px-4 border-b border-border bg-primary/5">
+            <Card className="rounded-none border border-border card-depth-2 animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <CardHeader className="py-2.5 px-4 border-b border-border bg-primary/5">
                 <CardTitle className="text-xs font-black uppercase tracking-wider text-primary flex items-center gap-1.5">
                   <Info className="h-4 w-4" /> UUID Metadata Inspector
                 </CardTitle>
@@ -356,8 +366,7 @@ export default function UUIDGenerator() {
             </Card>
           )}
         </div>
-
-      </div>
+      </ToolLayout>
     </div>
   );
 }
