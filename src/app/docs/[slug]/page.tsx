@@ -81,7 +81,7 @@ export default async function DocArticlePage({ params }: DocPageProps) {
   );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 py-4">
+    <div className="w-full space-y-8 py-4">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}

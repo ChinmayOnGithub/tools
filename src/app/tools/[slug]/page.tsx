@@ -188,7 +188,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
     };
 
     return (
-      <div className="flex flex-col gap-8 max-w-4xl mx-auto w-full">
+      <div className="flex flex-col gap-8 w-full">
         {/* Breadcrumb */}
         <nav className="text-xs text-muted-foreground flex gap-2 items-center mb-2" aria-label="Breadcrumb">
           <Link href="/" className="hover:underline">Home</Link>
@@ -237,7 +237,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto w-full space-y-6">
+    <div className="w-full space-y-6">
       {/* Schema.org Structured Data */}
       <script
         type="application/ld+json"

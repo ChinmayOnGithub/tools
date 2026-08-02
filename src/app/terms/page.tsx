@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div className="w-full space-y-8 py-4">
       {/* Page Header Card */}
       <header className="border-2 border-border bg-card p-6 sm:p-8 rounded-none card-depth-2 mb-8 space-y-3 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-2 h-full bg-primary" />

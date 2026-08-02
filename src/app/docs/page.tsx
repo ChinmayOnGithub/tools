@@ -32,7 +32,7 @@ export default function DocsIndexPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 py-4">
+    <div className="w-full space-y-10 py-4">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(docsSchema) }}

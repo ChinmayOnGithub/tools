@@ -112,7 +112,7 @@ export default function Home() {
       />
       <ScrollControls />
 
-      <div className="flex flex-col gap-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-10 w-full">
 
         {/* ── HERO ─────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden">

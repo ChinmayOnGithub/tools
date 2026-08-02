@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="max-w-3xl mx-auto space-y-8 py-4">
+    <div className="w-full space-y-8 py-4">
       {/* Header section */}
       <section className="space-y-3 text-center sm:text-left">
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
