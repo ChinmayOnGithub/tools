@@ -14,6 +14,8 @@ import {
   trackDownloadAction 
 } from '@/lib/analytics';
 
+import TrustBanner from '@/components/shared/TrustBanner';
+
 const SAMPLE_LIST = `apple
 banana
 apple
@@ -145,20 +147,7 @@ export default function RemoveDuplicateLines() {
   return (
     <div className="space-y-6 w-full">
       {/* Trust pledge indicators banner */}
-      <div className="bg-muted/30 border-2 border-border p-3 rounded-none text-[10px] sm:text-xs font-bold text-muted-foreground flex flex-wrap gap-x-4 gap-y-1.5">
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Browser-Only Cleanups
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Lists Never Uploaded
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Free & Secure Forever
-        </span>
-      </div>
+      <TrustBanner items={['Browser-Only Cleanups', 'Lists Never Uploaded', 'Free & Secure Forever']} />
 
       {/* Action controls panel */}
       <div className="flex flex-wrap gap-2 justify-between items-center bg-card p-3 border-2 border-border">

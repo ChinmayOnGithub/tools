@@ -14,6 +14,7 @@ import {
   trackDownloadAction 
 } from '@/lib/analytics';
 import { BarChart3, HelpCircle, FileText, Download, Copy, Trash, Sparkles, AlignLeft } from 'lucide-react';
+import TrustBanner from '@/components/shared/TrustBanner';
 
 const SAMPLE_TEXT = `JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object.
 
@@ -174,20 +175,7 @@ export default function WordCounter() {
   return (
     <div className="space-y-6 w-full">
       {/* Trust pledge indicators banner */}
-      <div className="bg-muted/30 border-2 border-border p-3 rounded-none text-[10px] sm:text-xs font-bold text-muted-foreground flex flex-wrap gap-x-4 gap-y-1.5">
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          100% In-Browser Analysis
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Text Never Leaves Your Device
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Free &amp; Secure Forever
-        </span>
-      </div>
+      <TrustBanner />
 
       {/* Action controls */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-card p-3 border-2 border-border rounded-none">

@@ -11,6 +11,7 @@ import {
   trackToolLaunch, 
   trackToolCompletion
 } from '@/lib/analytics';
+import TrustBanner from '@/components/shared/TrustBanner';
 
 const STYLES = [
   { id: 'upper', label: 'UPPERCASE' },
@@ -114,20 +115,7 @@ export default function CaseConverter() {
   return (
     <div className="space-y-6 w-full">
       {/* Trust pledge indicators banner */}
-      <div className="bg-muted/30 border-2 border-border p-3 rounded-none text-[10px] sm:text-xs font-bold text-muted-foreground flex flex-wrap gap-x-4 gap-y-1.5">
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          100% Client-Side Casing
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Text Never Sent to Servers
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Free &amp; Secure Forever
-        </span>
-      </div>
+      <TrustBanner items={['100% Client-Side Casing', 'Text Never Sent to Servers', 'Free & Secure Forever']} />
 
       {/* Action controls panel */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-card p-3 border-2 border-border rounded-none">

@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { CheckboxField } from '@/components/ui/CheckboxField';
 import FaqSection from '@/components/shared/FaqSection';
+import TrustBanner from '@/components/shared/TrustBanner';
 import { 
   trackToolLaunch, 
   trackToolCompletion, 
@@ -378,20 +379,7 @@ export default function PomodoroTimer() {
   return (
     <div className="space-y-6 w-full">
       {/* Trust pledge indicators banner */}
-      <div className="bg-muted/30 border-2 border-border p-3 rounded-none text-[10px] sm:text-xs font-bold text-muted-foreground flex flex-wrap gap-x-4 gap-y-1.5">
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          100% Offline Capable
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Local Audio Synthesis
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Zero Focus Logs Saved
-        </span>
-      </div>
+      <TrustBanner items={['100% Offline Capable', 'Local Audio Synthesis', 'Zero Focus Logs Saved']} />
 
       {/* Main interactive timer workspace */}
       <div 

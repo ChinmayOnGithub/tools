@@ -14,6 +14,7 @@ import {
   trackToolCompletion, 
   trackDownloadAction 
 } from '@/lib/analytics';
+import TrustBanner from '@/components/shared/TrustBanner';
 
 export default function LoremIpsumGenerator() {
   const [mounted, setMounted] = useState(false);
@@ -65,20 +66,7 @@ export default function LoremIpsumGenerator() {
   return (
     <div className="space-y-6 w-full">
       {/* Trust pledge indicators banner */}
-      <div className="bg-muted/30 border-2 border-border p-3 rounded-none text-[10px] sm:text-xs font-bold text-muted-foreground flex flex-wrap gap-x-4 gap-y-1.5 animate-fade-in">
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          100% Client-Side Generator
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Local Browser Execution
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="text-primary text-[9px] select-none">■</span>
-          Free & Secure Forever
-        </span>
-      </div>
+      <TrustBanner items={['100% Client-Side Generator', 'Local Browser Execution', 'Free & Secure Forever']} className="animate-fade-in" />
 
       {/* Configuration Option Controls Card */}
       <Card>
