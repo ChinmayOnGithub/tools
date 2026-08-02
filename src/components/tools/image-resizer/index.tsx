@@ -1,24 +1,30 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  Upload, 
-  Trash2, 
   AlertTriangle,
-  CheckCircle,
   RefreshCw,
   Sliders,
   Lock,
-  Unlock
+  Unlock,
+  Download,
+  Image as ImageIcon,
+  CheckCircle2
 } from 'lucide-react';
 import t from './locales/en.json';
 import { getProportionalHeight, getProportionalWidth } from './utils';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+
+// Primitives
+import ToolLayout from '@/components/shared/ToolLayout';
+import InputPanel from '@/components/shared/InputPanel';
+import OutputPanel from '@/components/shared/OutputPanel';
+import ActionBar from '@/components/shared/ActionBar';
+import CopyShareToast from '@/components/shared/CopyShareToast';
+import FileDropzone from '@/components/shared/FileDropzone';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
-import FaqSection from '@/components/shared/FaqSection';
 
 export default function ImageResizerComponent() {
   const [mounted, setMounted] = useState(false);
@@ -33,9 +39,7 @@ export default function ImageResizerComponent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -69,24 +73,7 @@ export default function ImageResizerComponent() {
     };
   };
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
-    }
-  };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFile(e.dataTransfer.files[0]);
-    }
-  };
 
   const handleWidthChange = (val: string) => {
     setWidth(val);
@@ -114,7 +101,7 @@ export default function ImageResizerComponent() {
     const parsedHeight = parseInt(height, 10);
 
     if (isNaN(parsedWidth) || parsedWidth <= 0 || isNaN(parsedHeight) || parsedHeight <= 0) {
-      setError('Please enter valid width and height values.');
+      setError('Please enter valid width and height dimensions.');
       return;
     }
 
@@ -133,240 +120,261 @@ export default function ImageResizerComponent() {
 
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          throw new Error('Failed to get canvas context');
+          throw new Error('Canvas 2D context not available');
         }
 
         ctx.drawImage(img, 0, 0, parsedWidth, parsedHeight);
 
+        // Convert canvas contents to resized image blob
         canvas.toBlob((blob) => {
           if (!blob) {
-            throw new Error('Image resizing failed');
+            throw new Error('Canvas blob compilation failed');
           }
 
-          const url = URL.createObjectURL(blob);
-          setDownloadUrl(url);
+          if (downloadUrl) {
+            URL.revokeObjectURL(downloadUrl);
+          }
+
+          const resizedUrl = URL.createObjectURL(blob);
+          setDownloadUrl(resizedUrl);
           setSuccess(true);
           trackToolCompletion('image-resizer');
           trackDownloadAction('image-resizer');
+          setShowToast(true);
 
+          // Auto-download
           const link = document.createElement('a');
-          link.href = url;
-          link.download = `${sourceFile.name.replace(/\.[^/.]+$/, '')}_resized.${sourceFile.type.split('/')[1] || 'png'}`;
+          link.href = resizedUrl;
+          link.download = `resized_${sourceFile.name}`;
           link.click();
         }, sourceFile.type);
       } catch (err: unknown) {
-        const errMsg = err instanceof Error ? err.message : t.invalidFileError;
-        setError(errMsg);
-        trackValidationError('image-resizer', 'resize_failed');
         logger.error('Failed to resize image:', err);
+        setError('Image resize failed.');
+        trackValidationError('image-resizer', 'resize_failed');
       } finally {
         setLoading(false);
       }
     };
 
     img.onerror = () => {
-      setError(t.invalidFileError);
+      URL.revokeObjectURL(img.src);
+      setError('Failed to load image source.');
       setLoading(false);
     };
   };
 
   const clearSelection = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    if (downloadUrl) {
+      URL.revokeObjectURL(downloadUrl);
+    }
     setSourceFile(null);
+    setPreviewUrl(null);
+    setSuccess(false);
+    setDownloadUrl(null);
     setOriginalWidth(0);
     setOriginalHeight(0);
     setWidth('');
     setHeight('');
     setError(null);
-    setSuccess(false);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
-    if (downloadUrl) {
-      URL.revokeObjectURL(downloadUrl);
-      setDownloadUrl(null);
-    }
   };
 
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border border-border" />;
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
-      <Card className="card-depth-2">
-        <CardHeader>
-          <CardTitle className="text-lg font-bold text-foreground">
-            {t.title}
-          </CardTitle>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
-          {/* File Selector Dropzone */}
-          {!sourceFile ? (
-            <div
-              onDragEnter={handleDrag}
-              onDragOver={handleDrag}
-              onDragLeave={handleDrag}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
-                dragActive 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-border bg-muted/10 hover:bg-muted/20 hover:border-primary/50'
-              }`}
-            >
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={(e) => e.target.files && handleFile(e.target.files[0])}
-                accept="image/*"
-                className="hidden"
-              />
-              <div className="flex flex-col items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                  <Upload className="h-6 w-6" />
-                </div>
-                <p className="text-sm font-semibold text-foreground">
-                  {dragActive ? t.dragDropActive : t.dragDropPlaceholder}
-                </p>
-                <p className="text-xs text-muted-foreground">PNG, JPG, WebP supported</p>
-              </div>
-            </div>
-          ) : (
-            /* Selected File details */
+    <div className="space-y-6 w-full">
+      <ToolLayout>
+        {/* Left Column: Image Dropzone and dimensions settings */}
+        <div className="space-y-6">
+          <InputPanel title="Resizing Options">
             <div className="space-y-4">
-              <div className="border-2 border-border p-4 rounded-lg flex items-center justify-between bg-muted/10">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="h-9 w-9 border rounded overflow-hidden shrink-0 bg-muted/20 flex items-center justify-center">
-                    {previewUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img 
-                        src={previewUrl} 
-                        alt="Preview thumbnail" 
-                        className="h-full w-full object-cover"
-                      />
-                    )}
+              {!sourceFile ? (
+                <FileDropzone
+                  accept="image/*"
+                  onFilesSelected={(files) => {
+                    if (files && files[0]) handleFile(files[0]);
+                  }}
+                  category="image"
+                  placeholderText={t.dragDropPlaceholder}
+                  dragActiveText={t.dragDropActive}
+                  descriptionText="PNG, JPG, WebP supported"
+                />
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 border border-border bg-card">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="h-10 w-10 border rounded-none overflow-hidden shrink-0 bg-muted/20 flex items-center justify-center">
+                        {previewUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img 
+                            src={previewUrl} 
+                            alt="Preview thumbnail" 
+                            className="h-full w-full object-cover"
+                          />
+                        )}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs font-bold text-foreground truncate max-w-[150px] md:max-w-[200px]">
+                          {sourceFile.name}
+                        </span>
+                        <span className="text-[9px] text-muted-foreground">
+                          Original: {originalWidth}×{originalHeight} px
+                        </span>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={clearSelection} className="text-destructive hover:bg-destructive/5 rounded-none h-8 text-[10px] font-bold uppercase tracking-wider">
+                      Remove
+                    </Button>
                   </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-xs font-bold text-foreground truncate max-w-[240px] md:max-w-[360px]">
-                      {sourceFile.name}
+
+                  {/* Dimension parameters */}
+                  <div className="space-y-4 pt-4 border-t border-border/40">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                      <Sliders className="h-3.5 w-3.5" />
+                      Resize Settings
                     </span>
-                    <span className="text-[10px] text-muted-foreground">
-                      Original Dimensions: {originalWidth}x{originalHeight}px
-                    </span>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label htmlFor="width-input" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          {t.widthLabel}
+                        </label>
+                        <Input
+                          id="width-input"
+                          type="number"
+                          value={width}
+                          onChange={(e) => handleWidthChange(e.target.value)}
+                          className="h-9 text-xs rounded-none border border-border bg-card"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label htmlFor="height-input" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          {t.heightLabel}
+                        </label>
+                        <Input
+                          id="height-input"
+                          type="number"
+                          value={height}
+                          onChange={(e) => handleHeightChange(e.target.value)}
+                          className="h-9 text-xs rounded-none border border-border bg-card"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs font-semibold">
+                      <button
+                        onClick={() => setLockAspect(!lockAspect)}
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer text-muted-foreground text-[10px] font-bold uppercase tracking-wider"
+                        type="button"
+                      >
+                        {lockAspect ? (
+                          <Lock className="h-3.5 w-3.5 text-primary" />
+                        ) : (
+                          <Unlock className="h-3.5 w-3.5" />
+                        )}
+                        <span>{t.lockAspectLabel}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={clearSelection}
-                  className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                  aria-label="Remove image"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+              )}
+            </div>
+          </InputPanel>
+        </div>
 
-              {/* Resizing Configuration parameters */}
-              <div className="space-y-4 border-t pt-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                  <Sliders className="h-4 w-4" /> {t.resizingSettings}
-                </span>
+        {/* Right Column: Execution previews, dimensions comparison, and downloads */}
+        <div className="space-y-6">
+          <OutputPanel title="Resized Output">
+            <div className="space-y-4">
+              {/* Loader */}
+              {loading && (
+                <div className="bg-muted/30 border border-border p-5 text-center space-y-3 rounded-none">
+                  <RefreshCw className="h-6 w-6 text-primary animate-spin mx-auto" />
+                  <p className="text-xs font-bold text-foreground">Resizing image...</p>
+                </div>
+              )}
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label htmlFor="width-input" className="text-xs font-bold text-muted-foreground">
-                      {t.widthLabel}
-                    </label>
-                    <Input
-                      id="width-input"
-                      type="number"
-                      value={width}
-                      onChange={(e) => handleWidthChange(e.target.value)}
-                      className="h-10 text-xs"
-                      aria-label="Width input"
+              {/* Success metrics */}
+              {success && sourceFile && downloadUrl && (
+                <div className="space-y-4">
+                  <div className="border border-border p-4 bg-muted/5 space-y-3 rounded-none">
+                    <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                      <CheckCircle2 className="h-4 w-4 shrink-0" />
+                      <span className="text-xs font-bold">Image resized successfully!</span>
+                    </div>
+
+                    <div className="bg-primary/5 border border-primary/20 p-3.5 grid grid-cols-2 gap-2 text-center select-none rounded-none font-mono">
+                      <div>
+                        <span className="text-[9px] text-muted-foreground uppercase tracking-wider block">Before</span>
+                        <span className="text-xs font-extrabold text-foreground mt-0.5 block">{originalWidth}×{originalHeight} px</span>
+                      </div>
+                      <div>
+                        <span className="text-[9px] text-muted-foreground uppercase tracking-wider block">After</span>
+                        <span className="text-xs font-extrabold text-primary mt-0.5 block">{width}×{height} px</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Resized output preview */}
+                  <div className="flex flex-col items-center justify-center p-4 border border-border bg-white min-h-[180px] rounded-none">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={downloadUrl} 
+                      alt="Resized output view" 
+                      className="max-w-full max-h-[200px] object-contain shadow-sm"
                     />
                   </div>
-
-                  <div className="space-y-1.5">
-                    <label htmlFor="height-input" className="text-xs font-bold text-muted-foreground">
-                      {t.heightLabel}
-                    </label>
-                    <Input
-                      id="height-input"
-                      type="number"
-                      value={height}
-                      onChange={(e) => handleHeightChange(e.target.value)}
-                      className="h-10 text-xs"
-                      aria-label="Height input"
-                    />
-                  </div>
                 </div>
+              )}
 
-                <div className="flex items-center gap-2 text-xs font-semibold">
-                  <button
-                    onClick={() => setLockAspect(!lockAspect)}
-                    className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer text-muted-foreground text-[11px]"
-                  >
-                    {lockAspect ? (
-                      <Lock className="h-4.5 w-4.5 text-primary" />
-                    ) : (
-                      <Unlock className="h-4.5 w-4.5" />
-                    )}
-                    <span>{t.lockAspectLabel}</span>
-                  </button>
+              {!success && !loading && (
+                <div className="border border-border bg-card p-6 text-center">
+                  <ImageIcon className="h-10 w-10 text-primary mx-auto mb-2" />
+                  <p className="text-xs font-bold text-foreground">Resized Output Preview</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">Configure dimensions on the left to resize images locally</p>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {/* Error Message Card */}
-          {error && (
-            <div className="bg-destructive/10 border-2 border-destructive/20 text-destructive p-4 flex gap-3 text-xs font-semibold leading-relaxed">
-              <AlertTriangle className="h-5 w-5 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
+              {error && (
+                <div className="bg-destructive/5 border border-destructive/20 text-destructive p-3 flex gap-2 text-xs font-semibold rounded-none">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
 
-          {/* Action Trigger Button */}
-          {sourceFile && !success && (
-            <div className="pt-2">
-              <Button
-                onClick={handleResize}
-                disabled={loading}
-                className="w-full font-bold flex items-center justify-center gap-2 h-11 text-sm cursor-pointer"
-              >
-                {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
-                {loading ? t.resizingStatus : t.resizeButton}
-              </Button>
+              <ActionBar>
+                <div className="flex gap-2" />
+                <div className="flex gap-2">
+                  {success && downloadUrl ? (
+                    <Button onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = downloadUrl;
+                      link.download = `resized_${sourceFile?.name || 'image.png'}`;
+                      link.click();
+                    }}>
+                      <Download className="h-3.5 w-3.5 mr-1" />
+                      Download Image
+                    </Button>
+                  ) : (
+                    <Button onClick={handleResize} disabled={loading || !sourceFile}>
+                      {loading ? <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5 mr-1" />}
+                      Resize Image
+                    </Button>
+                  )}
+                </div>
+              </ActionBar>
             </div>
-          )}
+          </OutputPanel>
+        </div>
+      </ToolLayout>
 
-          {/* Success / Result details */}
-          {success && downloadUrl && (
-            <div className="bg-emerald-500/10 border-2 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-lg flex flex-col gap-2 text-xs font-semibold leading-relaxed">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5" />
-                <span>{t.successMessage}</span>
-              </div>
-              <a
-                href={downloadUrl}
-                download={`${sourceFile?.name.replace(/\.[^/.]+$/, '')}_resized.${sourceFile?.type.split('/')[1] || 'png'}`}
-                className="text-primary underline font-bold pl-7"
-              >
-                {t.downloadPrompt}
-              </a>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* FAQ accordion */}
-      
-      <Card className="p-4 space-y-4 rounded-none">
-        <FaqSection faqs={t.faq} />
-      </Card>
+      <CopyShareToast show={showToast} onClose={() => setShowToast(false)} message="Image successfully resized." />
     </div>
   );
 }

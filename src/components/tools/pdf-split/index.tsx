@@ -1,26 +1,30 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   FileText, 
-  Upload, 
-  Trash2, 
   AlertTriangle,
-  CheckCircle,
   RefreshCw,
   Sliders,
-  Sparkles
+  Sparkles,
+  Download
 } from 'lucide-react';
 import t from './locales/en.json';
 import { parsePageRanges, splitPdfBuffer } from './utils';
 import { getPdfPageThumbnail } from '@/lib/pdf-core';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { PDFDocument } from 'pdf-lib';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
-import FaqSection from '@/components/shared/FaqSection';
+
+// Primitives
+import ToolLayout from '@/components/shared/ToolLayout';
+import InputPanel from '@/components/shared/InputPanel';
+import OutputPanel from '@/components/shared/OutputPanel';
+import ActionBar from '@/components/shared/ActionBar';
+import CopyShareToast from '@/components/shared/CopyShareToast';
+import FileDropzone from '@/components/shared/FileDropzone';
 
 // Helper to convert array of 1-indexed numbers to range string
 function indicesToRangeString(pages: number[]): string {
@@ -55,20 +59,15 @@ export default function PdfSplitComponent() {
   const [mounted, setMounted] = useState(false);
   const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [totalPages, setTotalPages] = useState<number | null>(null);
-  const [loadingPageCount, setLoadingPageCount] = useState(false);
   const [splitMode, setSplitMode] = useState<'all' | 'range'>('range');
   const [rangeInput, setRangeInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [filesList, setFilesList] = useState<{ name: string; url: string }[]>([]);
-  const [dragActive, setDragActive] = useState(false);
-
-  // Visual selection state
+  const [showToast, setShowToast] = useState(false);
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
   const [pagesThumbnails, setPagesThumbnails] = useState<Record<number, string>>({});
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -101,99 +100,86 @@ export default function PdfSplitComponent() {
 
     return () => {
       active = false;
-      setPagesThumbnails({});
     };
   }, [sourceFile, totalPages]);
 
-  const handleFile = async (file: File) => {
-    setError(null);
-    setSuccess(false);
-    setFilesList([]);
-    setTotalPages(null);
-    setSelectedPages(new Set());
-    setRangeInput('');
 
-    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+
+  const processFile = async (file: File) => {
+    if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
       setError(t.invalidFileError);
-      trackValidationError('pdf-split', 'invalid_file_type');
       return;
     }
 
+    setError(null);
+    setSuccess(false);
+    setFilesList([]);
     setSourceFile(file);
-    setLoadingPageCount(true);
+    setPagesThumbnails({});
+    setSelectedPages(new Set());
+    setRangeInput('');
 
     try {
-      const buffer = await file.arrayBuffer();
+      const buffer = new Uint8Array(await file.arrayBuffer());
       const doc = await PDFDocument.load(buffer, { updateMetadata: false });
-      const pagesCount = doc.getPageCount();
-      setTotalPages(pagesCount);
-      
-      // Select page 1 by default
-      setSelectedPages(new Set([1]));
-      setRangeInput('1');
-    } catch (err) {
+      setTotalPages(doc.getPageCount());
+    } catch (err: unknown) {
+      logger.error('Failed to parse page count:', err);
       setError(t.invalidFileError);
-      trackValidationError('pdf-split', 'parse_failed');
-      logger.error('Failed to parse PDF document page size:', err);
-    } finally {
-      setLoadingPageCount(false);
     }
   };
 
-  const handleFiles = (incomingFiles: FileList | null) => {
-    if (!incomingFiles || incomingFiles.length === 0) return;
-    handleFile(incomingFiles[0]);
+
+
+  const removeFile = () => {
+    setSourceFile(null);
+    setTotalPages(null);
+    setSuccess(false);
+    setFilesList([]);
+    setSelectedPages(new Set());
+    setPagesThumbnails({});
+    setRangeInput('');
+    setError(null);
   };
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
+  const handlePageClick = (pageNum: number) => {
+    const nextSelected = new Set(selectedPages);
+    if (nextSelected.has(pageNum)) {
+      nextSelected.delete(pageNum);
+    } else {
+      nextSelected.add(pageNum);
     }
+    setSelectedPages(nextSelected);
+
+    // Convert Set of selected page indices to range input string format
+    const pageIndices = Array.from(nextSelected);
+    const rangeStr = indicesToRangeString(pageIndices);
+    setRangeInput(rangeStr);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    handleFiles(e.dataTransfer.files);
-  };
-
-  // Sync textbox change back to visual grid selection
   const handleRangeInputChange = (val: string) => {
     setRangeInput(val);
     if (!totalPages) return;
-    
+
     try {
-      const sortedIndices = parsePageRanges(val, totalPages);
-      const parsedSet = new Set(sortedIndices.map(idx => idx + 1));
-      setSelectedPages(parsedSet);
-      setError(null);
+      const pages = parsePageRanges(val, totalPages);
+      setSelectedPages(new Set(pages));
     } catch {
-      // Allow invalid typing buffer in textbox without immediately throwing error
+      // Ignore intermediate typing errors in range parser
     }
   };
 
-  // Sync visual click back to textbox range string
-  const handlePageClick = (pageNum: number) => {
-    const newSet = new Set(selectedPages);
-    if (newSet.has(pageNum)) {
-      newSet.delete(pageNum);
-    } else {
-      newSet.add(pageNum);
-    }
-    setSelectedPages(newSet);
-    
-    const rangeStr = indicesToRangeString(Array.from(newSet));
-    setRangeInput(rangeStr);
+  const formatSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const handleSplit = async () => {
     if (!sourceFile || totalPages === null) {
-      setError(t.emptyFileError);
+      setError('No source file loaded.');
       return;
     }
 
@@ -245,8 +231,9 @@ export default function PdfSplitComponent() {
         setSuccess(true);
         trackToolCompletion('pdf-split');
       }
+      setShowToast(true);
     } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : t.invalidRangeError;
+      const errMsg = err instanceof Error ? err.message : 'PDF split process failed.';
       setError(errMsg);
       trackValidationError('pdf-split', 'split_failed');
     } finally {
@@ -254,283 +241,202 @@ export default function PdfSplitComponent() {
     }
   };
 
-  const clearSelection = () => {
-    setSourceFile(null);
-    setTotalPages(null);
-    setFilesList([]);
-    setError(null);
-    setSuccess(false);
-    setRangeInput('');
-    setSelectedPages(new Set());
-    setPagesThumbnails({});
-  };
-
-  const formatSize = (bytes: number) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border border-border" />;
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
-      <Card className="card-depth-2">
-        <CardHeader>
-          <CardTitle className="text-lg font-bold text-foreground">
-            {t.title}
-          </CardTitle>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
-          {/* File Selector Dropzone */}
-          {!sourceFile ? (
-            <div
-              onDragEnter={handleDrag}
-              onDragOver={handleDrag}
-              onDragLeave={handleDrag}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
-                dragActive 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-border bg-muted/10 hover:bg-muted/20 hover:border-primary/50'
-              }`}
-            >
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={(e) => handleFiles(e.target.files)}
-                accept=".pdf,application/pdf"
-                className="hidden"
-              />
-              <div className="flex flex-col items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                  <Upload className="h-6 w-6" />
-                </div>
-                <p className="text-sm font-semibold text-foreground">
-                  {dragActive ? t.dragDropActive : t.dragDropPlaceholder}
-                </p>
-                <p className="text-xs text-muted-foreground">PDF files processed safely client-side</p>
-              </div>
-            </div>
-          ) : (
-            /* Selected File details */
-            <div className="space-y-6">
-              <div className="border-2 border-border p-4 rounded-lg flex items-center justify-between bg-muted/10">
-                <div className="flex items-center gap-3 min-w-0">
-                  <FileText className="h-6 w-6 text-red-500 shrink-0" />
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-xs font-bold text-foreground truncate max-w-[280px] md:max-w-[400px]">
-                      {sourceFile.name}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground flex gap-3">
-                      <span>{formatSize(sourceFile.size)}</span>
-                      {loadingPageCount ? (
-                        <span className="flex items-center gap-1">
-                          <RefreshCw className="h-2.5 w-2.5 animate-spin" /> Counting Pages
-                        </span>
-                      ) : (
-                        <span className="text-primary font-bold">{t.totalPages}: {totalPages}</span>
-                      )}
-                    </span>
+    <div className="space-y-6 w-full">
+      <ToolLayout>
+        {/* Left Column: Dropzone, options and visual grid selection */}
+        <div className="space-y-6">
+          <InputPanel title="PDF Document Source">
+            <div className="space-y-4">
+              {!sourceFile ? (
+                <FileDropzone
+                  accept=".pdf,application/pdf"
+                  onFilesSelected={(files) => {
+                    if (files && files[0]) processFile(files[0]);
+                  }}
+                  category="pdf"
+                  placeholderText={t.dragDropPlaceholder}
+                  dragActiveText={t.dragDropActive}
+                  descriptionText="Select a PDF to extract pages locally"
+                />
+              ) : (
+                <div className="flex items-center justify-between p-3 border border-border bg-card">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <FileText className="h-8 w-8 text-primary shrink-0" />
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-bold text-foreground truncate max-w-[200px]">
+                        {sourceFile.name}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground flex gap-2">
+                        <span>{formatSize(sourceFile.size)}</span>
+                        {totalPages && <span className="text-primary font-semibold">({totalPages} pages)</span>}
+                      </span>
+                    </div>
                   </div>
+                  <Button variant="outline" size="sm" onClick={removeFile} className="text-destructive hover:bg-destructive/5 rounded-none h-8 text-[10px] font-bold uppercase tracking-wider">
+                    Remove
+                  </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={clearSelection}
-                  className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                  aria-label="Remove document"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+              )}
 
               {/* Configurations */}
-              <div className="space-y-4 border-t pt-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                  <Sliders className="h-4 w-4 text-primary" /> {t.splitOptions}
-                </span>
-
-                <div className="space-y-3 text-xs">
-                  <label className="flex items-center gap-2 font-bold text-foreground select-none cursor-pointer">
-                    <input
-                      type="radio"
-                      name="splitMode"
-                      value="range"
-                      checked={splitMode === 'range'}
-                      onChange={() => setSplitMode('range')}
-                      className="h-4 w-4 text-primary accent-primary"
-                    />
-                    <span>{t.splitRangeLabel}</span>
-                  </label>
-
-                  <label className="flex items-center gap-2 font-bold text-foreground select-none cursor-pointer">
-                    <input
-                      type="radio"
-                      name="splitMode"
-                      value="all"
-                      checked={splitMode === 'all'}
-                      onChange={() => setSplitMode('all')}
-                      className="h-4 w-4 text-primary accent-primary"
-                    />
-                    <span>{t.splitAllLabel}</span>
-                  </label>
-                </div>
-
-                {/* Range inputs */}
-                {splitMode === 'range' && (
-                  <div className="space-y-2 pt-2">
-                    <label htmlFor="range-input" className="text-xs font-bold text-muted-foreground">
-                      Enter Page Range
-                    </label>
-                    <Input
-                      id="range-input"
-                      type="text"
-                      value={rangeInput}
-                      onChange={(e) => handleRangeInputChange(e.target.value)}
-                      placeholder={t.rangeInputPlaceholder}
-                      className="text-xs font-bold"
-                    />
-                    <p className="text-[10px] text-muted-foreground">
-                      e.g., 1-4, 7, 9-12 (pages start from 1)
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Visual Page Selector Grid */}
-              {splitMode === 'range' && totalPages && totalPages > 0 && (
-                <div className="space-y-3.5 border-t pt-4">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <Sparkles className="h-4 w-4 text-primary" />
-                      {t.visualSelection}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">{t.visualSelectionDesc}</span>
+              {sourceFile && (
+                <div className="space-y-4 pt-4 border-t border-border/40">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Extraction Mode</label>
+                    <div className="flex border border-border rounded-none overflow-hidden h-7 max-w-xs">
+                      <button
+                        onClick={() => setSplitMode('range')}
+                        className={`px-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer border-r border-border transition-colors flex-1 ${
+                          splitMode === 'range'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-background hover:bg-muted text-muted-foreground'
+                        }`}
+                      >
+                        Extract Ranges
+                      </button>
+                      <button
+                        onClick={() => setSplitMode('all')}
+                        className={`px-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors flex-1 ${
+                          splitMode === 'all'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-background hover:bg-muted text-muted-foreground'
+                        }`}
+                      >
+                        Split All Pages
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-[300px] overflow-y-auto p-1.5 border rounded-lg bg-muted/5">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
-                      const isSelected = selectedPages.has(pageNum);
-                      const thumb = pagesThumbnails[pageNum];
+                  {splitMode === 'range' && (
+                    <div className="space-y-1.5">
+                      <label htmlFor="range-input" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        Page Ranges
+                      </label>
+                      <Input
+                        id="range-input"
+                        type="text"
+                        value={rangeInput}
+                        onChange={(e) => handleRangeInputChange(e.target.value)}
+                        placeholder="e.g. 1-3, 5, 7-9"
+                        className="text-xs font-semibold rounded-none border border-border bg-card h-9"
+                      />
+                      <p className="text-[9px] text-muted-foreground">
+                        Use commas to separate page indexes or ranges (1-indexed)
+                      </p>
+                    </div>
+                  )}
 
-                      return (
-                        <button
-                          key={pageNum}
-                          type="button"
-                          onClick={() => handlePageClick(pageNum)}
-                          className={`relative border rounded-lg p-2 flex flex-col items-center justify-between cursor-pointer transition-all select-none bg-card hover:bg-muted/10 ${
-                            isSelected 
-                              ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
-                              : 'border-border hover:border-muted-foreground/30'
-                          }`}
-                        >
-                          {/* Corner checkbox indicator */}
-                          <div className="absolute top-1 right-1">
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              readOnly
-                              className="h-3.5 w-3.5 rounded border-input text-primary accent-primary pointer-events-none"
-                            />
-                          </div>
+                  {/* Visual grid */}
+                  {splitMode === 'range' && totalPages && totalPages > 0 && (
+                    <div className="space-y-2 pt-2 border-t border-border/40">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                          <Sparkles className="h-3.5 w-3.5" />
+                          Visual Page Selector
+                        </span>
+                        <span className="text-[9px] text-muted-foreground">Click pages to toggle selection range</span>
+                      </div>
 
-                          {/* Render Page Thumbnail */}
-                          <div className="h-20 w-14 border rounded shrink-0 overflow-hidden bg-muted/20 flex items-center justify-center mt-2.5">
-                            {thumb ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img 
-                                src={thumb} 
-                                alt={`Page ${pageNum}`} 
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <div className="flex flex-col items-center gap-1 animate-pulse">
-                                <FileText className="h-4 w-4 text-muted-foreground" />
+                      <div className="grid grid-cols-4 gap-2 max-h-[220px] overflow-y-auto p-1.5 border border-border bg-muted/5">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                          const isSelected = selectedPages.has(pageNum);
+                          const thumb = pagesThumbnails[pageNum];
+
+                          return (
+                            <button
+                              key={pageNum}
+                              type="button"
+                              onClick={() => handlePageClick(pageNum)}
+                              className={`relative border p-1.5 flex flex-col items-center justify-between cursor-pointer transition-all select-none rounded-none bg-card hover:bg-muted/10 ${
+                                isSelected 
+                                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20' 
+                                  : 'border-border'
+                              }`}
+                            >
+                              <div className="h-16 w-11 border rounded-none shrink-0 overflow-hidden bg-muted/20 flex items-center justify-center mt-1">
+                                {thumb ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img 
+                                    src={thumb} 
+                                    alt={`Page ${pageNum}`} 
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <FileText className="h-4 w-4 text-muted-foreground" />
+                                )}
                               </div>
-                            )}
-                          </div>
-
-                          <span className="text-[10px] font-bold text-foreground mt-2">
-                            Page {pageNum}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                              <span className="text-[9px] font-bold text-foreground mt-1.5">
+                                Page {pageNum}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
+          </InputPanel>
+        </div>
 
-          {/* Error Message Card */}
-          {error && (
-            <div className="bg-destructive/10 border-2 border-destructive/20 text-destructive p-4 flex gap-3 text-xs font-semibold leading-relaxed rounded-lg">
-              <AlertTriangle className="h-5 w-5 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
+        {/* Right Column: Execution & Splitting Downloads */}
+        <div className="space-y-6">
+          <OutputPanel title="Split Output">
+            <div className="space-y-4">
+              {/* Output State Details */}
+              <div className="border border-border bg-card p-6 text-center">
+                <Sliders className="h-10 w-10 text-primary mx-auto mb-2" />
+                <p className="text-xs font-bold text-foreground">Split Document</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Extract selected page indexes locally in browser</p>
+              </div>
 
-          {/* Action Trigger Button */}
-          {sourceFile && !success && (
-            <div className="pt-2">
-              <Button
-                onClick={handleSplit}
-                disabled={loading || (splitMode === 'range' && !rangeInput.trim())}
-                className="w-full font-bold flex items-center justify-center gap-2 h-11 text-sm cursor-pointer"
-              >
-                {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
-                {loading ? t.splittingStatus : t.splitButton}
-              </Button>
-            </div>
-          )}
-
-          {/* Success / Result details */}
-          {success && filesList.length > 0 && (
-            <div className="space-y-4 pt-4 border-t">
-              <div className="bg-emerald-500/10 border-2 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-lg flex flex-col gap-2 text-xs font-semibold leading-relaxed">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5" />
-                  <span>{t.successMessage}</span>
+              {error && (
+                <div className="bg-destructive/5 border border-destructive/20 text-destructive p-3 flex gap-2 text-xs font-semibold rounded-none">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  <span>{error}</span>
                 </div>
-              </div>
+              )}
 
-              {/* Extracted file list */}
-              <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
-                {filesList.map((item, idx) => (
-                  <div key={idx} className="border p-3 rounded-lg flex items-center justify-between bg-card text-xs">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <FileText className="h-4 w-4 text-red-500 shrink-0" />
-                      <span className="font-bold text-foreground truncate max-w-[280px] md:max-w-[400px]">
-                        {item.name}
-                      </span>
+              {/* Download list if multiple files */}
+              {success && filesList.length > 0 && (
+                <div className="space-y-2 max-h-[200px] overflow-y-auto border border-border p-2 divide-y divide-border/40">
+                  {filesList.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-2 text-xs font-semibold">
+                      <span className="truncate max-w-[150px] font-mono text-[10px]">{item.name}</span>
+                      <Button variant="outline" size="sm" onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = item.url;
+                        link.download = item.name;
+                        link.click();
+                      }} className="h-7 text-[9px] font-extrabold uppercase tracking-wider rounded-none">
+                        <Download className="h-3 w-3 mr-1" /> Download
+                      </Button>
                     </div>
-                    <a
-                      href={item.url}
-                      download={item.name}
-                      className="text-primary font-bold underline shrink-0 hover:text-primary-dark"
-                    >
-                      Download
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  ))}
+                </div>
+              )}
 
-      {/* FAQ accordion */}
-      
-      <Card className="p-4 space-y-4 rounded-none">
-        <FaqSection faqs={t.faq} />
-      </Card>
+              <ActionBar>
+                <div className="flex gap-2" />
+                <div className="flex gap-2">
+                  <Button onClick={handleSplit} disabled={loading || !sourceFile || (splitMode === 'range' && !rangeInput.trim())}>
+                    {loading ? <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5 mr-1" />}
+                    Extract Pages
+                  </Button>
+                </div>
+              </ActionBar>
+            </div>
+          </OutputPanel>
+        </div>
+      </ToolLayout>
+
+      <CopyShareToast show={showToast} onClose={() => setShowToast(false)} message="PDF document successfully split." />
     </div>
   );
 }

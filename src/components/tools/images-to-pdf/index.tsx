@@ -1,23 +1,29 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  Upload, 
   Trash2, 
   ArrowUp, 
   ArrowDown, 
   GripVertical, 
-  CheckCircle, 
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  FileImage,
+  Download
 } from 'lucide-react';
 import t from './locales/en.json';
 import { imagesToPdfBuffer } from './utils';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { trackToolLaunch, trackToolCompletion, trackValidationError, trackDownloadAction } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
-import FaqSection from '@/components/shared/FaqSection';
+
+// Primitives
+import ToolLayout from '@/components/shared/ToolLayout';
+import InputPanel from '@/components/shared/InputPanel';
+import OutputPanel from '@/components/shared/OutputPanel';
+import ActionBar from '@/components/shared/ActionBar';
+import CopyShareToast from '@/components/shared/CopyShareToast';
+import FileDropzone from '@/components/shared/FileDropzone';
 
 interface ImageFile {
   file: File;
@@ -31,10 +37,8 @@ export default function ImagesToPdfComponent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [dragActive, setDragActive] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -68,22 +72,7 @@ export default function ImagesToPdfComponent() {
     }
   };
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
-    }
-  };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    handleFiles(e.dataTransfer.files);
-  };
 
   const moveItem = (index: number, direction: 'up' | 'down') => {
     const nextIndex = direction === 'up' ? index - 1 : index + 1;
@@ -94,27 +83,27 @@ export default function ImagesToPdfComponent() {
     updated[index] = updated[nextIndex];
     updated[nextIndex] = temp;
     setImages(updated);
+    setSuccess(false);
   };
 
   const removeItem = (index: number) => {
     const target = images[index];
-    URL.revokeObjectURL(target.previewUrl);
+    if (target) {
+      URL.revokeObjectURL(target.previewUrl);
+    }
     setImages((prev) => prev.filter((_, i) => i !== index));
     setSuccess(false);
-    setError(null);
   };
 
   const clearList = () => {
-    images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+    images.forEach((item) => URL.revokeObjectURL(item.previewUrl));
     setImages([]);
-    setError(null);
     setSuccess(false);
-    if (downloadUrl) {
-      URL.revokeObjectURL(downloadUrl);
-      setDownloadUrl(null);
-    }
+    setDownloadUrl(null);
+    setError(null);
   };
 
+  // Drag and drop list sorting
   const onDragStart = (index: number) => {
     setDraggingIndex(index);
   };
@@ -122,77 +111,24 @@ export default function ImagesToPdfComponent() {
   const onDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
     if (draggingIndex === null || draggingIndex === index) return;
-
-    const updated = [...images];
-    const draggedItem = updated[draggingIndex];
-    updated.splice(draggingIndex, 1);
-    updated.splice(index, 0, draggedItem);
     
+    setImages((prev) => {
+      const list = [...prev];
+      const draggedItem = list[draggingIndex];
+      list.splice(draggingIndex, 1);
+      list.splice(index, 0, draggedItem);
+      return list;
+    });
     setDraggingIndex(index);
-    setImages(updated);
   };
 
   const onDragEnd = () => {
     setDraggingIndex(null);
   };
 
-  const formatSize = (bytes: number) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const convertFileToPdfImage = async (file: File): Promise<{ bytes: Uint8Array; isPng: boolean }> => {
-    const type = file.type.toLowerCase();
-    const isPng = type.includes('png');
-    const isJpg = type.includes('jpeg') || type.includes('jpg');
-
-    if (isPng || isJpg) {
-      return {
-        bytes: new Uint8Array(await file.arrayBuffer()),
-        isPng,
-      };
-    }
-
-    // Fallback: draw unsupported formats (like WebP or SVG) onto canvas to serialize as JPEGs
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.src = URL.createObjectURL(file);
-      img.onload = () => {
-        URL.revokeObjectURL(img.src);
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          reject(new Error('Failed to get canvas context'));
-          return;
-        }
-        ctx.drawImage(img, 0, 0);
-        canvas.toBlob((blob) => {
-          if (!blob) {
-            reject(new Error('Canvas image conversion failed'));
-            return;
-          }
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            resolve({
-              bytes: new Uint8Array(reader.result as ArrayBuffer),
-              isPng: false,
-            });
-          };
-          reader.readAsArrayBuffer(blob);
-        }, 'image/jpeg', 0.95);
-      };
-      img.onerror = () => reject(new Error('Failed to load image file source'));
-    });
-  };
-
   const handleConvert = async () => {
     if (images.length === 0) {
-      setError(t.noImagesSelected);
+      setError('Please select at least one image to compile.');
       return;
     }
 
@@ -201,11 +137,14 @@ export default function ImagesToPdfComponent() {
     setSuccess(false);
 
     try {
-      const processedImages = await Promise.all(
-        images.map((img) => convertFileToPdfImage(img.file))
+      const imageBuffers = await Promise.all(
+        images.map(async (item) => ({
+          bytes: new Uint8Array(await item.file.arrayBuffer()),
+          isPng: item.file.type === 'image/png' || item.file.name.endsWith('.png')
+        }))
       );
 
-      const pdfBytes = await imagesToPdfBuffer(processedImages);
+      const pdfBytes = await imagesToPdfBuffer(imageBuffers);
       const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
 
@@ -214,202 +153,188 @@ export default function ImagesToPdfComponent() {
       trackToolCompletion('images-to-pdf');
       trackDownloadAction('images-to-pdf');
 
+      // Auto-trigger download
       const link = document.createElement('a');
       link.href = url;
       link.download = 'images_compiled.pdf';
       link.click();
+      setShowToast(true);
     } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : t.invalidFileError;
-      setError(errMsg);
-      trackValidationError('images-to-pdf', 'conversion_failed');
-      logger.error('Failed to compile images to PDF:', err);
+      logger.error('Failed compiling images to PDF:', err);
+      const msg = err instanceof Error ? err.message : 'PDF compilation failed.';
+      setError(msg);
+      trackValidationError('images-to-pdf', 'compile_failed');
     } finally {
       setLoading(false);
     }
   };
 
+  const formatSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   if (!mounted) {
-    return <div className="animate-pulse bg-muted h-64 rounded-lg w-full" />;
+    return <div className="animate-pulse bg-muted h-64 rounded-none w-full border border-border" />;
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto w-full">
-      <Card className="card-depth-2">
-        <CardHeader>
-          <CardTitle className="text-lg font-bold text-foreground">
-            {t.title}
-          </CardTitle>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
-          {/* File Selector Dropzone */}
-          <div
-            onDragEnter={handleDrag}
-            onDragOver={handleDrag}
-            onDragLeave={handleDrag}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
-              dragActive 
-                ? 'border-primary bg-primary/5' 
-                : 'border-border bg-muted/10 hover:bg-muted/20 hover:border-primary/50'
-            }`}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={(e) => handleFiles(e.target.files)}
-              accept="image/*"
-              multiple
-              className="hidden"
-            />
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                <Upload className="h-6 w-6" />
-              </div>
-              <p className="text-sm font-semibold text-foreground">
-                {dragActive ? t.dragDropActive : t.dragDropPlaceholder}
-              </p>
-              <p className="text-xs text-muted-foreground">PNG, JPG, WebP, SVG, GIF supported</p>
-            </div>
-          </div>
+    <div className="space-y-6 w-full">
+      <ToolLayout>
+        {/* Left Column: Input Selection */}
+        <div className="space-y-6">
+          <InputPanel title="Selected Images">
+            <div className="space-y-4">
+              {/* Dropzone */}
+              <FileDropzone
+                accept="image/png, image/jpeg, image/webp"
+                multiple
+                onFilesSelected={handleFiles}
+                category="image"
+                placeholderText={t.dragDropPlaceholder}
+                dragActiveText={t.dragDropActive}
+                descriptionText="Select multiple images (PNG, JPG, WebP) to compile"
+              />
 
-          {/* Error Message Card */}
-          {error && (
-            <div className="bg-destructive/10 border-2 border-destructive/20 text-destructive p-4 flex gap-3 text-xs font-semibold leading-relaxed">
-              <AlertTriangle className="h-5 w-5 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* List of images selected */}
-          {images.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between border-b pb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  {t.selectedImages} ({images.length})
-                </span>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={clearList}
-                  className="text-xs font-bold"
-                >
-                  {t.clearButton}
-                </Button>
-              </div>
-              
-              <p className="text-[10px] text-muted-foreground font-semibold">{t.reorderGuidance}</p>
-
-              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                {images.map((item, index) => (
-                  <div
-                    key={index}
-                    draggable
-                    onDragStart={() => onDragStart(index)}
-                    onDragOver={(e) => onDragOver(e, index)}
-                    onDragEnd={onDragEnd}
-                    className={`flex items-center justify-between p-3 border-2 rounded-lg bg-card transition-all ${
-                      draggingIndex === index 
-                        ? 'border-primary bg-primary/5 opacity-50' 
-                        : 'border-border hover:border-muted-foreground/30'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="cursor-grab text-muted-foreground hover:text-foreground p-1">
-                        <GripVertical className="h-4 w-4" />
-                      </div>
-                      <div className="h-9 w-9 border rounded overflow-hidden shrink-0 bg-muted/20 flex items-center justify-center">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img 
-                          src={item.previewUrl} 
-                          alt="Thumbnail preview" 
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-xs font-bold text-foreground truncate max-w-[200px] md:max-w-[280px]">
-                          {item.file.name}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">{formatSize(item.file.size)}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {/* Reordering Controls */}
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => moveItem(index, 'up')}
-                        disabled={index === 0}
-                        className="h-7 w-7"
-                        aria-label="Move item up"
-                      >
-                        <ArrowUp className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => moveItem(index, 'down')}
-                        disabled={index === images.length - 1}
-                        className="h-7 w-7"
-                        aria-label="Move item down"
-                      >
-                        <ArrowDown className="h-3 w-3" />
-                      </Button>
-                      {/* Delete item */}
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => removeItem(index)}
-                        className="h-7 w-7 text-destructive hover:bg-destructive/10"
-                        aria-label="Delete item"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
+              {/* selected list */}
+              {images.length > 0 && (
+                <div className="space-y-3 pt-2 border-t border-border/40">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      {t.selectedImages} ({images.length})
+                    </span>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={clearList}
+                      className="text-[10px] font-extrabold uppercase tracking-wider text-destructive border-border hover:bg-destructive/5 rounded-none"
+                    >
+                      Clear All
+                    </Button>
                   </div>
-                ))}
-              </div>
+                  
+                  <p className="text-[9px] text-muted-foreground font-semibold">{t.reorderGuidance}</p>
 
-              {/* Action Trigger Button */}
-              <div className="pt-2">
-                <Button
-                  onClick={handleConvert}
-                  disabled={loading || images.length === 0}
-                  className="w-full font-bold flex items-center justify-center gap-2 h-11 text-sm cursor-pointer"
-                >
-                  {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
-                  {loading ? t.convertingStatus : t.convertButton}
-                </Button>
-              </div>
+                  <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 divide-y divide-border/40">
+                    {images.map((item, index) => (
+                      <div
+                        key={index}
+                        draggable
+                        onDragStart={() => onDragStart(index)}
+                        onDragOver={(e) => onDragOver(e, index)}
+                        onDragEnd={onDragEnd}
+                        className={`flex items-center justify-between py-2.5 px-2 bg-card border border-transparent transition-all ${
+                          draggingIndex === index 
+                            ? 'border-primary bg-primary/5 opacity-50' 
+                            : 'hover:bg-muted/30'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="cursor-grab text-muted-foreground hover:text-foreground p-1">
+                            <GripVertical className="h-3.5 w-3.5" />
+                          </div>
+                          
+                          {/* Image preview Thumbnail */}
+                          <div className="h-10 w-10 border rounded-none bg-muted/20 shrink-0 overflow-hidden flex items-center justify-center">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img 
+                              src={item.previewUrl} 
+                              alt={`Preview of ${item.file.name}`} 
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-xs font-bold text-foreground truncate max-w-[150px] md:max-w-[220px]">
+                              {item.file.name}
+                            </span>
+                            <span className="text-[9px] text-muted-foreground">
+                              {formatSize(item.file.size)}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => moveItem(index, 'up')}
+                            disabled={index === 0}
+                            className="p-1 border border-border hover:border-primary hover:text-primary transition-colors disabled:opacity-30 disabled:pointer-events-none rounded-none"
+                            type="button"
+                          >
+                            <ArrowUp className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={() => moveItem(index, 'down')}
+                            disabled={index === images.length - 1}
+                            className="p-1 border border-border hover:border-primary hover:text-primary transition-colors disabled:opacity-30 disabled:pointer-events-none rounded-none"
+                            type="button"
+                          >
+                            <ArrowDown className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={() => removeItem(index)}
+                            className="p-1 border border-border hover:border-destructive hover:text-destructive transition-colors rounded-none"
+                            type="button"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </InputPanel>
+        </div>
 
-          {/* Success / Result details */}
-          {success && downloadUrl && (
-            <div className="bg-emerald-500/10 border-2 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-lg flex flex-col gap-2 text-xs font-semibold leading-relaxed">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5" />
-                <span>{t.successMessage}</span>
+        {/* Right Column: Converter actions */}
+        <div className="space-y-6">
+          <OutputPanel title="Conversion Output">
+            <div className="space-y-4">
+              <div className="border border-border bg-card p-6 text-center">
+                <FileImage className="h-10 w-10 text-primary mx-auto mb-2" />
+                <p className="text-xs font-bold text-foreground">Convert to PDF</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Compile select image files locally into a single document</p>
               </div>
-              <a
-                href={downloadUrl}
-                download="images_compiled.pdf"
-                className="text-primary underline font-bold pl-7"
-              >
-                {t.downloadPrompt}
-              </a>
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
-      {/* FAQ accordion */}
-      
-      <Card className="p-4 space-y-4 rounded-none">
-        <FaqSection faqs={t.faq} />
-      </Card>
+              {error && (
+                <div className="bg-destructive/5 border border-destructive/20 text-destructive p-3 flex gap-2 text-xs font-semibold rounded-none">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <ActionBar>
+                <div className="flex gap-2" />
+                <div className="flex gap-2">
+                  {success && downloadUrl ? (
+                    <Button onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = downloadUrl;
+                      link.download = 'images_compiled.pdf';
+                      link.click();
+                    }}>
+                      <Download className="h-3.5 w-3.5 mr-1" />
+                      Download PDF
+                    </Button>
+                  ) : (
+                    <Button onClick={handleConvert} disabled={loading || images.length === 0}>
+                      {loading ? <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5 mr-1" />}
+                      Compile to PDF
+                    </Button>
+                  )}
+                </div>
+              </ActionBar>
+            </div>
+          </OutputPanel>
+        </div>
+      </ToolLayout>
+
+      <CopyShareToast show={showToast} onClose={() => setShowToast(false)} message="PDF document successfully compiled from images." />
     </div>
   );
 }
