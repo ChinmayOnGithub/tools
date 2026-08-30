@@ -45,8 +45,8 @@ export function Navigation() {
             
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1 text-sm font-medium">
-              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50 font-bold text-xs uppercase tracking-wider" href="/docs">
-                Docs & Guides
+              <Link className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50 font-bold text-xs uppercase tracking-wider" href="/guides">
+                Guides &amp; Solutions
               </Link>
               <div className="relative group">
                 <button className="px-3 py-2 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50 font-bold text-xs uppercase tracking-wider flex items-center gap-1">
@@ -128,11 +128,11 @@ export function Navigation() {
             </div>
             <div className="border-t-2 border-border pt-4 flex flex-col gap-2">
               <Link
-                href="/docs"
+                href="/guides"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-3 py-2.5 border-2 border-border text-sm hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors font-medium"
               >
-                Documentation & Guides
+                Guides &amp; Solutions
               </Link>
               <Link
                 href="/contact"

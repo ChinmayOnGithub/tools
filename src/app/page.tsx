@@ -9,6 +9,7 @@ import ScrollControls from '@/components/shared/ScrollControls';
 import { CATEGORIES } from '@/config/categories';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import FaqSection from '@/components/shared/FaqSection';
+import SolveAProblemSection from '@/components/shared/SolveAProblemSection';
 import {
   ShieldCheck,
   Cpu,
@@ -190,6 +191,11 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* ── SOLVE A PROBLEM SECTION (KNOWLEDGE BASE ENTRY POINT) ──── */}
+        {!searchQuery && (
+          <SolveAProblemSection />
+        )}
 
         {/* ── TOOL SUITE SHOWCASES (DEVELOPER, FILE, LIVE DATA) ────── */}
         {!searchQuery && (

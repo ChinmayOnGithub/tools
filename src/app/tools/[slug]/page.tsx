@@ -7,6 +7,7 @@ import { CATEGORIES } from '@/config/categories';
 import { SEO_CONTENT_MAP } from '@/config/seo-content';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import AdContainer from '@/components/shared/AdContainer';
+import RelatedGuidesList from '@/components/shared/RelatedGuidesList';
 import ToolContainer from '@/components/shared/ToolContainer';
 import ToolCard from '@/components/shared/ToolCard';
 import FaqSection from '@/components/shared/FaqSection';
@@ -481,6 +482,9 @@ export default async function ToolWrapperPage({ params }: PageProps) {
             )}
           </article>
         )}
+
+        {/* Problem-Solving Guides Connection */}
+        <RelatedGuidesList toolId={tool.id} />
 
         {/* Related Utilities Showcase */}
         {relatedPublished.length > 0 && (

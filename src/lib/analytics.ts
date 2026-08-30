@@ -107,6 +107,14 @@ export function trackInternalSearch(query: string) {
   event('internal_search', 'search', query);
 }
 
+export function trackGuideView(guideSlug: string) {
+  event('guide_view', 'guide', guideSlug);
+}
+
+export function trackWorkflowView(workflowSlug: string) {
+  event('workflow_view', 'workflow', workflowSlug);
+}
+
 const analytics = {
   pageview,
   event,
@@ -117,6 +125,8 @@ const analytics = {
   trackToolCompletion,
   trackRelatedToolClick,
   trackInternalSearch,
+  trackGuideView,
+  trackWorkflowView,
 };
 
 export default analytics;

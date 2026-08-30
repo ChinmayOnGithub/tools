@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import { CATEGORIES } from '@/config/categories';
 import { DOCS_ARTICLES } from '@/config/docs-data';
+import { GUIDES_ARTICLES, WORKFLOWS_DATA } from '@/config/guides-data';
 import { SITE_URL } from '@/config/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -15,10 +16,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
+      url: `${siteUrl}/guides`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    {
       url: `${siteUrl}/docs`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
-      priority: 0.9,
+      priority: 0.8,
     },
     {
       url: `${siteUrl}/about`,
@@ -59,11 +66,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
+  const guideRoutes = GUIDES_ARTICLES.map((guide) => ({
+    url: `${siteUrl}/guides/${guide.slug}`,
+    lastModified: new Date(guide.updatedAt),
+    changeFrequency: 'weekly' as const,
+    priority: 0.85,
+  }));
+
+  const workflowRoutes = WORKFLOWS_DATA.map((wf) => ({
+    url: `${siteUrl}/workflows/${wf.slug}`,
+    lastModified: new Date(wf.updatedAt),
+    changeFrequency: 'weekly' as const,
+    priority: 0.85,
+  }));
+
   const docRoutes = DOCS_ARTICLES.map((article) => ({
     url: `${siteUrl}/docs/${article.slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
-    priority: 0.8,
+    priority: 0.7,
   }));
 
   // Only index published tools that are not marked noindex
@@ -76,5 +97,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: tool.qualityTier === 'flagship' ? 0.9 : 0.7,
     }));
 
-  return [...routes, ...categoryRoutes, ...docRoutes, ...toolRoutes];
+  return [...routes, ...categoryRoutes, ...guideRoutes, ...workflowRoutes, ...docRoutes, ...toolRoutes];
 }
