@@ -141,7 +141,7 @@ for (const bytes of pdfBytesArray) {
     id: 'productivity-time-management',
     slug: 'productivity-time-management',
     title: 'Productivity Techniques: Pomodoro & Lap Timing Benchmarks',
-    description: 'Scientific principles behind the Pomodoro Technique, time boxing, and high-precision sub-millisecond lap stopwatches.',
+    description: 'Scientific principles behind the Pomodoro Technique, time boxing, and high-resolution lap stopwatches.',
     category: 'productivity',
     readTime: '4 min read',
     updatedAt: '2026-06-28',
@@ -152,8 +152,8 @@ for (const bytes of pdfBytesArray) {
         content: 'Developed by Francesco Cirillo, the Pomodoro Technique structures work into 25-minute concentrated focus sprints followed by short 5-minute restorative breaks. After 4 cycles, a longer 15-30 minute break is taken.',
       },
       {
-        heading: 'Sub-Millisecond Stopwatch Accuracy',
-        content: 'CoolTools stopwatches utilize high-resolution performance timers (window.performance.now()) to deliver sub-millisecond precision, unaffected by CPU background task throttling.',
+        heading: 'High-Resolution Stopwatch Timing',
+        content: 'Our stopwatch utilizes high-resolution performance timers (window.performance.now()) to measure elapsed intervals with millisecond-level precision, immune to system clock adjustments.',
       }
     ],
     faqs: [

@@ -12,7 +12,7 @@
   "faq": [
     {
       "q": "How accurate is the stopwatch?",
-      "a": "The stopwatch connects directly to the browser's performance.now() clock, giving high-resolution accuracy matching sub-millisecond ranges."
+      "a": "The stopwatch connects directly to the browser performance.now() clock, measuring intervals with high-resolution precision unaffected by system clock adjustments."
     },
     {
       "q": "Can I copy my recorded laps?",

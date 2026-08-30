@@ -7,6 +7,12 @@ export interface SeoToolContent {
   exampleInput: string;
   exampleOutput: string;
   technicalOverview?: string;
+  technicalDetails?: string;
+  limitations?: string[];
+  securityNotes?: string;
+  browserCompatibility?: string;
+  references?: { title: string; url: string }[];
+  commonMistakes?: { mistake: string; explanation: string; fix: string }[];
   stepByStepGuide?: string[];
   useCases?: string[];
   troubleshooting?: string[];
@@ -15,396 +21,478 @@ export interface SeoToolContent {
 
 export const SEO_CONTENT_MAP: Record<string, SeoToolContent> = {
   'uuid-generator': {
-    heading: 'Universally Unique Identifier (UUID/GUID) Generator',
-    explanation: 'A client-side utility to generate RFC4122 version 4 compliant universally unique identifiers (UUIDs) or GUIDs instantly. You can generate multiple IDs, customize character casings, and toggle hyphens.',
-    whenToUse: 'Use this generator when you need unique keys for databases, API testing tokens, transaction tracking IDs, or system component session identifiers.',
-    howItWorks: 'This tool uses the browser-native cryptographically secure random number generator (Web Crypto API `crypto.getRandomValues`) to ensure random randomness compliant with RFC4122 specifications.',
-    privacyExplanation: 'All UUID calculations run strictly inside your browser tab. No requests are sent to servers, ensuring complete privacy of generated identifiers.',
-    exampleInput: 'Generate 1 UUID (Uppercase, with Hyphens)',
+    heading: 'RFC 4122 Version 4 UUID Generator',
+    explanation: 'Generate cryptographically random Universally Unique Identifiers (UUIDv4) directly in your browser. Configurable options include case formatting, hyphen delimiters, and batch size up to 50 identifiers.',
+    whenToUse: 'Generate primary keys for databases (PostgreSQL, MySQL, SQLite), unique request IDs for distributed logging, transaction trace IDs, or random idempotency keys for API payloads.',
+    howItWorks: 'Uses the browser Web Crypto API (crypto.getRandomValues) to fill a 16-byte buffer with hardware-derived cryptographically secure pseudorandom numbers (CSPRNG), sets the 4-bit version (0100) and 2-bit RFC 4122 variant (10xx), and formats the result as a 36-character hexadecimal string.',
+    privacyExplanation: 'UUID generation occurs exclusively inside your browser runtime. No generated identifiers are transmitted to any server or recorded in remote logs.',
+    exampleInput: 'Count: 1, Format: Uppercase, Hyphens: Enabled',
     exampleOutput: '9B1DE2F8-0D32-475C-9A8B-3FA41829B245',
+    technicalDetails: 'UUIDv4 contains 122 bits of random entropy out of 128 total bits. The probability of generating a duplicate identifier across billions of iterations is negligible (1 in 2^122).',
+    limitations: [
+      'UUIDv4 is un-ordered and not time-sequential. If you need chronologically sortable identifiers, consider ULID or UUIDv7.',
+      'Batch generation is capped in the interface at 50 per click to ensure zero UI thread latency.'
+    ],
+    references: [
+      { title: 'IETF RFC 4122: A Universally Unique IDentifier (UUID) URN Namespace', url: 'https://datatracker.ietf.org/doc/html/rfc4122' },
+      { title: 'MDN Web Docs: Crypto.getRandomValues()', url: 'https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues' }
+    ],
     faqs: [
-      { q: 'What is a UUID version 4?', a: 'A Version 4 UUID is a universally unique identifier generated using random numbers. It contains 122 bits of random data, making collisions statistically impossible.' },
-      { q: 'Is a UUID the same as a GUID?', a: 'Yes. GUID is Microsoft\'s terminology for UUID. They both conform to the same formatting structure.' }
+      { q: 'What is the structure of a Version 4 UUID?', a: 'A UUIDv4 is formatted as 32 hexadecimal digits displayed in five groups separated by hyphens (8-4-4-4-12). The 13th digit is always 4 (representing Version 4), and the 17th digit is 8, 9, A, or B (representing the RFC 4122 variant).' },
+      { q: 'Are these UUIDs safe to use as database keys?', a: 'Yes. Because they are generated using cryptographically secure random values via the Web Crypto API, they provide 122 bits of collision resistance.' }
     ]
   },
   'json-formatter': {
-    heading: 'JSON Formatter, Validator & Minifier',
-    explanation: 'Format, validate, beautify, and minify your JSON data in real-time. Features lightweight syntax highlighting, copy-paste, error highlighting, and file download support.',
-    whenToUse: 'Use this tool when debugging API responses, formatting nested configurations, or validating raw JSON payloads for syntax errors.',
-    howItWorks: 'The JSON content is parsed via standard JavaScript compilers. Invalids trigger location-based syntax error indicators, highlighting precise lines and columns.',
-    privacyExplanation: 'No data leaves your device. All parsing, validation, formatting, and file exports occur inside your local browser memory.',
-    exampleInput: '{"user":"john","roles":["admin","user"]}',
-    exampleOutput: '{\n  "user": "john",\n  "roles": [\n    "admin",\n    "user"\n  ]\n}',
+    heading: 'JSON Formatter, Beautifier & Minifier',
+    explanation: 'Format, beautify, inspect, and minify JSON code directly in your browser. Features syntax error line/column tracking, object key sorting, collapsible tree visualization, and file export options.',
+    whenToUse: 'Format unreadable single-line JSON payloads from API responses, inspect complex nested configuration files, minify payloads before network transmission, or diagnose syntax errors in JSON datasets.',
+    howItWorks: 'Parses the input string using the browser V8 JavaScript engine JSON parser. Valid payloads are formatted with configurable indentation (2 spaces, 4 spaces, or tabs) or stripped of whitespace delimiters. Invalid payloads trigger parser diagnostic routines that calculate line and column offsets.',
+    privacyExplanation: 'All parsing, tree construction, formatting, and file exports execute strictly inside your local browser memory tab. No JSON text or payloads are sent to any remote server.',
+    exampleInput: '{"name":"API Gateway","routes":[{"path":"/v1/users","auth":true}]}',
+    exampleOutput: '{\n  "name": "API Gateway",\n  "routes": [\n    {\n      "path": "/v1/users",\n      "auth": true\n    }\n  ]\n}',
+    technicalDetails: 'Compliant with RFC 8259 and ECMA-404 JSON data interchange format specifications. Keys must be double-quoted strings, and numbers must adhere to IEEE 754 floating-point representations.',
+    limitations: [
+      'Large inputs exceeding 5 MB may slow down client-side syntax highlighting and tree rendering. For files over 2 MB, automatic background validation is deferred to manual button triggers.',
+      'Numbers exceeding 64-bit float precision (above Number.MAX_SAFE_INTEGER / 9007199254740991) may lose precision during standard JSON.parse.'
+    ],
+    commonMistakes: [
+      { mistake: 'Trailing Commas', explanation: 'Adding a comma after the final key in an object or array causes a syntax error.', fix: 'Remove the trailing comma before closing } or ].' },
+      { mistake: 'Single Quotes', explanation: 'JSON syntax strictly requires double quotes (") around keys and string values.', fix: 'Replace single quotes with double quotes.' }
+    ],
+    references: [
+      { title: 'IETF RFC 8259: The JavaScript Object Notation (JSON) Data Interchange Format', url: 'https://datatracker.ietf.org/doc/html/rfc8259' },
+      { title: 'ECMA-404: The JSON Data Interchange Standard', url: 'https://www.ecma-international.org/publications-and-standards/standards/ecma-404/' }
+    ],
     faqs: [
-      { q: 'How does the JSON validator detect errors?', a: 'It compiles inputs using standard JSON.parse hooks, intercepting location details when syntax parsing failures occur.' },
-      { q: 'Can I upload files to format?', a: 'Yes. You can upload files under 5MB, which are processed entirely client-side using browser FileReader APIs.' }
+      { q: 'Does JSON allow comments or trailing commas?', a: 'No. The official JSON standard (RFC 8259) prohibits comments (// or /* */) and trailing commas. If your payload uses comments, it is JSON5 or JSONC, not standard JSON.' },
+      { q: 'Can I upload a JSON file to format?', a: 'Yes. You can drag and drop or upload JSON files up to 5 MB. The file is read directly into browser memory via FileReader and formatted without network transmission.' }
     ]
   },
   'json-validator': {
-    heading: 'Secure JSON Validator & Syntax Checker',
-    explanation: 'Validate your JSON string syntax online in real-time. Highlights exact syntax errors with line/column details, trailing commas, unmatched brackets, and invalid character escapes.',
-    whenToUse: 'Use this validator when your JSON parsing fails in a codebase and you need to quickly locate syntax errors or confirm compliance with RFC 8259 specifications.',
-    howItWorks: 'The validator parses inputs using client-side JavaScript compilers, catching parse exceptions to extract exact error line numbers and column offsets.',
-    privacyExplanation: 'No JSON payload is ever transmitted over the network. All syntax checking is done locally within your browser tab.',
-    exampleInput: '{\n  "name": "Jane",\n  "age": 30,\n}',
-    exampleOutput: 'Syntax Error: Unexpected token } in JSON at position 28 (line 4, column 1) - Trailing comma detected.',
+    heading: 'JSON Syntax Validator & Diagnostic Error Pinpointer',
+    explanation: 'Validate JSON syntax compliance against RFC 8259 specifications. Pinpoints exact error line numbers, column positions, unescaped characters, unclosed brackets, and trailing commas with plain-language explanations.',
+    whenToUse: 'Quickly find why a configuration file or API payload fails to parse, detect invisible invalid control characters, or verify JSON compliance before committing code to production.',
+    howItWorks: 'Executes standard JavaScript JSON parsing routines within a protected try/catch boundary, captures lexical errors, parses browser-specific error offset messages (Firefox line/col and Chromium byte position), and cross-references the error token against the source text to provide contextual guidance.',
+    privacyExplanation: 'No data leaves your device. All syntax parsing, error location extraction, and validation checks occur inside your browser sandbox.',
+    exampleInput: '{\n  "service": "auth",\n  "enabled": true,\n}',
+    exampleOutput: 'Syntax Error at line 4, col 1: Trailing comma detected before closing brace "}".',
+    technicalDetails: 'JSON validator checks strict type validity for objects, arrays, numbers, strings, booleans (true/false), and null.',
+    limitations: [
+      'This validator checks JSON structural and lexical syntax. It does not validate payloads against JSON Schema specifications ($schema).'
+    ],
+    references: [
+      { title: 'IETF RFC 8259 JSON Specification', url: 'https://datatracker.ietf.org/doc/html/rfc8259' }
+    ],
     faqs: [
-      { q: 'Why is my JSON invalid?', a: 'Common syntax issues include missing quotes around keys, trailing commas in objects or arrays, using single quotes instead of double quotes, or unmatched brackets/curly braces.' },
-      { q: 'Is there a size limit for validation?', a: 'No strict limit for simple validation, but files up to 5MB are fully supported and run instantly in your browser.' }
-    ]
-  },
-  'word-counter': {
-    heading: 'Live Text Statistics & Word Counter',
-    explanation: 'Analyze text statistics in real-time. Counts words, characters, characters without spaces, paragraphs, sentences, estimated reading times, and speaking times.',
-    whenToUse: 'Perfect for content writers, students, developers writing documentation, or editors reviewing copy lengths against character limits.',
-    howItWorks: 'Calculates metrics using regular expression dividers (whitespace delimiters for words, period/punctuation groupings for sentences, and double carriage returns for paragraphs).',
-    privacyExplanation: 'Your text remains entirely on your device. We do not store, log, or transmit any character strings.',
-    exampleInput: 'Hello world. This is a secure browser word counter.',
-    exampleOutput: 'Words: 9\nCharacters: 52\nSentences: 2\nParagraphs: 1\nReading Time: 3 sec',
-    faqs: [
-      { q: 'What speeds are used to calculate reading times?', a: 'We employ standard benchmarks of 200 words per minute (WPM) for reading times and 130 WPM for speaking times.' },
-      { q: 'Does this count support symbols?', a: 'Yes. Word dividers filter out stray symbols to ensure accurate word counts.' }
-    ]
-  },
-  'base64-converter': {
-    heading: 'Base64 Text and File Encoder & Decoder',
-    explanation: 'Encode strings into Base64 formats, decode Base64 back into raw text, or convert files into downloadable binary streams locally in your browser tab.',
-    whenToUse: 'Ideal for decoding base64-encoded email payloads, encoding basic authentication credentials, or formatting images/files into base64 data URLs.',
-    howItWorks: 'Utilizes browser-native `btoa` and `atob` binaries. Large files use FileReader stream buffers to convert files up to 5MB.',
-    privacyExplanation: 'Everything is processed inside your local web browser tab. No files are uploaded to any servers.',
-    exampleInput: 'CoolTools',
-    exampleOutput: 'Q29vbFRvb2xz',
-    faqs: [
-      { q: 'What is Base64?', a: 'Base64 is a binary-to-text encoding scheme that represents binary data in an ASCII string format, commonly used for data transmission over text channels.' },
-      { q: 'Can I convert images to Base64?', a: 'Yes. Small images and text files can be uploaded and converted to Base64 code formats securely.' }
-    ]
-  },
-  'url-encoder': {
-    heading: 'URL Encoder / Decoder Utility',
-    explanation: 'Encode special characters into URL-safe formats or decode percent-encoded strings back to standard human-readable text.',
-    whenToUse: 'Use this tool when formatting query parameters, resolving query parameters in analytics paths, or cleaning URL strings for HTTP requests.',
-    howItWorks: 'Leverages browser-native `encodeURIComponent` and `decodeURIComponent` modules for secure conversions.',
-    privacyExplanation: 'URLs are processed instantly in your tab. We never log url queries, ensuring complete data privacy.',
-    exampleInput: 'user name=john&admin=true',
-    exampleOutput: 'user%20name%3Djohn%26admin%3Dtrue',
-    faqs: [
-      { q: 'Why do URLs need encoding?', a: 'URLs can only contain certain safe ASCII characters. Special characters like spaces or symbols must be percent-encoded to prevent server parsing errors.' },
-      { q: 'Is there a limit on query length?', a: 'We restrict local processing to 2MB to keep performance fast.' }
-    ]
-  },
-  'password-generator': {
-    heading: 'Random Secure Password Generator',
-    explanation: 'Generate cryptographically secure random passwords. Customize lengths, include uppercase, lowercase, numbers, symbols, and configure options to exclude similar or ambiguous characters.',
-    whenToUse: 'Use this tool whenever creating new user accounts, updating old credentials, or generating server API key secrets.',
-    howItWorks: 'Uses browser-native `crypto.getRandomValues` to select characters randomly, ensuring high entropy resistant to dictionary attacks.',
-    privacyExplanation: 'Your passwords are generated locally inside your web browser. No credentials leave your device.',
-    exampleInput: '16 characters, Numbers, Symbols',
-    exampleOutput: 'x9&fA$kL2#pQ!z7*',
-    faqs: [
-      { q: 'What makes a password cryptographically secure?', a: 'Using random character pools selected using hardware entropy sources (like standard browser crypto API) instead of pseudo-random algorithms.' },
-      { q: 'How many passwords can I generate at once?', a: 'You can generate up to 50 passwords in a single batch.' }
+      { q: 'Why is my JSON failing validation?', a: 'Common causes include trailing commas after the last property, using single quotes instead of double quotes, missing closing braces/brackets, or unescaped control characters inside strings.' },
+      { q: 'Can this validator identify the exact line of an error?', a: 'Yes. The validator calculates both the line number and character column index where the parsing error occurred.' }
     ]
   },
   'jwt-decoder': {
-    heading: 'JSON Web Token (JWT) Decoder & Viewer',
-    explanation: 'Decode JSON Web Tokens (JWT) client-side to inspect header metadata, payload claims, signature parts, and claim dates.',
-    whenToUse: 'Use when debugging API token authorization headers, verifying user claims, or inspecting expiration times.',
-    howItWorks: 'Splits the JWT string into Header, Payload, and Signature, then base64url decodes them to format readable JSON trees.',
-    privacyExplanation: 'Tokens never leave your device. Decoding happens in the sandbox. Your secrets remain secure.',
-    exampleInput: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-    exampleOutput: 'Header: {"alg":"HS256","typ":"JWT"}\nPayload: {"sub":"1234567890","name":"John Doe","admin":true}',
+    heading: 'JSON Web Token (JWT) Inspector & Claim Decoder',
+    explanation: 'Inspect and decode the three structural components of a JSON Web Token (Header, Payload, and Signature) directly in your browser. Inspect expiration timestamps, token issuers, subjects, and custom claims.',
+    whenToUse: 'Debug authentication headers, verify claims returned by OAuth/OpenID Connect identity providers (Auth0, Okta, Firebase, AWS Cognito), inspect token expiration status, or verify token algorithm headers.',
+    howItWorks: 'Splits the period-delimited JWT string into its three segments (Header, Payload, Signature), normalizes the Base64URL encoding into standard Base64 with appropriate padding, decodes the UTF-8 byte stream into JSON objects, and computes expiration status against the client system clock.',
+    privacyExplanation: 'Tokens are processed exclusively in client-side memory. Confidential tokens and API authorization credentials are never uploaded to any remote server.',
+    exampleInput: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIiwiZXhwIjoxNzg0ODgwMDAwfQ.4v_secret_sig',
+    exampleOutput: 'Header: {"alg":"HS256","typ":"JWT"}\nPayload: {"sub":"1234567890","name":"Alice","exp":1784880000}',
+    securityNotes: 'Decode ≠ Verify. This tool inspects the structural claims of a JWT without verifying the cryptographic signature. Never trust token claims on a server without validating the signature using your public key (RS256/ES256) or secret key (HS256).',
+    limitations: [
+      'This tool decodes unsigned, symmetrically signed (HS256), and asymmetrically signed (RS256/ES256) JWTs, but does not verify signature validity without access to private/public cryptographic key pairs.',
+      'Encrypted JSON Web Tokens (JWE - RFC 7516) cannot be inspected without providing the corresponding decryption key.'
+    ],
+    references: [
+      { title: 'IETF RFC 7519: JSON Web Token (JWT)', url: 'https://datatracker.ietf.org/doc/html/rfc7519' },
+      { title: 'IETF RFC 7515: JSON Web Signature (JWS)', url: 'https://datatracker.ietf.org/doc/html/rfc7515' }
+    ],
     faqs: [
-      { q: 'Does this verify the JWT signature?', a: 'No, this is a decoder/viewer only. Signature verification requires server keys.' },
-      { q: 'Can I decode expired tokens?', a: 'Yes. Expiration dates are parsed and highlighted relative to current browser times.' }
+      { q: 'Does decoding a JWT prove the token is valid?', a: 'No. Decoding only translates the Base64URL payload into readable JSON. To determine authenticity and prevent tampering, your server must verify the cryptographic signature using your shared secret or identity provider public key.' },
+      { q: 'What do standard claims like exp, iat, and nbf mean?', a: 'exp (Expiration Time) defines when the token ceases to be valid; iat (Issued At) records the timestamp of token creation; nbf (Not Before) specifies the timestamp prior to which the token must not be accepted.' }
+    ]
+  },
+  'unicode-inspector': {
+    heading: 'Unicode Character Inspector & Code Point Analyzer',
+    explanation: 'Analyze text strings to inspect exact Unicode code points, UTF-8 byte sequences, UTF-16 code units, Unicode categories, and non-printable characters. Detects zero-width spaces, invisible characters, bidirectional overrides, and multi-codepoint emoji clusters.',
+    whenToUse: 'Debug text copying issues, detect invisible zero-width characters injected into code or credentials, investigate bidirectional text spoofing (RTLO attacks), examine Unicode normalization bugs, and inspect emoji grapheme sequences.',
+    howItWorks: 'Iterates through text using JavaScript character iterators to correctly handle surrogate pairs, calls String.prototype.codePointAt, encodes character bytes using TextEncoder (UTF-8) and charCodeAt (UTF-16), and evaluates character values against Unicode 15.0 block ranges.',
+    privacyExplanation: 'All character inspection, hex conversions, and classification calculations execute in your browser runtime. No input text is stored or sent over the network.',
+    exampleInput: 'Hello 👋\\u200b',
+    exampleOutput: 'Idx 0: "H" U+0048 (UTF-8: 48) [Latin]\nIdx 6: "👋" U+1F44B (UTF-8: F0 9F 91 8B, UTF-16: D83D DC4B) [Emoji]\nIdx 7: [Hidden] U+200B (UTF-8: E2 80 8B) [Zero-Width Space]',
+    technicalDetails: 'Unicode assigns every human script character, emoji, and control symbol a unique integer code point (U+0000 to U+10FFFF). Characters above U+FFFF are encoded in UTF-16 using surrogate pairs.',
+    limitations: [
+      'Grapheme cluster boundaries (composite emoji sequences like skin tones or family groups composed of multiple codepoints joined by ZWJ) are broken down into their individual constituent code points for inspection.'
+    ],
+    references: [
+      { title: 'The Unicode Consortium: Unicode Standard Core Specification', url: 'https://www.unicode.org/versions/latest/' },
+      { title: 'MDN Web Docs: String.prototype.codePointAt()', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/codePointAt' }
+    ],
+    faqs: [
+      { q: 'What is a zero-width space (ZWSP)?', a: 'A zero-width space (U+200B) is an invisible character used in typesetting to indicate word boundaries without displaying a space. It is frequently copied accidentally and causes elusive programming syntax errors or database query mismatches.' },
+      { q: 'What is a bidirectional (BiDi) override control?', a: 'BiDi controls (such as Right-to-Left Override U+202E) force the rendering engine to reverse the visual direction of subsequent characters. Attackers sometimes use them to disguise executable file extensions (e.g. making "payload[U+202E]exe.pdf" display visually as "payloadfdp.exe").' }
+    ]
+  },
+  'timestamp-explorer': {
+    heading: 'Unix Epoch Timestamp & DateTime Explorer',
+    explanation: 'Convert and inspect Unix epoch timestamps in seconds and milliseconds across ISO 8601, RFC 3339, RFC 2822, UTC, and local timezone formats with live relative time calculations.',
+    whenToUse: 'Debug database timestamps (PostgreSQL, MongoDB, MySQL), analyze server access logs, inspect token exp/iat claims, convert API dates to human-readable timestamps, or resolve timezone offset bugs.',
+    howItWorks: 'Parses numeric inputs (treating 10-digit values as seconds and 13-digit values as milliseconds) or ISO date strings into millisecond epoch values, initializes a native JavaScript Date object, and maps the components to standard date representation formats.',
+    privacyExplanation: 'Calculations run entirely inside your browser tab. Timestamps, database records, and server logs are never sent over the network.',
+    exampleInput: '1719600000 (10-digit Unix Seconds)',
+    exampleOutput: 'ISO 8601: 2024-06-28T18:40:00.000Z\nRFC 3339: 2024-06-28T18:40:00Z\nUTC: Fri, 28 Jun 2024 18:40:00 GMT',
+    technicalDetails: 'Unix time represents the number of non-leap seconds elapsed since January 1, 1970 00:00:00 UTC (the Unix Epoch). 10-digit timestamps represent seconds; 13-digit timestamps represent milliseconds.',
+    limitations: [
+      'Dates before 1970 or after the Year 2038 (32-bit signed integer overflow limit) are handled using 64-bit JavaScript Numbers, supporting accurate representation up to Year 275760.',
+      'Timezone conversions depend on your local operating system and browser timezone settings.'
+    ],
+    references: [
+      { title: 'IETF RFC 3339: Date and Time on the Internet: Timestamps', url: 'https://datatracker.ietf.org/doc/html/rfc3339' },
+      { title: 'ISO 8601 Representation of Dates and Times', url: 'https://www.iso.org/iso-8601-date-and-time-format.html' }
+    ],
+    faqs: [
+      { q: 'What is the difference between Unix seconds and milliseconds?', a: 'A 10-digit integer (e.g. 1719600000) represents seconds elapsed since the Unix epoch, commonly used in Unix command lines, JWT exp claims, and C libraries. A 13-digit integer (e.g. 1719600000000) represents milliseconds, used by JavaScript Date.now() and Java/JVM runtimes.' },
+      { q: 'What is the Year 2038 problem?', a: 'Systems storing Unix time as signed 32-bit integers will overflow on January 19, 2038 at 03:14:07 UTC. Modern 64-bit systems and JavaScript runtimes avoid this problem by using 64-bit representations.' }
     ]
   },
   'hash-generator': {
-    heading: 'Cryptographic Hash Checksum Generator',
-    explanation: 'Calculate cryptographic MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from input strings locally.',
-    whenToUse: 'Verify data integrity, check checksums, or encode sensitive keys into static digests.',
-    howItWorks: 'Uses Web Crypto subtle API (`crypto.subtle.digest`) for SHA family digests, and a custom pure-JS MD5 hashing algorithm.',
-    privacyExplanation: 'Calculations occur locally. Text inputs are processed client-side with no network transfers.',
-    exampleInput: 'hello',
-    exampleOutput: 'SHA-256: 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824',
+    heading: 'Cryptographic Hash Generator & Checksum Calculator',
+    explanation: 'Generate cryptographic hash digests using MD5, SHA-1, SHA-256, SHA-384, and SHA-512 directly in your browser. Supports custom cryptographic salts with prepend/append configurations and text file drag-and-drop.',
+    whenToUse: 'Calculate file checksums to verify download integrity, create cryptographic digests for data deduplication, or compute hashes for development testing.',
+    howItWorks: 'Uses the W3C Web Crypto API (crypto.subtle.digest) for hardware-accelerated SHA-1, SHA-256, SHA-384, and SHA-512 calculations. Uses an internal pure JavaScript implementation for legacy MD5 checksums.',
+    privacyExplanation: 'All hashing calculations execute inside your local browser memory. Text inputs, files, and generated hashes are never uploaded to any remote server.',
+    exampleInput: 'Input: "cooltools", Algorithm: SHA-256',
+    exampleOutput: 'SHA-256: 4b2958ff62ff054c2049d564bbda2c8b87d2ef1492c6e6e06b3a033f6b9bc607',
+    securityNotes: 'Hashing is a one-way mathematical digest, not encryption (which is reversible with a key) and not encoding (which is a reversible representation). MD5 and SHA-1 have known cryptographic collision weaknesses and must not be used for security-critical applications or password storage.',
+    limitations: [
+      'Web Crypto processes files in browser memory; files larger than 2 MB should be processed using native command line utilities (sha256sum) to avoid browser tab memory pressure.',
+      'This tool computes standard cryptographic digests. For password storage, use adaptive password-hashing functions like bcrypt, scrypt, or Argon2 instead of raw fast hashes.'
+    ],
+    references: [
+      { title: 'NIST FIPS 180-4: Secure Hash Standard (SHS)', url: 'https://csrc.nist.gov/publications/detail/fips/180/4/final' },
+      { title: 'W3C Web Cryptography API', url: 'https://www.w3.org/TR/WebCryptoAPI/' }
+    ],
     faqs: [
-      { q: 'Is MD5 secure?', a: 'MD5 is cryptographically broken and should not be used for security purposes, but it remains widely used for basic file validation.' },
-      { q: 'Which algorithm is recommended?', a: 'SHA-256 or SHA-512 are recommended for modern security.' }
+      { q: 'What is the difference between hashing, encryption, and encoding?', a: 'Hashing is a one-way mathematical transformation that produces a fixed-length digest and cannot be reversed. Encryption is a two-way transformation designed to protect confidentiality, reversible only with a secret key. Encoding (like Base64) is a data format conversion for transmission, easily reversed without any key.' },
+      { q: 'Why is MD5 not recommended for security?', a: 'Researchers have demonstrated practical collision attacks against MD5 (generating two distinct files with the exact same hash). Use SHA-256 or SHA-512 for security applications.' }
+    ]
+  },
+  'base64-converter': {
+    heading: 'Base64 Text & File Encoder / Decoder',
+    explanation: 'Encode text strings and files into Base64 format or decode Base64 strings back to standard human-readable text and binary files directly in your browser tab.',
+    whenToUse: 'Encode HTTP Basic Authentication header credentials, embed small image assets as Data URLs in HTML/CSS, decode Base64 payload data from webhooks, or format binary data for text-only communication channels.',
+    howItWorks: 'Converts UTF-8 text strings into byte arrays using TextEncoder/TextDecoder before executing window.btoa and window.atob conversions, properly handling multi-byte Unicode characters without Latin1 truncation.',
+    privacyExplanation: 'All conversions run strictly in your local browser sandbox. No strings or uploaded files are sent across the network.',
+    exampleInput: 'Input Text: "Hello, World!"',
+    exampleOutput: 'Base64 Encoded: "SGVsbG8sIFdvcmxkIQ=="',
+    technicalDetails: 'Base64 represents 6 bits of data per character using an alphabet of 64 ASCII characters (A-Z, a-z, 0-9, +, /) and "=" for padding. Encoding increases data size by approximately 33%.',
+    limitations: [
+      'Base64 encoding increases payload size by ~33%. It should not be used for large media files where binary transfer is supported.',
+      'Base64 is an encoding scheme, not encryption. It provides zero confidentiality or security on its own.'
+    ],
+    references: [
+      { title: 'IETF RFC 4648: The Base16, Base32, and Base64 Data Encodings', url: 'https://datatracker.ietf.org/doc/html/rfc4648' }
+    ],
+    faqs: [
+      { q: 'Is Base64 secure for sensitive data?', a: 'No. Base64 is a data representation format, not an encryption method. Anyone can immediately decode a Base64 string without a password or key.' },
+      { q: 'What is the difference between standard Base64 and Base64URL?', a: 'Standard Base64 uses "+" and "/" characters, which have special meanings in URLs and filenames. Base64URL replaces "+" with "-" and "/" with "_", and typically omits trailing "=" padding characters.' }
+    ]
+  },
+  'pdf-merge': {
+    heading: 'Browser-Native PDF Merger',
+    explanation: 'Combine multiple PDF documents into a single file directly in your browser. Reorder pages and files interactively before generating the merged document.',
+    whenToUse: 'Merge multi-part scanned documents, consolidate monthly invoices or receipts into a single tax file, combine project proposals with contract appendices, or compile individual PDF chapters into a book.',
+    howItWorks: 'Reads uploaded PDF files into ArrayBuffers using browser FileReader APIs, parses the document object structure with the client-side pdf-lib WebAssembly/JavaScript library, copies selected pages sequentially into a new PDF document instance, and exports the final binary blob for immediate download.',
+    privacyExplanation: 'Documents are processed locally in your browser memory. Your confidential contracts, financial statements, and personal records are never uploaded to any remote server.',
+    exampleInput: 'Files: contract_part1.pdf (3 pages), contract_part2.pdf (2 pages)',
+    exampleOutput: 'Merged: merged_document.pdf (5 pages total)',
+    technicalDetails: 'The merger reconstructs PDF cross-reference tables (XREFs) and page tree objects in local memory while preserving embedded vector fonts and standard document metadata.',
+    limitations: [
+      'Encrypted or password-protected PDF files must be decrypted before merging.',
+      'Processing very large files (e.g. combined size exceeding 100 MB) depends on available browser RAM.'
+    ],
+    references: [
+      { title: 'ISO 32000-1: Document Management — Portable Document Format (PDF 1.7)', url: 'https://www.iso.org/standard/51502.html' }
+    ],
+    faqs: [
+      { q: 'Are my uploaded PDF files safe from interception?', a: 'Yes. Unlike traditional online PDF services that process your files on remote servers, this tool executes 100% inside your browser sandbox. You can verify this by inspecting the Network tab in your browser Developer Tools.' },
+      { q: 'Can I change the order of files before merging?', a: 'Yes. You can drag and drop or use the accessible reorder buttons to arrange documents in your desired sequence.' }
+    ]
+  },
+  'pdf-split': {
+    heading: 'Browser-Native PDF Splitter & Page Extractor',
+    explanation: 'Split PDF documents by specific page numbers or continuous page ranges, or extract individual pages into separate downloadable PDF files directly in your browser.',
+    whenToUse: 'Extract specific pages or chapters from a large manual, separate a multi-page contract into individual addendums, or isolate specific invoice sheets from a batch scan.',
+    howItWorks: 'Loads the source PDF into memory using pdf-lib, parses custom page range expressions (e.g. "1-3, 5, 8-10"), copies the corresponding page objects into a new PDF document container, and generates an optimized binary download.',
+    privacyExplanation: 'All page parsing and extraction occurs inside your local browser tab. No document data touches external servers.',
+    exampleInput: 'File: annual_report.pdf (20 pages), Range: "1-3, 10"',
+    exampleOutput: 'Extracted: annual_report_extracted.pdf (4 pages: 1, 2, 3, 10)',
+    technicalDetails: 'Extracts exact vector paths, fonts, form fields, and image streams associated with target pages without rasterizing or re-compressing graphics.',
+    limitations: [
+      'Password-protected PDFs must be unlocked before page extraction.',
+      'Dynamic interactive XFA forms may lose scripted logic when separated into individual pages.'
+    ],
+    faqs: [
+      { q: 'How do I specify page ranges to split?', a: 'Use commas to separate individual pages and hyphens for continuous ranges (e.g. "1-4, 7, 9-12").' },
+      { q: 'Does splitting reduce the visual quality of pages?', a: 'No. The tool copies original PDF page structures and embedded assets losslessly without rasterizing text or images.' }
+    ]
+  },
+  'pdf-compress': {
+    heading: 'Ghostscript WebAssembly Client-Side PDF Compressor',
+    explanation: 'Optimize and reduce PDF document file sizes locally inside your browser memory using Ghostscript compiled to WebAssembly (WASM).',
+    whenToUse: 'Reduce PDF file sizes to meet strict upload limits on government portals, email attachment caps (e.g. 25 MB), job application systems, or mobile document viewers.',
+    howItWorks: 'Spawns a Web Worker running Ghostscript compiled to WebAssembly. The input PDF is loaded into a virtual memory filesystem (MEMFS), where Ghostscript applies standard PostScript/PDF optimization filters (downsampling images to 150 DPI and removing redundant font descriptors) before outputting the optimized file.',
+    privacyExplanation: 'Processing occurs 100% inside your browser WebAssembly runtime. Confidential documents, bank statements, and legal files are never uploaded to any remote server.',
+    exampleInput: 'Upload: scanned_record.pdf (8.5 MB), Preset: Balanced (150 DPI)',
+    exampleOutput: 'Download: scanned_record_compressed.pdf (2.1 MB - 75% reduction)',
+    technicalDetails: 'Uses standard Ghostscript PDF write device parameters (/ebook at 150 DPI for balanced quality, /screen at 72 DPI for maximum reduction).',
+    limitations: [
+      'PDFs that consist primarily of plain vector text without images may experience minimal compression because vector instructions are already compact.',
+      'Very large documents (exceeding 50 MB) require sufficient browser memory for the WebAssembly runtime.'
+    ],
+    faqs: [
+      { q: 'Why do some PDF files not compress significantly?', a: 'PDFs that contain only vector text, clean fonts, or images that are already heavily compressed will see little reduction. The highest reduction occurs on high-resolution scanned documents with uncompressed raster images.' },
+      { q: 'What quality preset should I choose?', a: 'We recommend the Balanced preset (150 DPI) for general documents and emails. Choose High Compression (72 DPI) only for screen-only viewing where file size is critical.' }
+    ]
+  },
+  'image-compressor': {
+    heading: 'Client-Side Image Compressor & Size Optimizer',
+    explanation: 'Compress and optimize JPEG, PNG, and WebP images directly in your browser. Configure compression quality levels and maximum dimension limits while previewing file size savings in real time.',
+    whenToUse: 'Optimize website images for faster page load times, compress photos for email attachments, reduce profile picture sizes, or save storage space.',
+    howItWorks: 'Draws the uploaded image into an HTML5 Canvas context and re-encodes the pixel buffer using Canvas.toBlob with adjustable quality parameters (0.0 to 1.0) and bilinear downscaling.',
+    privacyExplanation: 'Images are processed locally in your browser memory. Photos and graphics are never uploaded to any remote server.',
+    exampleInput: 'Input: photo.jpg (3.2 MB), Quality: 80%',
+    exampleOutput: 'Output: photo_compressed.jpg (720 KB - 77% reduction)',
+    technicalDetails: 'JPEG and WebP encodings utilize lossy discrete cosine transform (DCT) and arithmetic compression algorithms. PNG optimization uses palette reduction and canvas re-encoding.',
+    limitations: [
+      'Compressing transparent PNGs with lossy JPEG output will replace transparent backgrounds with black or white. Use WebP or PNG format to preserve transparency.',
+      'Images exceeding 40 Megapixels may hit browser Canvas memory constraints on mobile devices.'
+    ],
+    faqs: [
+      { q: 'What is the best image format for web performance?', a: 'WebP offers superior compression compared to JPEG and PNG, delivering 25%–35% smaller file sizes at equivalent visual quality with full transparency support.' },
+      { q: 'Does image compression reduce photo dimensions?', a: 'By default, compression adjusts encoding quality while preserving original pixel dimensions. You can optionally set maximum width/height constraints to scale the image down.' }
+    ]
+  },
+  'image-resizer': {
+    heading: 'Client-Side Image Resizer',
+    explanation: 'Resize image dimensions (width and height in pixels) with aspect ratio locking directly in your browser. Supports JPEG, PNG, and WebP formats.',
+    whenToUse: 'Scale down high-resolution photos for web publishing, prepare social media banners and thumbnails, or fit images to specific dimension requirements.',
+    howItWorks: 'Loads the image bitmap into an offscreen HTML5 Canvas element scaled to the target width and height, applies browser bilinear filtering, and exports the resized image blob.',
+    privacyExplanation: 'All resizing executes in local browser memory. No images leave your device.',
+    exampleInput: 'Original: 3840x2160, Target: 1920x1080 (16:9 aspect locked)',
+    exampleOutput: 'Resized Image: 1920x1080 px',
+    faqs: [
+      { q: 'Does scaling up an image improve its resolution?', a: 'No. Upscaling a small image to larger dimensions interpolates existing pixels, which typically results in blurriness or pixelation.' },
+      { q: 'How does aspect ratio locking work?', a: 'When locked, changing either the width or height automatically calculates the other dimension proportionally to prevent image distortion.' }
+    ]
+  },
+  'image-format-converter': {
+    heading: 'Client-Side Image Format Converter',
+    explanation: 'Convert images seamlessly between PNG, JPEG, and WebP formats directly in your browser tab.',
+    whenToUse: 'Convert PNG screenshots to WebP for faster web loading, convert WebP images to standard JPEG for older software compatibility, or convert JPEGs to PNG for lossless editing.',
+    howItWorks: 'Renders the input image onto an HTML5 Canvas surface and exports the binary stream as the target MIME type using the browser-native canvas blob encoder.',
+    privacyExplanation: 'Conversions execute entirely client-side. No image files are uploaded or stored.',
+    exampleInput: 'Source: banner.png -> Target: WEBP (Quality: 85%)',
+    exampleOutput: 'Converted: banner.webp',
+    faqs: [
+      { q: 'What happens to transparency when converting PNG to JPEG?', a: 'JPEG format does not support alpha channel transparency. Converting a transparent PNG to JPEG will fill transparent areas with a solid background color. Use WebP to retain transparency with smaller file sizes.' },
+      { q: 'Is converting from JPEG to PNG lossless?', a: 'Converting a JPEG to PNG produces a lossless container, but it cannot restore image details previously discarded by JPEG lossy compression.' }
+    ]
+  },
+  'image-cropper': {
+    heading: 'Client-Side Image Cropping Utility',
+    explanation: 'Crop images to custom rectangular dimensions or specific aspect ratios directly in your browser.',
+    whenToUse: 'Crop headshots for profile avatars, remove unwanted borders from screenshots, or center subjects for social media cards.',
+    howItWorks: 'Maps crop coordinates to natural pixel boundaries and draws the selected region onto an HTML5 Canvas for instant export.',
+    privacyExplanation: 'Cropping operates entirely inside your browser tab without network transfers.',
+    exampleInput: 'Input: landscape.jpg, Crop: 1:1 square centered',
+    exampleOutput: 'Cropped: landscape_cropped.jpg',
+    faqs: [
+      { q: 'Does cropping reduce the resolution of the cropped area?', a: 'No. The crop tool extracts original pixels directly from the source image at 1:1 scale without re-sampling or loss.' }
+    ]
+  },
+  'images-to-pdf': {
+    heading: 'Browser-Native Images to PDF Compiler',
+    explanation: 'Compile PNG, JPEG, and WebP images into a single unified PDF document directly in your browser.',
+    whenToUse: 'Combine multiple photo receipts into an expense PDF, create PDF slide presentations from image exports, or compile scanned document pages into a single document.',
+    howItWorks: 'Reads selected image files into binary buffers, calculates optimal page layout dimensions, and embeds each image into consecutive pages of a new PDF document using pdf-lib.',
+    privacyExplanation: 'Everything compiles locally in your browser memory sandbox. No images are uploaded to any server.',
+    exampleInput: 'Upload: page1.png, page2.jpg, receipt.webp',
+    exampleOutput: 'Compiled PDF: images_compiled.pdf (3 pages)',
+    faqs: [
+      { q: 'Can I reorder images before generating the PDF?', a: 'Yes. You can drag and drop images to arrange the exact page sequence before compilation.' }
+    ]
+  },
+  'url-encoder': {
+    heading: 'URL Parameter & URI Component Encoder / Decoder',
+    explanation: 'Encode text strings into percent-encoded URL formats or decode percent-encoded strings back into standard human-readable text.',
+    whenToUse: 'Format query parameter values containing spaces or symbols for HTTP GET requests, decode API tracking parameters, or clean URLs for web routing.',
+    howItWorks: 'Uses browser-native encodeURIComponent and decodeURIComponent functions compliant with RFC 3986 Uniform Resource Identifier specifications.',
+    privacyExplanation: 'URL parsing and conversions occur locally in your browser tab without server transmission.',
+    exampleInput: 'query=user name & role=admin',
+    exampleOutput: 'query%3Duser%20name%20%26%20role%3Dadmin',
+    references: [
+      { title: 'IETF RFC 3986: Uniform Resource Identifier (URI): Generic Syntax', url: 'https://datatracker.ietf.org/doc/html/rfc3986' }
+    ],
+    faqs: [
+      { q: 'Why do URL query parameters need encoding?', a: 'URLs can only safely transmit unreserved ASCII characters. Reserved characters like spaces, &, =, and ? have structural meanings in URIs and must be percent-encoded to avoid ambiguous parsing.' }
+    ]
+  },
+  'password-generator': {
+    heading: 'CSPRNG Random Password Generator',
+    explanation: 'Generate cryptographically secure random passwords and passphrases using hardware-derived entropy via the Web Crypto API.',
+    whenToUse: 'Generate secure master passwords, server database credentials, API secret keys, or unique account passwords.',
+    howItWorks: 'Uses crypto.getRandomValues to select random characters uniformly from configurable character pools (uppercase, lowercase, numbers, symbols) to prevent bias and ensure maximum entropy.',
+    privacyExplanation: 'All passwords are generated directly inside your browser memory. Generated credentials are never logged, transmitted, or stored on any server.',
+    exampleInput: 'Length: 20, Character Pools: Upper, Lower, Digits, Symbols',
+    exampleOutput: 'k7#Qm9$Lp2!vX8*Zw4@R',
+    references: [
+      { title: 'NIST Special Publication 800-63B: Digital Identity Guidelines (Authentication)', url: 'https://pages.nist.gov/800-63-3/sp800-63b.html' }
+    ],
+    faqs: [
+      { q: 'What makes a password cryptographically secure?', a: 'Using a cryptographically secure pseudorandom number generator (CSPRNG) tied to hardware entropy rather than pseudo-random functions like Math.random(), combined with sufficient length (16+ characters) to resist brute-force search attacks.' }
+    ]
+  },
+  'qr-generator': {
+    heading: 'Client-Side QR Code Generator',
+    explanation: 'Generate customizable, high-resolution QR codes from text, URLs, and contact details with configurable error correction and downloadable PNG exports.',
+    whenToUse: 'Create scannable website links, share Wi-Fi credentials, generate authentication setup codes, or prepare print materials.',
+    howItWorks: 'Calculates Reed-Solomon error correction matrices and renders vector modules onto an HTML5 Canvas element.',
+    privacyExplanation: 'QR codes are rendered locally inside your browser tab without transmitting content strings to external services.',
+    exampleInput: 'URL: https://tools.chinmaypatil.com',
+    exampleOutput: 'Downloadable QR Code Image (PNG)',
+    faqs: [
+      { q: 'What error correction level should I choose?', a: 'Medium (M - 15% recovery) is ideal for digital displays. Choose Quartile (Q - 25%) or High (H - 30%) if you plan to print the QR code or place a logo in the center.' }
+    ]
+  },
+  'barcode-generator': {
+    heading: 'Client-Side Vector Barcode Generator',
+    explanation: 'Generate standard 1D barcodes including CODE128, EAN-13, EAN-8, and UPC-A as scalable vector SVG files directly in your browser.',
+    whenToUse: 'Generate retail barcodes, inventory tracking labels, shipping tags, or library catalog markers.',
+    howItWorks: 'Calculates symbology check digits and renders vector SVG paths matching ISO/IEC barcode specifications.',
+    privacyExplanation: 'Barcode generation runs locally inside your browser tab.',
+    exampleInput: 'Format: CODE128, Value: "INV-98234-A"',
+    exampleOutput: 'Vector Barcode (SVG format)',
+    faqs: [
+      { q: 'Why are barcodes exported as SVG?', a: 'SVG is a vector format that scales infinitely without pixelation, ensuring sharp print results on thermal label printers and laser scanners.' }
+    ]
+  },
+  'color-picker': {
+    heading: 'Color Picker & Palette Harmony Explorer',
+    explanation: 'Inspect and convert colors between HEX, RGB, and HSL color models, test contrast ratios, and generate complementary, analogous, and triadic color harmonies.',
+    whenToUse: 'Design web interfaces, extract palette harmonies for brand identity, or test accessible color combinations.',
+    howItWorks: 'Converts RGB color vectors into cylindrical HSL coordinates and calculates trigonometric hue rotations in local JavaScript memory.',
+    privacyExplanation: 'Color computations execute entirely in your browser.',
+    exampleInput: 'Hex: #6366F1 (Indigo)',
+    exampleOutput: 'RGB: rgb(99, 102, 241), HSL: hsl(239, 84%, 67%)',
+    faqs: [
+      { q: 'What is the advantage of HSL over RGB for design?', a: 'HSL (Hue, Saturation, Lightness) separates color shade from brightness and saturation, making it intuitive to create tints, shades, and harmonious color variants.' }
+    ]
+  },
+  'word-counter': {
+    heading: 'Text Statistics & Word Counter',
+    explanation: 'Analyze text statistics in real time, including word count, character count (with and without spaces), sentence count, paragraph count, and estimated reading times.',
+    whenToUse: 'Verify word limits for essays and articles, check tweet and character lengths for social posts, or review documentation readability.',
+    howItWorks: 'Uses Unicode-aware regular expression tokenizers to divide text into word boundaries and paragraph segments.',
+    privacyExplanation: 'All text analysis occurs strictly inside your browser memory. Text is never logged or transmitted.',
+    exampleInput: 'Enter or paste sample text paragraphs.',
+    exampleOutput: 'Words: 45, Characters: 280, Sentences: 3, Reading Time: 14s',
+    faqs: [
+      { q: 'How are reading times calculated?', a: 'Reading time is calculated using an average adult reading speed benchmark of 200 words per minute (WPM).' }
     ]
   },
   'case-converter': {
-    heading: 'Multi-Format Text Case Converter',
-    explanation: 'Convert text case formatting styles between UPPERCASE, lowercase, Title Case, Sentence case, camelCase, PascalCase, snake_case, kebab-case, Train-Case, and dot.case.',
-    whenToUse: 'Helpful for formatting titles, coding variables, query names, or normalizing database tables.',
-    howItWorks: 'Splits strings using boundary selectors and rebuilds them with custom delimiters and capitalization maps.',
-    privacyExplanation: 'Text casing runs entirely client-side. Zero keystrokes are recorded or sent.',
-    exampleInput: 'hello world',
-    exampleOutput: 'Title Case: Hello World\ncamelCase: helloWorld\nsnake_case: hello_world',
+    heading: 'Text Case Converter',
+    explanation: 'Convert text between standard typographic and programming cases: UPPERCASE, lowercase, Title Case, Sentence case, camelCase, PascalCase, snake_case, and kebab-case.',
+    whenToUse: 'Format code variable names, standardize database column names, clean spreadsheet titles, or convert text casings for headlines.',
+    howItWorks: 'Tokenizes words using delimiter and casing boundaries, applying case transformation rules to each token before joining with the target delimiter.',
+    privacyExplanation: 'Conversions execute entirely inside your browser tab.',
+    exampleInput: 'User account profile settings',
+    exampleOutput: 'camelCase: userAccountProfileSettings\nsnake_case: user_account_profile_settings\nkebab-case: user-account-profile-settings',
     faqs: [
-      { q: 'What is Train-Case?', a: 'Train-Case capitalizes the first letter of each word and separates them with hyphens, similar to HTTP header names.' },
-      { q: 'Does it preserve spacing?', a: 'Sentence and Title Case preserveSpacing, while coding cases normalize spaces into punctuation delimiters.' }
+      { q: 'What is the difference between camelCase and PascalCase?', a: 'camelCase starts with a lowercase letter and capitalizes subsequent words (e.g. userProfile). PascalCase capitalizes all words including the first (e.g. UserProfile).' }
     ]
   },
   'remove-duplicate-lines': {
-    heading: 'List Cleaner & Duplicate Line Remover',
-    explanation: 'Remove repeating rows from list datasets. Configures case sensitivity, line whitespace trims, and alphabetical sorting.',
-    whenToUse: 'Clean email indexes, deduplicate keyword arrays, format CSV registers, or clean lists before coding integrations.',
-    howItWorks: 'Normalizes lines and matches them against a uniqueness Set, maintaining original list structures.',
-    privacyExplanation: 'All list filtering runs locally. List entries are never sent to external servers.',
-    exampleInput: 'apple\nbanana\napple',
-    exampleOutput: 'apple\nbanana',
+    heading: 'Duplicate Line Remover & List Cleaner',
+    explanation: 'Filter duplicate lines from text lists and data sets with configurable case sensitivity, whitespace trimming, and alphabetical sorting.',
+    whenToUse: 'Deduplicate email subscriber lists, clean keyword indexes for SEO, remove duplicate database IDs, or sort raw data rows.',
+    howItWorks: 'Splits text by newline delimiters, filters unique elements using a JavaScript Set data structure, and reconstructs the cleaned list.',
+    privacyExplanation: 'List filtering runs entirely inside your browser memory.',
+    exampleInput: 'alpha\\nbeta\\nalpha\\ngamma',
+    exampleOutput: 'alpha\\nbeta\\ngamma (1 duplicate removed)',
     faqs: [
-      { q: 'Does it show statistics?', a: 'Yes. It displays a summary detailing the exact count of repeating lines removed.' },
-      { q: 'What does Trim Whitespace do?', a: 'Trims spaces from the start and end of rows before evaluating uniqueness.' }
+      { q: 'Does whitespace trimming affect line deduplication?', a: 'When enabled, leading and trailing spaces are stripped before comparing lines for uniqueness, preventing lines with trailing whitespace from being treated as unique.' }
     ]
   },
-  'lorem-ipsum-generator': {
-    heading: 'Lorem Ipsum Placeholder Text Generator',
-    explanation: 'Generate custom dummy placeholder text in words, sentences, or paragraphs, formatted as plain text or HTML paragraph tags.',
-    whenToUse: 'Use when mocking layouts, testing font choices, or creating visual designs for web applications.',
-    howItWorks: 'Uses a random vocabulary picker from classic lorem ipsum passages to construct sentences of varying lengths.',
-    privacyExplanation: 'Generates text locally. Completely private, offline-capable dummy generator.',
-    exampleInput: '3 Paragraphs, HTML format',
-    exampleOutput: '<p>Lorem ipsum dolor sit amet...</p>',
+  'unit-converter': {
+    heading: 'Engineering & Everyday Unit Converter',
+    explanation: 'Convert values across Metric and Imperial measurement units for Length, Weight, Temperature, Area, Volume, Time, and Speed.',
+    whenToUse: 'Convert cooking measurements, engineering specifications, international travel distances, or temperature scales.',
+    howItWorks: 'Applies standard international unit conversion ratio factors and affine temperature formulas in browser memory.',
+    privacyExplanation: 'Calculations execute entirely inside your browser tab.',
+    exampleInput: '100 Kilometers -> Miles',
+    exampleOutput: '62.1371 Miles',
     faqs: [
-      { q: 'What is the origin of Lorem Ipsum?', a: 'Lorem Ipsum is derived from Cicero\'s classical Latin literature from 45 BC.' },
-      { q: 'Can I copy HTML tags directly?', a: 'Yes. The HTML format wraps lines in standard paragraph tags, ready for page mockups.' }
+      { q: 'Are precision rounding limits applied?', a: 'Values are calculated with high floating-point precision and formatted cleanly to eliminate precision artifacts.' }
     ]
   },
   'pomodoro-timer': {
     heading: 'Pomodoro Focus Timer & Productivity Workstation',
-    explanation: 'Improve focus and productivity using the Pomodoro technique. Configures customizable focus slots, short breaks, long breaks, and long break intervals.',
-    whenToUse: 'Excellent for deep focus blocks, writing, coding sessions, task planning, or study routines.',
-    howItWorks: 'Implements an SVG circular progress ring and countdown timer using requestAnimationFrame hooks. Play alerts use browser-native Web Audio API bells.',
-    privacyExplanation: 'All configs, timer counts, and session stats are stored locally in localStorage. No tracking data leaves your tab.',
-    exampleInput: '25 Min Focus, 5 Min Short Break',
-    exampleOutput: '[25:00] Focus Countdown',
+    explanation: 'Structure work and study sessions with the Pomodoro technique using customizable focus intervals, short breaks, long breaks, and synthesized Web Audio alert chimes.',
+    whenToUse: 'Deep focus work sessions, coding sprints, study blocks, and structured timeboxing.',
+    howItWorks: 'Maintains interval timers synchronized with high-resolution system timestamps, rendering a visual progress ring and playing alert chimes via the Web Audio API.',
+    privacyExplanation: 'All timer configurations and session counts are stored locally in browser localStorage.',
+    exampleInput: 'Focus: 25 min, Short Break: 5 min',
+    exampleOutput: 'Active Countdown Timer with audio notifications',
     faqs: [
-      { q: 'Are audio bell chimes safe to run in background?', a: 'Yes. Web Audio API synthesizers play bell double chimes even if your browser tab runs in the background.' },
-      { q: 'What are the keyboard shortcuts?', a: 'Use Space to Play/Pause, R to Reset, S to Skip, and F to enter/exit Fullscreen mode.' }
-    ]
-  },
-  'pdf-merge': {
-    heading: 'Secure PDF Document Merger',
-    explanation: 'A client-side browser-native tool to combine multiple PDF files into a single document. Reorder document pages easily before merging.',
-    whenToUse: 'Ideal for combining split reports, merging scanned pages, compiling legal forms, or consolidating project PDFs.',
-    howItWorks: 'Utilizes the pdf-lib library to load the binary arrays of selected files, copies all pages sequentially, and saves them into a new compiled PDF in local memory.',
-    privacyExplanation: 'Documents are processed strictly inside your browser sandbox. No PDF data leaves your machine or is uploaded to servers.',
-    exampleInput: 'Upload: report_p1.pdf (2 pages), report_p2.pdf (3 pages)',
-    exampleOutput: 'Download: merged_document.pdf (5 pages total)',
-    faqs: [
-      { q: 'Can I reorder PDF files before merging?', a: 'Yes. Drag and drop file items in the list to rearrange the merge order, or use the accessible Up/Down buttons.' },
-      { q: 'Is there a file count limit?', a: 'Since files compile locally, we recommend merging up to 15 PDFs at a time to prevent browser memory limit errors.' }
-    ]
-  },
-  'pdf-split': {
-    heading: 'Secure PDF Page Splitter & Extractor',
-    explanation: 'Split PDF files by individual pages, extract custom page ranges, or export specific pages as a sub-document.',
-    whenToUse: 'Perfect for extracting specific sheets from large reports, dividing documents for sharing, or cropping PDF pages.',
-    howItWorks: 'Parses range inputs (e.g. 1-3, 5), matches them to 0-indexed page keys, copies matching items into a new document buffer, and outputs downloadable PDFs.',
-    privacyExplanation: 'All splits run locally. No documents are uploaded or processed externally.',
-    exampleInput: 'File: invoice.pdf (5 pages), Range input: "1-2, 5"',
-    exampleOutput: 'Download: invoice_extracted.pdf (pages 1, 2, 5 only)',
-    faqs: [
-      { q: 'How do I specify range configurations?', a: 'Input single pages or hyphens for continuous page ranges (e.g. 1-4, 6), separated by commas.' },
-      { q: 'What happens if I split every page?', a: 'The tool splits the document page by page and displays separate download links for each page.' }
-    ]
-  },
-
-  'images-to-pdf': {
-    heading: 'Secure Images to PDF Document Compiler',
-    explanation: 'Compile PNG, JPG, or WebP images into a single PDF document locally. Arrange page order easily.',
-    whenToUse: 'Perfect for compiling photo slides, scanning paperwork, or joining multiple receipts into one PDF.',
-    howItWorks: 'Draws incompatible image formats to Canvas to serialize as JPEGs/PNGs, then embeds them on PDF pages.',
-    privacyExplanation: 'Everything compiles locally in your web browser sandbox. No file uploads.',
-    exampleInput: 'Upload: slide1.png, slide2.jpg (arranged)',
-    exampleOutput: 'Download: images_compiled.pdf (2 pages)',
-    faqs: [
-      { q: 'Are all image formats supported?', a: 'Yes. PNG, JPEG, WebP, SVG, and GIF are supported and auto-converted if necessary.' },
-      { q: 'Can I reorder the images?', a: 'Yes. Drag and drop items in the list to rearrange the page sequence.' }
-    ]
-  },
-
-  'pdf-compress': {
-    heading: 'Secure Client-Side PDF Compressor & Size Optimizer',
-    explanation: 'Compress and optimize PDF file sizes locally inside your browser memory using Ghostscript WebAssembly.',
-    whenToUse: 'Perfect for reducing PDF file sizes for email attachments, government portal uploads, and mobile sharing.',
-    howItWorks: 'Loads Ghostscript compiled to WebAssembly inside a Web Worker, writes the input PDF to a virtual filesystem (MEMFS), runs the gs CLI device optimizer, and compiles the result.',
-    privacyExplanation: 'Runs entirely in your local browser sandbox. Your document is processed 100% offline, keeping your private data safe.',
-    exampleInput: 'Upload: report.pdf (12.4 MB) with Balanced preset',
-    exampleOutput: 'Download: report-compressed.pdf (2.8 MB - 77% size savings)',
-    faqs: [
-      { q: 'Why is this tool more secure than other PDF compressors?', a: 'Other tools require you to upload your sensitive documents to their servers. This tool processes everything inside your browser using WebAssembly, meaning your file never touches the internet.' },
-      { q: 'What do the compression quality presets mean?', a: 'High Compression uses 72 DPI (best for emails/web); Balanced uses 150 DPI (recommended, clear text); High Quality uses 300 DPI (for standard printing); Maximum Quality keeps 300 DPI with full color profiles.' }
-    ]
-  },
-
-  'image-compressor': {
-    heading: 'Secure Client-Side Image Compressor & Size Optimizer',
-    explanation: 'Compress and optimize sizes of JPG, PNG, and WebP images client-side.',
-    whenToUse: 'Great for web assets, email attachments, and profile picture optimization.',
-    howItWorks: 'Uses Canvas API to serialize image arrays at custom quality levels and max dimensions.',
-    privacyExplanation: 'Processed entirely locally. Your images never leave your system.',
-    exampleInput: 'Upload: photo.jpg (2.8 MB) at 80% quality',
-    exampleOutput: 'Download: photo_compressed.jpg (650 KB - 76% reduction)',
-    faqs: [
-      { q: 'How does it compress PNGs?', a: 'PNGs can be converted to JPEGs or compressed at custom scales to significantly reduce sizes.' },
-      { q: 'Is there a processing limit?', a: 'No, you can compress as many images as you like offline.' }
-    ]
-  },
-  'image-resizer': {
-    heading: 'Secure Client-Side Image Resizer',
-    explanation: 'Adjust dimensions of PNG, JPG, and WebP images maintaining aspect ratios.',
-    whenToUse: 'Ideal for resizing banners, icons, or photo prints to exact pixel widths.',
-    howItWorks: 'Draws images on Canvas contexts set to your custom dimensions and downloads the output.',
-    privacyExplanation: 'Dimensions are adjusted in your browser. Complete data privacy.',
-    exampleInput: 'Dimensions: 1920x1080 -> 1280x720 (aspect locked)',
-    exampleOutput: 'Download: photo_resized.png (1280x720px)',
-    faqs: [
-      { q: 'How does aspect ratio locking work?', a: 'When locked, changing the width automatically recalculates the height proportionally.' },
-      { q: 'Does resizing degrade quality?', a: 'Resizing down scales cleanly, while scaling up can result in pixelation.' }
-    ]
-  },
-  'image-format-converter': {
-    heading: 'Secure Client-Side Image Format Converter',
-    explanation: 'Convert images between PNG, JPEG, and WebP formats instantly.',
-    whenToUse: 'Great for Web development, converting Apple HEIC/PNG snapshots to WebP, or JPGs to PNGs.',
-    howItWorks: 'Canvas context draws the image buffer and outputs a blob in the selected target format.',
-    privacyExplanation: 'No format data is sent to external servers. Safe, fast, and local.',
-    exampleInput: 'Convert: screenshot.png -> Target: WEBP',
-    exampleOutput: 'Download: screenshot_converted.webp',
-    faqs: [
-      { q: 'Does WebP conversion save space?', a: 'Yes. WebP format yields 25%-30% smaller files than JPEGs while keeping high quality.' },
-      { q: 'Can I batch convert images?', a: 'Yes. Select multiple files and convert them all to your target format in one click.' }
-    ]
-  },
-  'image-cropper': {
-    heading: 'Secure Client-Side Image Cropping Utility',
-    explanation: 'Crop image files to custom rectangular areas securely.',
-    whenToUse: 'Perfect for cropping faces, removing borders, or focusing on image details.',
-    howItWorks: 'Calculates scaled offsets from sliders and crops natural pixel boundaries using Canvas.',
-    privacyExplanation: 'Cropping runs offline in your web browser. No data leaves your machine.',
-    exampleInput: 'Input: photo.png, Sliders: Crop X offset, custom widths',
-    exampleOutput: 'Download: photo_cropped.png',
-    faqs: [
-      { q: 'Is this mobile friendly?', a: 'Yes. The slider controls work perfectly on mobile touchscreens without drag issues.' },
-      { q: 'Is original quality preserved?', a: 'Yes. Coordinates scale to natural pixels for a lossless crop.' }
-    ]
-  },
-  'fullscreen-clock': {
-    heading: 'Fullscreen Digital Clock & Study workstation',
-    explanation: 'A beautiful digital clock for study desks, focus spaces, and fullscreens.',
-    whenToUse: 'Perfect for desk monitors, library study sessions, and workspace clocks.',
-    howItWorks: 'Runs an update cycle using requestAnimationFrame synchronized with system time.',
-    privacyExplanation: 'System time is checked locally in-browser. No tracking logs.',
-    exampleInput: 'Settings: 24-hour, show seconds, show date',
-    exampleOutput: '[14:05:09] Displayed Fullscreen',
-    faqs: [
-      { q: 'How do I toggle fullscreen?', a: 'Click the button or press F11. Press Escape to exit.' },
-      { q: 'Does it support dark themes?', a: 'Yes. The clock inherits your platform theme settings automatically.' }
+      { q: 'Will the timer chime if my browser tab is in the background?', a: 'Yes. The Web Audio API synthesizer plays completion alert chimes even when the tab is backgrounded.' }
     ]
   },
   'stopwatch': {
-    heading: 'High-Precision Stopwatch & Lap Timer',
-    explanation: 'Track elapsed duration with sub-millisecond precision and lap splits.',
-    whenToUse: 'Ideal for workout timing, code performance audits, or event tracking.',
-    howItWorks: 'Measures high-resolution intervals using performance.now() and logs lap results.',
-    privacyExplanation: 'Laps and times are kept in transient React states. No data is stored or uploaded.',
-    exampleInput: 'Click Start, Lap, Lap, Stop',
-    exampleOutput: 'List: Lap #1 00:04.12, Total 00:08.24',
+    heading: 'High-Resolution Stopwatch & Lap Timer',
+    explanation: 'Measure elapsed time intervals and record lap splits with high-resolution accuracy using the browser performance.now() API.',
+    whenToUse: 'Time athletic laps, record code execution benchmarks, or track task durations.',
+    howItWorks: 'Measures high-resolution performance intervals using window.performance.now() to deliver microsecond-accurate time measurement free from clock drift.',
+    privacyExplanation: 'Lap times remain in transient component state and are never transmitted.',
+    exampleInput: 'Start -> Lap -> Lap -> Stop',
+    exampleOutput: 'Lap 1: 00:04.32, Lap 2: 00:03.88, Total: 00:08.20',
     faqs: [
-      { q: 'How accurate is the stopwatch?', a: 'It utilizes performance.now() to measure intervals with microsecond resolution.' },
-      { q: 'Can I export lap tables?', a: 'Yes. You can copy the clean HTML table entries directly.' }
+      { q: 'How does performance.now() differ from Date.now()?', a: 'performance.now() measures monotonic time from page load with sub-millisecond resolution, unaffected by operating system clock adjustments or daylight saving shifts.' }
     ]
   },
   'countdown-timer': {
-    heading: 'Countdown Timer & Audio Alarm Chime',
-    explanation: 'Configure countdown timers with custom hours, minutes, and alarm notifications.',
-    whenToUse: 'Great for cooking, study blocks, presentation timings, or focus slots.',
-    howItWorks: 'Decrements counts relative to system timestamps and plays synthesized sound bells.',
-    privacyExplanation: 'Audios are generated on-the-fly via Web Audio API. No external fetches.',
-    exampleInput: 'Timer values: 1 Hour, 15 Minutes',
-    exampleOutput: '[01:15:00] Countdown with double bells at zero',
+    heading: 'Countdown Timer & Audio Alarm',
+    explanation: 'Set countdown timers for hours, minutes, and seconds with audible Web Audio alarm chimes.',
+    whenToUse: 'Cooking timers, presentation time limits, exercise intervals, or study countdowns.',
+    howItWorks: 'Calculates remaining duration against system timestamps and triggers synthesized Web Audio frequencies upon reaching zero.',
+    privacyExplanation: 'Runs entirely client-side without external dependencies.',
+    exampleInput: 'Duration: 15 minutes',
+    exampleOutput: 'Active countdown with alarm at 00:00:00',
     faqs: [
-      { q: 'Will the alarm play in background tabs?', a: 'Yes. Web Audio API plays chimes even when the tab is backgrounded.' },
-      { q: 'Are cookies used for settings?', a: 'No, everything is transient client-side states.' }
+      { q: 'Are alarm audio files downloaded from a server?', a: 'No. The audio chime is synthesized directly in your browser using the Web Audio API oscillator.' }
     ]
   },
-  'qr-generator': {
-    heading: 'Secure Client-Side QR Code Generator',
-    explanation: 'Create customizable QR codes from text or URL parameters instantly.',
-    whenToUse: 'Perfect for sharing links, printing cards, or encoding Wi-Fi details.',
-    howItWorks: 'Uses the qrcode library to build matrix grids and render them on Canvas elements.',
-    privacyExplanation: 'QR codes are rendered locally. Your text strings are never uploaded.',
-    exampleInput: 'URL: https://tools.chinmaypatil.com, colors: fg #000, bg #fff',
-    exampleOutput: 'Download: qrcode.png (256x256px)',
+  'fullscreen-clock': {
+    heading: 'Fullscreen Digital Clock & Study Display',
+    explanation: 'A clean digital clock with 12/24 hour display options, date formatting, and fullscreen mode for desks and study monitors.',
+    whenToUse: 'Full-screen desk clock display during study or remote work sessions.',
+    howItWorks: 'Synchronizes with local device time via requestAnimationFrame render cycles.',
+    privacyExplanation: 'System time is read locally inside your browser.',
+    exampleInput: 'Mode: 24-hour, Fullscreen',
+    exampleOutput: '[ 14:05:09 ]',
     faqs: [
-      { q: 'Can I customize QR colors?', a: 'Yes. You can configure custom foreground and background colors.' },
-      { q: 'Can QR codes be scanned on any device?', a: 'Yes, our generated QR codes follow the official standard specifications.' }
+      { q: 'How do I toggle fullscreen mode?', a: 'Click the Fullscreen button or press the F11 key on your keyboard.' }
     ]
   },
-  'barcode-generator': {
-    heading: 'Secure Client-Side Barcode Generator',
-    explanation: 'Generate CODE128, EAN13, EAN8, and UPC barcodes as vector SVGs.',
-    whenToUse: 'Ideal for product tagging, inventory systems, or retail scan tests.',
-    howItWorks: 'Integrates jsbarcode to construct standard barcode structures as vector paths.',
-    privacyExplanation: 'Code strings are processed entirely in-browser. Zero server calls.',
-    exampleInput: 'Format: EAN13, Code: 1234567890128',
-    exampleOutput: 'Download: barcode_1234567890128.svg',
+  'lorem-ipsum-generator': {
+    heading: 'Lorem Ipsum Placeholder Text Generator',
+    explanation: 'Generate dummy placeholder text by words, sentences, or paragraphs in plain text or HTML paragraph formats for layout design.',
+    whenToUse: 'Mocking website layouts, testing typography rendering, and designing wireframes.',
+    howItWorks: 'Selects words and punctuation patterns from classical Latin passages in browser memory.',
+    privacyExplanation: 'Generates text completely client-side.',
+    exampleInput: '3 Paragraphs, HTML format',
+    exampleOutput: '<p>Lorem ipsum dolor sit amet...</p>',
     faqs: [
-      { q: 'Why download as SVG?', a: 'SVGs are vectors, meaning they print cleanly at any scale without pixelating.' },
-      { q: 'Are retail checksums verified?', a: 'Yes. EAN13 and EAN8 validate numeric structures before rendering.' }
-    ]
-  },
-  'color-picker': {
-    heading: 'Secure Color Picker & Palette Generator',
-    explanation: 'Pick colors, inspect HSL/RGB/HEX values, and generate harmonies.',
-    whenToUse: 'Perfect for UI design, CSS styling, brand coloring, or theme picking.',
-    howItWorks: 'Reads standard hex/rgb parameters and calculates HSL complementary shifts.',
-    privacyExplanation: 'Color selections and palettes are computed locally. No data leaves your machine.',
-    exampleInput: 'Color: #6366f1 (Indigo)',
-    exampleOutput: 'Analogous: #3b82f6, #6366f1, #a855f7. Click-to-copy enabled.',
-    faqs: [
-      { q: 'How do I copy color codes?', a: 'Click the copy icon next to any value, or click directly on any palette swatch.' },
-      { q: 'What harmonies are supported?', a: 'Analogous, complementary, triadic, and monochromatic palettes.' }
-    ]
-  },
-  'unit-converter': {
-    heading: 'Secure Universal Unit Converter',
-    explanation: 'Convert metric and imperial units for Length, Weight, Temperature, Area, Volume, Time, and Speed.',
-    whenToUse: 'Great for engineering, recipes, math studies, or travel calculations.',
-    howItWorks: 'Applies conversion factor ratios and temperature offset formulas client-side.',
-    privacyExplanation: 'Calculations run in-browser. Fast, offline, and completely private.',
-    exampleInput: 'Category: Length, Value: 5, From: km, To: m',
-    exampleOutput: 'Result: 5000 m',
-    faqs: [
-      { q: 'Are imperial units supported?', a: 'Yes. Feet, inches, yards, miles, pounds, ounces, gallons, and quarts are supported.' },
-      { q: 'Does it work offline?', a: 'Yes! All unit calculators are loaded in your browser memory and work 100% offline.' }
-    ]
-  },
-  'timestamp-explorer': {
-    heading: 'Secure Unix Epoch Timestamp & Date Converter',
-    explanation: 'Convert Unix epoch timestamps in seconds or milliseconds to ISO 8601, RFC 3339, UTC, local, and relative date formats.',
-    whenToUse: 'Perfect for debugging database epochs, verifying token exp times, formatting date logs, or analyzing log files.',
-    howItWorks: 'Utilizes JS Date parsing functions locally in your browser memory to map timestamps to standard international layout strings.',
-    privacyExplanation: 'Epoch inputs and dates are processed locally. Your server logs and database IDs are never uploaded or shared.',
-    exampleInput: 'Timestamp: 1719600000',
-    exampleOutput: 'ISO 8601: 2024-06-28T18:40:00.000Z',
-    faqs: [
-      { q: 'What is a Unix epoch?', a: 'The Unix epoch is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT), not counting leap seconds.' },
-      { q: 'Does it support milliseconds?', a: 'Yes. The converter detects lengths greater than 10 digits and parses them as milliseconds automatically.' }
-    ]
-  },
-  'unicode-inspector': {
-    heading: 'Secure Unicode Code Point & Character Inspector',
-    explanation: 'Analyze strings to inspect Unicode code points, hex values, and type properties. Instantly find hidden spaces, zero-width characters, emojis, and control symbols.',
-    whenToUse: 'Excellent for debugging paste bugs, cleaning copy-paste text fields, inspecting localized characters, or identifying trailing spaces.',
-    howItWorks: 'Iterates through string surrogate pairs to identify code points and maps them to Unicode blocks in your browser memory.',
-    privacyExplanation: 'All strings are processed in-memory locally. No text is sent to the network or stored.',
-    exampleInput: 'Text: Hi 👋',
-    exampleOutput: 'Char: H (U+0048), Char: i (U+0069), Char: 👋 (U+1F44B)',
-    faqs: [
-      { q: 'What is a zero-width space?', a: 'A zero-width space (ZWSP) is a non-printing character used in computerized typesetting to indicate word boundaries where line-breaks are permissible.' },
-      { q: 'Does it support multi-byte emojis?', a: 'Yes. The analyzer correctly splits supplementary Unicode characters and emojis using standard surrogate pair checks.' }
+      { q: 'Where does Lorem Ipsum originate?', a: 'Lorem Ipsum is derived from sections of Cicero\'s classical work "De Finibus Bonorum et Malorum" written in 45 BC.' }
     ]
   }
 };

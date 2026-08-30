@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, ChangeEvent, DragEvent, useCallback } from 'react';
 import t from './locales/en.json';
-import { beautifyJSON, minifyJSON } from './utils';
+import { beautifyJSON, minifyJSON, parseJSONError } from './utils';
 import { TreeView } from './TreeView';
 import { Button } from '@/components/ui/Button';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
@@ -169,7 +169,9 @@ export default function JsonWorkspace({ slug = 'json-formatter' }: JsonWorkspace
       setIsValid(false);
       setParsedData(null);
       const errorObj = err instanceof Error ? err : new Error(String(err));
-      setErrorMsg(errorObj.message || 'Invalid JSON syntax');
+      const parsedErr = parseJSONError(errorObj.message || 'Invalid JSON', input);
+      const locStr = parsedErr.line ? ` (Line ${parsedErr.line}, Col ${parsedErr.column})` : '';
+      setErrorMsg(`${parsedErr.detailedError}${locStr}`);
     }
   }, [input, indent]);
 

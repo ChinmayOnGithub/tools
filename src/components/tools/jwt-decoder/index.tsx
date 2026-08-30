@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trash, Copy } from 'lucide-react';
+import { Trash, Copy, ShieldAlert, CheckCircle2, Clock } from 'lucide-react';
 import t from './locales/en.json';
 import { decodeJWT } from './utils';
 
@@ -108,6 +108,7 @@ export default function JWTDecoder() {
   const result = input.trim() ? decodeJWT(input) : null;
   const headerText = result?.success && result.data ? JSON.stringify(result.data.header, null, 2) : '';
   const payloadText = result?.success && result.data ? JSON.stringify(result.data.payload, null, 2) : '';
+  const signatureText = result?.success && result.data ? result.data.signature : '';
   const errorMsg = result && !result.success ? result.error : null;
 
   if (!mounted) {
@@ -116,6 +117,19 @@ export default function JWTDecoder() {
 
   return (
     <div className="space-y-6 w-full">
+      {/* Prominent Technical Callout: Decode != Verify */}
+      <div className="p-3.5 border-2 border-primary/30 bg-primary/5 flex items-start gap-3">
+        <ShieldAlert className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+        <div className="space-y-1 text-xs text-muted-foreground leading-relaxed">
+          <p className="font-bold text-foreground">
+            <span className="uppercase tracking-wider">Decode ≠ Verify</span> — Client-Side Structural Inspection
+          </p>
+          <p>
+            This tool parses and displays the JSON Web Token structure directly in your browser. It reveals the claims and header algorithms, but <strong className="text-foreground">does not verify the cryptographic signature</strong> against your private secret or public key.
+          </p>
+        </div>
+      </div>
+
       {/* 1. Validation Message Box */}
       {errorMsg && (
         <div className="p-3 text-xs font-semibold border bg-destructive/5 text-destructive border-destructive/20 rounded-none animate-in fade-in duration-200">
@@ -128,7 +142,7 @@ export default function JWTDecoder() {
         {/* Workspace Inputs */}
         <div className="space-y-6">
           <InputPanel 
-            title="JWT Token Input" 
+            title="JWT Token Input (Header.Payload.Signature)" 
             onPasteClick={handlePasteClick}
           >
             <div className="space-y-4">
@@ -161,6 +175,28 @@ export default function JWTDecoder() {
 
         {/* Outputs Column */}
         <div className="space-y-6">
+          {/* Claim Metadata Status Bar */}
+          {result?.success && result.data && (
+            <div className="p-3 border border-border bg-card grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div className="flex items-center gap-1.5 font-medium">
+                {result.data.isExpired ? (
+                  <span className="text-destructive flex items-center gap-1 font-bold">
+                    <Clock className="h-3.5 w-3.5" /> Token Expired
+                  </span>
+                ) : (
+                  <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-bold">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Token Not Expired
+                  </span>
+                )}
+              </div>
+              {result.data.expirationDate && (
+                <div className="text-muted-foreground text-[11px]">
+                  Exp: {result.data.expirationDate}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Decoded Header */}
           {!!headerText && (
             <OutputPanel title="Decoded Header (Algorithm & Key Type)">
@@ -171,7 +207,7 @@ export default function JWTDecoder() {
                     readOnly
                     placeholder="Decoded Header JSON"
                     aria-label="Decoded Header JSON text area"
-                    className="w-full h-40 bg-transparent text-xs font-mono p-3 border-none outline-none focus:ring-0 text-foreground resize-y"
+                    className="w-full h-32 bg-transparent text-xs font-mono p-3 border-none outline-none focus:ring-0 text-foreground resize-y"
                   />
                 </div>
                 <ActionBar>
@@ -199,7 +235,7 @@ export default function JWTDecoder() {
                     readOnly
                     placeholder="Decoded Payload JSON"
                     aria-label="Decoded Payload JSON text area"
-                    className="w-full h-64 bg-transparent text-xs font-mono p-3 border-none outline-none focus:ring-0 text-foreground resize-y"
+                    className="w-full h-56 bg-transparent text-xs font-mono p-3 border-none outline-none focus:ring-0 text-foreground resize-y"
                   />
                 </div>
                 <ActionBar>
@@ -213,6 +249,17 @@ export default function JWTDecoder() {
                     </Button>
                   </div>
                 </ActionBar>
+              </div>
+            </OutputPanel>
+          )}
+
+          {/* Raw Signature Output */}
+          {!!signatureText && (
+            <OutputPanel title="Token Signature Component">
+              <div className="space-y-4">
+                <div className="border border-border bg-card p-3">
+                  <p className="font-mono text-xs text-muted-foreground break-all">{signatureText}</p>
+                </div>
               </div>
             </OutputPanel>
           )}

@@ -66,12 +66,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  const toolRoutes = TOOLS_REGISTRY.filter((t) => t.status === 'published').map((tool) => ({
-    url: `${siteUrl}/tools/${tool.id}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }));
+  // Only index published tools that are not marked noindex
+  const toolRoutes = TOOLS_REGISTRY
+    .filter((t) => t.status === 'published' && !t.noindex)
+    .map((tool) => ({
+      url: `${siteUrl}/tools/${tool.id}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: tool.qualityTier === 'flagship' ? 0.9 : 0.7,
+    }));
 
   return [...routes, ...categoryRoutes, ...docRoutes, ...toolRoutes];
 }

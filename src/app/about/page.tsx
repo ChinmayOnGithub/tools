@@ -1,11 +1,11 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ShieldCheck, Cpu, Key, FileText, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Cpu, Code2, Lock, ExternalLink, Terminal } from 'lucide-react';
 import AdContainer from '@/components/shared/AdContainer';
 
 export const metadata: Metadata = {
-  title: 'About Us - Privacy-First Browser Utilities',
-  description: 'Learn about our local client-side processing architecture. CoolTools runs entirely inside your browser tab to secure your files and private data.',
+  title: 'About Us - Privacy-First Browser Utilities & Developer Tools',
+  description: 'Learn about our local client-side processing architecture, open web standards, and developer trust model. CoolTools processes data in your browser tab without tool-processing servers.',
   alternates: {
     canonical: 'https://tools.chinmaypatil.com/about',
   },
@@ -19,88 +19,117 @@ export default function AboutPage() {
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
           About CoolTools
         </h1>
-        <p className="text-base text-muted-foreground leading-relaxed">
-          CoolTools is a growing collection of professional browser-native utilities built to respect your privacy. 
-          Everything runs entirely inside your local device using modern client-side browser APIs.
+        <p className="text-base text-muted-foreground leading-relaxed max-w-3xl">
+          CoolTools is an open-source, privacy-first web utilities platform built by a developer for developers, designers, and privacy-conscious users. Every utility is engineered to execute directly inside your browser memory using modern Web APIs without routing sensitive files or tokens through remote servers.
         </p>
       </section>
 
       {/* Trust Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-card border-2 border-border p-6 card-depth-1">
-          <div className="h-10 w-10 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
+        <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-2">
+          <div className="h-10 w-10 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2">
             <ShieldCheck className="h-5 w-5" />
           </div>
-          <h2 className="text-base font-bold text-foreground mb-2">100% Client-Side</h2>
+          <h2 className="text-base font-bold text-foreground">Client-Side Isolation</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Your files and data never touch external servers. All operations happen in local browser sandbox memory, keeping your documents and secrets secure.
+            Your files, JSON payloads, tokens, and documents are loaded into local browser memory via FileReader, Canvas, and WebAssembly. No backend tool-processing API receives or stores your input data.
           </p>
         </div>
 
-        <div className="bg-card border-2 border-border p-6 card-depth-1">
-          <div className="h-10 w-10 bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
+        <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-2">
+          <div className="h-10 w-10 bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-2">
             <Cpu className="h-5 w-5" />
           </div>
-          <h2 className="text-base font-bold text-foreground mb-2">Instant Operations</h2>
+          <h2 className="text-base font-bold text-foreground">WebAssembly &amp; Web Crypto</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Eliminates upload and download delay. Our tools compute calculations instantly in local memory for speed and efficiency.
+            We utilize high-performance standard browser engines—including W3C Web Crypto for CSPRNG passwords and SHA hashing, pdf-lib for document restructuring, and Ghostscript WASM for PDF optimization.
           </p>
         </div>
 
-        <div className="bg-card border-2 border-border p-6 card-depth-1">
-          <div className="h-10 w-10 bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-4">
-            <Key className="h-5 w-5" />
+        <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-2">
+          <div className="h-10 w-10 bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-2">
+            <Code2 className="h-5 w-5" />
           </div>
-          <h2 className="text-base font-bold text-foreground mb-2">No Registration Required</h2>
+          <h2 className="text-base font-bold text-foreground">RFC &amp; ISO Standards</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            No accounts, subscriptions, or login screens. Immediate utility access with zero tracking cookies or authentication hurdles.
+            Our tools strictly implement official technical standards, including RFC 8259 (JSON), RFC 7519 (JWT), RFC 4122 (UUIDv4), RFC 3986 (URI), and Unicode 15.0 specifications.
           </p>
         </div>
 
-        <div className="bg-card border-2 border-border p-6 card-depth-1">
-          <div className="h-10 w-10 bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center mb-4">
-            <FileText className="h-5 w-5" />
+        <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-2">
+          <div className="h-10 w-10 bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center mb-2">
+            <Lock className="h-5 w-5" />
           </div>
-          <h2 className="text-base font-bold text-foreground mb-2">Built for Professionals</h2>
+          <h2 className="text-base font-bold text-foreground">Transparent Verification</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Engineered for developers, students, and professionals requiring rapid, privacy-compliant text formatting, UUID generation, PDF operations, or clock widgets.
+            We encourage users to verify all network activity using browser Developer Tools (F12) to confirm that no input data leaves their machine during tool usage.
           </p>
         </div>
       </section>
 
-      {/* Collection Checklist */}
-      <section className="bg-muted/30 border border-border p-6 space-y-4">
-        <h2 className="text-lg font-bold text-foreground">Our Core Collection</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs text-muted-foreground font-semibold">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-            <span>Developer formatting & UUID utilities</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-            <span>Text analysis & casing editors</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-            <span>Browser-native PDF merge & split tools</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-            <span>Productivity timers and clock frames</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Publisher Identity & Editorial Standards */}
+      {/* How Local Processing Works Step-by-Step */}
       <section className="bg-card border-2 border-border p-6 space-y-4 card-depth-1">
-        <h2 className="text-lg font-extrabold text-foreground">Publisher Identity & Editorial Commitment</h2>
+        <h2 className="text-lg font-extrabold text-foreground">How Local Processing Works</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+          <div className="p-3.5 bg-muted/20 border border-border space-y-1.5">
+            <span className="font-mono text-primary font-bold text-[10px]">STEP 01</span>
+            <h3 className="font-bold text-foreground">User Selection</h3>
+            <p className="text-muted-foreground leading-relaxed">You paste text or select a file locally on your device.</p>
+          </div>
+          <div className="p-3.5 bg-muted/20 border border-border space-y-1.5">
+            <span className="font-mono text-primary font-bold text-[10px]">STEP 02</span>
+            <h3 className="font-bold text-foreground">Browser Memory</h3>
+            <p className="text-muted-foreground leading-relaxed">Data is read into JavaScript memory using HTML5 FileReader / ArrayBuffer.</p>
+          </div>
+          <div className="p-3.5 bg-muted/20 border border-border space-y-1.5">
+            <span className="font-mono text-primary font-bold text-[10px]">STEP 03</span>
+            <h3 className="font-bold text-foreground">Native Computation</h3>
+            <p className="text-muted-foreground leading-relaxed">Algorithms run on your CPU via Web APIs or WebAssembly workers.</p>
+          </div>
+          <div className="p-3.5 bg-muted/20 border border-border space-y-1.5">
+            <span className="font-mono text-primary font-bold text-[10px]">STEP 04</span>
+            <h3 className="font-bold text-foreground">Direct Download</h3>
+            <p className="text-muted-foreground leading-relaxed">Outputs are rendered or exported directly to your disk with zero network hops.</p>
+          </div>
+        </div>
+        <div className="pt-2 text-xs">
+          <Link
+            href="/docs/security-network-audit"
+            className="text-primary font-bold hover:underline inline-flex items-center gap-1"
+          >
+            Read our DevTools Network Inspection Guide →
+          </Link>
+        </div>
+      </section>
+
+      {/* Publisher Identity & Open Source */}
+      <section className="bg-card border-2 border-border p-6 space-y-4 card-depth-1">
+        <h2 className="text-lg font-extrabold text-foreground">Publisher Identity &amp; Open Source Project</h2>
         <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
           <p>
-            <strong className="text-foreground">CoolTools Platform</strong> is designed, maintained, and published independently by <strong className="text-foreground">Chinmay Patil</strong>. Our primary mission is to eliminate data privacy concerns associated with server-side online utilities by providing open-source, client-side web tools.
+            <strong className="text-foreground">CoolTools Platform</strong> is designed, maintained, and published by <strong className="text-foreground">Chinmay Patil</strong>. The project was created to provide a modern, transparent alternative to legacy online converter websites that unnecessarily upload confidential documents and tokens to private backend servers.
           </p>
           <p>
-            Every utility on this platform adheres to strict quality benchmarks: zero background data collection, 100% browser sandbox isolation, RFC/ISO standard compliance, and transparent open-source code verification.
+            The source code is hosted publicly on GitHub. You can inspect the implementation of every tool, review changes, submit bug reports, or contribute improvements directly.
           </p>
+          <div className="pt-2 flex flex-wrap gap-4 items-center">
+            <a
+              href="https://github.com/ChinmayOnGithub/tools"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 border-2 border-border bg-muted/40 text-foreground text-xs font-bold hover:border-primary hover:text-primary transition-all"
+            >
+              <Terminal className="h-4 w-4" />
+              <span>GitHub Repository</span>
+              <ExternalLink className="h-3 w-3 ml-0.5" />
+            </a>
+            <Link
+              href="/contact"
+              className="text-xs font-bold text-muted-foreground hover:text-foreground hover:underline"
+            >
+              Contact Developer
+            </Link>
+          </div>
         </div>
       </section>
 

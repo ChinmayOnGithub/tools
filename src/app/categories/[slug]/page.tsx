@@ -6,6 +6,7 @@ import { CATEGORIES } from '@/config/categories';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import ToolCard from '@/components/shared/ToolCard';
 import AdContainer from '@/components/shared/AdContainer';
+import { ShieldCheck, CheckCircle2, Terminal } from 'lucide-react';
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -108,16 +109,24 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       </nav>
 
       {/* Header Panel */}
-      <section className="relative bg-card border-2 border-border p-6 sm:p-8 card-depth-1 overflow-hidden">
-        {/* Top accent bar matching category */}
+      <section className="relative bg-card border-2 border-border p-6 sm:p-8 card-depth-1 overflow-hidden space-y-4">
         <div className={`absolute top-0 left-0 right-0 h-1 ${colors.bar}`} />
         
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          {category.title}
-        </h1>
-        <p className="mt-2.5 text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
-          {category.description}
-        </p>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+            {category.title}
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
+            {category.description}
+          </p>
+        </div>
+
+        {/* Domain Overview Context */}
+        {category.overview && (
+          <div className="pt-2 text-xs text-muted-foreground/90 leading-relaxed border-t border-border/40">
+            {category.overview}
+          </div>
+        )}
       </section>
 
       {/* Ad slot */}
@@ -132,7 +141,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               Available Tools
             </h2>
             <span className={`inline-flex items-center px-3 py-1 border text-xs font-bold uppercase tracking-wider ${colors.badge}`}>
-              {availableTools.length} Live
+              {availableTools.length} Available
             </span>
           </div>
           {availableTools.length > 0 ? (
@@ -149,14 +158,41 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           )}
         </div>
 
-        {/* Educational Guarantee Section */}
+        {/* Core Domain Workflows */}
+        {category.coreUseCases && category.coreUseCases.length > 0 && (
+          <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-4">
+            <div className="flex items-center gap-2 text-foreground font-bold text-sm">
+              <Terminal className="h-5 w-5 text-primary" />
+              <h2>Common Workflows &amp; Tasks in {category.title}</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-muted-foreground">
+              {category.coreUseCases.map((useCase, idx) => (
+                <div key={idx} className="flex items-start gap-2 p-2.5 bg-muted/20 border border-border">
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{useCase}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Educational Architecture Section */}
         <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-3">
-          <h2 className="text-sm font-extrabold text-foreground uppercase tracking-wider">
-            Why Use Client-Side {category.title}?
-          </h2>
+          <div className="flex items-center gap-2 text-foreground font-bold text-sm">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            <h2>How Local Browser Processing Works in {category.title}</h2>
+          </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            All utilities in the <strong className="text-foreground">{category.title}</strong> category operate 100% locally inside your web browser. No document streams, binary files, API keys, or text inputs are transmitted to external servers, providing mathematical data privacy and zero cloud retention risk.
+            All utilities in the <strong className="text-foreground">{category.title}</strong> category operate locally inside your web browser using modern Web APIs (such as Web Crypto, HTML5 Canvas, FileReader, and WebAssembly). Your document streams, binary files, tokens, and text inputs remain inside your local browser memory and are not sent to any backend tool-processing servers.
           </p>
+          <div className="pt-2">
+            <Link
+              href="/docs/security-network-audit"
+              className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1"
+            >
+              Learn how to inspect network requests with browser DevTools →
+            </Link>
+          </div>
         </div>
 
         {/* Upcoming Tools */}

@@ -13,6 +13,7 @@ import FaqSection from '@/components/shared/FaqSection';
 import PrivacyCard from '@/components/shared/PrivacyCard';
 import ToolLayout from '@/components/shared/ToolLayout';
 import ToolHeader from '@/components/shared/ToolHeader';
+import { ShieldCheck, BookOpen, AlertCircle, ExternalLink } from 'lucide-react';
 
 export async function generateStaticParams() {
   return TOOLS_REGISTRY.map((tool) => ({
@@ -37,6 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: tool.seoTitle || tool.name,
     description: tool.seoDescription || tool.description,
+    robots: tool.noindex ? { index: false, follow: true } : { index: true, follow: true },
     alternates: {
       canonical: `${siteUrl}/tools/${slug}`,
     },
@@ -207,7 +209,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
             {tool.name} is Coming Soon
           </h1>
           <p className="mt-1.5 text-xs text-muted-foreground max-w-sm leading-relaxed">
-            This utility is currently under active planning or development. Like all our tools, it will process data 100% locally in your browser.
+            This utility is currently under active planning or development. Like all our tools, it will process data locally inside your browser.
           </p>
           <div className="mt-2 flex flex-col sm:flex-row gap-4">
             <Link
@@ -290,10 +292,10 @@ export default async function ToolWrapperPage({ params }: PageProps) {
             <div className="bg-card border-2 border-border p-5 space-y-3 card-depth-1">
               <div className="flex items-center gap-2 font-extrabold text-xs text-foreground uppercase tracking-wider">
                 <span className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span>Zero Server Uploads</span>
+                <span>Local Browser Processing</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                All computations on CoolTools execute 100% inside your local browser memory tab. Your confidential files, tokens, and documents never touch remote servers.
+                All computations execute locally inside your browser memory. Your confidential files, tokens, and documents are not sent to any tool processing server.
               </p>
               <Link
                 href="/docs/security-network-audit"
@@ -337,11 +339,57 @@ export default async function ToolWrapperPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Technical Specifications & Standards */}
-            {seoContent.technicalOverview && (
-              <div className="bg-card border-2 border-border p-4 space-y-2 text-xs">
-                <h2 className="text-sm font-bold text-foreground">Technical Specifications & Standards</h2>
-                <p className="text-muted-foreground leading-relaxed">{seoContent.technicalOverview}</p>
+            {/* Technical Specifications & Details */}
+            {(seoContent.technicalDetails || seoContent.technicalOverview) && (
+              <div className="bg-card border-2 border-border p-5 space-y-2.5 text-xs card-depth-1">
+                <div className="flex items-center gap-2 font-bold text-sm text-foreground">
+                  <ShieldCheck className="h-4 w-4 text-primary" />
+                  <h2>Technical Specifications & Standards</h2>
+                </div>
+                <p className="text-muted-foreground leading-relaxed font-normal">
+                  {seoContent.technicalDetails || seoContent.technicalOverview}
+                </p>
+              </div>
+            )}
+
+            {/* Security Notes & Guidance */}
+            {seoContent.securityNotes && (
+              <div className="bg-primary/5 border-2 border-primary/20 p-5 space-y-2 text-xs">
+                <div className="flex items-center gap-2 font-bold text-sm text-primary">
+                  <AlertCircle className="h-4 w-4" />
+                  <h2>Security Notice & Verification Context</h2>
+                </div>
+                <p className="text-muted-foreground leading-relaxed">
+                  {seoContent.securityNotes}
+                </p>
+              </div>
+            )}
+
+            {/* Limitations Callout */}
+            {seoContent.limitations && seoContent.limitations.length > 0 && (
+              <div className="bg-muted/20 border-2 border-border p-5 space-y-3 text-xs">
+                <h2 className="text-sm font-bold text-foreground">Operating Limits & Considerations</h2>
+                <ul className="list-disc list-inside space-y-1.5 text-muted-foreground">
+                  {seoContent.limitations.map((limit, idx) => (
+                    <li key={idx} className="leading-relaxed">{limit}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Common Mistakes & Guidance */}
+            {seoContent.commonMistakes && seoContent.commonMistakes.length > 0 && (
+              <div className="border-2 border-border p-5 bg-card space-y-4 text-xs card-depth-1">
+                <h2 className="text-sm font-bold text-foreground">Common Mistakes & Solutions</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {seoContent.commonMistakes.map((item, idx) => (
+                    <div key={idx} className="p-3 bg-muted/30 border border-border space-y-1.5">
+                      <div className="font-bold text-foreground">{item.mistake}</div>
+                      <p className="text-muted-foreground text-[11px] leading-relaxed">{item.explanation}</p>
+                      <div className="text-[11px] font-semibold text-primary">Fix: {item.fix}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -386,6 +434,31 @@ export default async function ToolWrapperPage({ params }: PageProps) {
               </div>
             </div>
 
+            {/* Official Technical References */}
+            {seoContent.references && seoContent.references.length > 0 && (
+              <div className="bg-card border-2 border-border p-4 space-y-2 text-xs card-depth-1">
+                <div className="flex items-center gap-2 font-bold text-sm text-foreground">
+                  <BookOpen className="h-4 w-4 text-primary" />
+                  <h2>Standards & Technical References</h2>
+                </div>
+                <ul className="space-y-1.5 text-muted-foreground pt-1">
+                  {seoContent.references.map((ref, idx) => (
+                    <li key={idx}>
+                      <a 
+                        href={ref.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-primary hover:underline font-semibold inline-flex items-center gap-1"
+                      >
+                        <span>{ref.title}</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Troubleshooting & Error Handling */}
             {seoContent.troubleshooting && seoContent.troubleshooting.length > 0 && (
               <div className="space-y-2 border-2 border-border p-4 bg-card">
@@ -410,7 +483,7 @@ export default async function ToolWrapperPage({ params }: PageProps) {
           <section className="border-t-2 border-border pt-6 mt-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold tracking-tight text-foreground">
-                You might also need
+                Related Utilities
               </h2>
               {category && (
                 <Link

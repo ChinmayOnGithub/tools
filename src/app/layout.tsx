@@ -158,7 +158,7 @@ export default function RootLayout({
                 </div>
               </div>
               <p className="text-xs text-muted-foreground text-center mt-6">
-                &copy; {new Date().getFullYear()} CoolTools. All tools run 100% locally in your browser. No files are uploaded.
+                &copy; {new Date().getFullYear()} CoolTools. Utilities process data locally in your browser. No files are uploaded to tool-processing servers.
               </p>
             </div>
           </footer>

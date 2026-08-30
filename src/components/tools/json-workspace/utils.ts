@@ -2,11 +2,19 @@ export interface ParseResult {
   success: boolean;
   output: string;
   error?: string;
+  detailedError?: string;
   line?: number;
   column?: number;
+  snippet?: string;
 }
 
-export function parseJSONError(errorMsg: string, jsonStr: string): { message: string; line?: number; column?: number } {
+export function parseJSONError(errorMsg: string, jsonStr: string): { 
+  message: string; 
+  detailedError: string;
+  line?: number; 
+  column?: number;
+  snippet?: string;
+} {
   let line = 1;
   let column = 1;
   const message = errorMsg;
@@ -16,21 +24,40 @@ export function parseJSONError(errorMsg: string, jsonStr: string): { message: st
   const match = errorMsg.match(lineColRegex);
   
   if (match) {
-    line = parseInt(match[1]);
-    column = parseInt(match[2]);
+    line = parseInt(match[1], 10);
+    column = parseInt(match[2], 10);
   } else {
     // Match Chrome format: "at position 45"
     const posRegex = /position\s+(\d+)/i;
     const posMatch = errorMsg.match(posRegex);
     if (posMatch) {
-      const pos = parseInt(posMatch[1]);
+      const pos = parseInt(posMatch[1], 10);
       const lines = jsonStr.slice(0, pos).split('\n');
       line = lines.length;
       column = lines[lines.length - 1].length + 1;
     }
   }
 
-  return { message, line, column };
+  // Diagnostic pattern analysis to give plain-English developer guidance
+  let detailedError = errorMsg;
+  const lines = jsonStr.split('\n');
+  const errorLineContent = lines[line - 1] || '';
+
+  if (errorMsg.includes('Unexpected token }') || errorMsg.includes('Unexpected token ]') || /trailing comma/i.test(errorMsg)) {
+    detailedError = 'Trailing comma detected before closing bracket or brace. JSON RFC 8259 forbids trailing commas in objects and arrays.';
+  } else if (/Expected double-quoted property name/i.test(errorMsg) || /Unexpected token '\w+'/i.test(errorMsg)) {
+    detailedError = 'Unquoted or single-quoted key name. JSON keys must strictly use double quotes (e.g. "key": "value").';
+  } else if (errorLineContent.includes("'")) {
+    detailedError = 'Single quote detected. JSON strings and keys must always use standard double quotes (").';
+  } else if (/Unexpected end of JSON input/i.test(errorMsg) || /Unexpected end of data/i.test(errorMsg)) {
+    detailedError = 'Unexpected end of input. You may have an unclosed curly brace "}" or bracket "]", or unclosed string quote.';
+  } else if (/Bad control character/i.test(errorMsg)) {
+    detailedError = 'Unescaped control character (such as a raw newline or tab inside a string value). Use \\n or \\t escape sequences.';
+  }
+
+  const snippet = errorLineContent ? errorLineContent.trim() : undefined;
+
+  return { message, detailedError, line, column, snippet };
 }
 
 export function beautifyJSON(jsonStr: string, indent = 2): ParseResult {
@@ -47,8 +74,10 @@ export function beautifyJSON(jsonStr: string, indent = 2): ParseResult {
       success: false,
       output: '',
       error: parsedErr.message,
+      detailedError: parsedErr.detailedError,
       line: parsedErr.line,
       column: parsedErr.column,
+      snippet: parsedErr.snippet,
     };
   }
 }
@@ -67,8 +96,10 @@ export function minifyJSON(jsonStr: string): ParseResult {
       success: false,
       output: '',
       error: parsedErr.message,
+      detailedError: parsedErr.detailedError,
       line: parsedErr.line,
       column: parsedErr.column,
+      snippet: parsedErr.snippet,
     };
   }
 }

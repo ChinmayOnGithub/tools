@@ -7,9 +7,9 @@ interface TrustBannerProps {
 
 export function TrustBanner({ 
   items = [
-    '100% In-Browser Analysis',
-    'Text Never Leaves Your Device',
-    'Free & Secure Forever'
+    'Client-Side In-Browser Execution',
+    'Zero Server-Side Tool Processing',
+    'No Account or Registration Required'
   ],
   className = ''
 }: TrustBannerProps) {

@@ -21,20 +21,26 @@ import {
   Zap,
   Search,
   X,
+  FileCheck2,
+  Terminal,
 } from 'lucide-react';
 
 const FAQS = [
   {
-    q: 'How do browser-side tools work?',
-    a: 'All computations run directly inside your browser using modern Web APIs and WebAssembly. Your files never touch our servers.',
+    q: 'How does browser-side processing work?',
+    a: 'All calculations and file manipulations run directly inside your browser tab using Web APIs (such as Web Crypto, Canvas, FileReader) and WebAssembly. Your text inputs, code snippets, tokens, and files are not uploaded to any remote tool processing API.',
   },
   {
-    q: 'Is my data safe?',
-    a: 'Absolutely. Since processing happens locally in your browser memory, there is zero risk of data leaks or server-side storage.',
+    q: 'How can I verify that my data is not being uploaded?',
+    a: 'You can open your browser Developer Tools (F12 or Ctrl+Shift+I), switch to the Network tab, and perform any operation. You will see that no POST/PUT requests carrying your file data or tokens are sent to any server.',
   },
   {
     q: 'Can I use these tools offline?',
-    a: 'Yes! Once the page loads, most tools work perfectly without an internet connection since they run client-side.',
+    a: 'Yes. Once the web application assets are loaded in your browser cache, the client-side tool calculations execute locally without needing constant internet connectivity.',
+  },
+  {
+    q: 'Does this site require an account or subscription?',
+    a: 'No. All utilities are accessible immediately without registration, logins, or paywalls.',
   },
 ];
 
@@ -48,20 +54,12 @@ const CATEGORY_COLOR_MAP: Record<string, { icon: string; badge: string }> = {
   amber:   { icon: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',  badge: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20' },
 };
 
-const plannedTools = [
-  {
-    name: 'OCR PDF / Scan to Text',
-    description: 'Convert scanned PDF documents or image-only PDFs into selectable, editable text locally using WebAssembly.',
-    category: 'pdf',
-    badge: 'Coming Soon',
-  },
-];
-
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   const publishedTools = TOOLS_REGISTRY.filter((t) => t.status === 'published');
+  const flagshipTools = publishedTools.filter((t) => t.qualityTier === 'flagship');
 
   // Focus search input when user presses '/'
   useEffect(() => {
@@ -127,19 +125,16 @@ export default function Home() {
               <div className="inline-flex items-center gap-2 border border-primary/30 bg-primary/5 px-3 py-1">
                 <Zap className="h-3 w-3 text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary">
-                  100% Browser-Side · Zero Uploads
+                  Privacy-First · Local Browser Processing
                 </span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-foreground leading-tight">
-                Professional Browser Tools.
-                <br />
-                <span className="text-primary">Zero Server Uploads.</span>
+                Privacy-First Developer &amp; Browser Tools
               </h1>
 
-              <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
-                Instant, secure utilities that process everything locally. No data leaves your browser.
-                No accounts. No tracking.
+              <p className="text-sm text-muted-foreground max-w-xl leading-relaxed">
+                Process code, tokens, files, images, and developer data directly inside your browser memory whenever possible. No account required. Zero server uploads for tool calculations.
               </p>
 
               {/* Direct interactive search bar input */}
@@ -151,7 +146,7 @@ export default function Home() {
                     type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search professional browser tools..."
+                    placeholder="Search developer and browser utilities..."
                     className="w-full h-14 border-2 border-border bg-card pl-12 pr-12 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-none transition-all duration-200"
                     aria-label="Search inputs"
                   />
@@ -174,7 +169,7 @@ export default function Home() {
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mr-1">
                     Quick filters:
                   </span>
-                  {['All', 'JSON', 'PDF', 'Image', 'Text', 'Base64', 'Hash', 'QR', 'Timer', 'Color', 'Converter', 'Calculator'].map((tag) => {
+                  {['All', 'JSON', 'JWT', 'Unicode', 'Timestamp', 'PDF', 'Image', 'Base64', 'Hash', 'UUID', 'Text'].map((tag) => {
                     const isActive = (tag === 'All' && !searchQuery) || searchQuery.toLowerCase() === tag.toLowerCase();
                     return (
                       <button
@@ -197,13 +192,55 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── STATS ────────────────────────────────────────────────── */}
+        {/* ── FLAGSHIP TOOLS SPOTLIGHT ─────────────────────────────── */}
+        {!searchQuery && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b-2 border-border">
+              <div className="flex items-center gap-2">
+                <Terminal className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-black text-foreground tracking-tight">Featured Developer Tools</h2>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Flagship Suite
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {flagshipTools.map((tool) => (
+                <Link
+                  key={tool.id}
+                  href={`/tools/${tool.id}`}
+                  className="bg-card border-2 border-border p-5 hover:border-primary transition-all duration-150 card-depth-1 group relative flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="h-9 w-9 bg-primary/10 text-primary flex items-center justify-center font-bold">
+                        <Icon name={tool.icon} className="h-5 w-5" />
+                      </div>
+                      <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    </div>
+                    <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors">
+                      {tool.name}
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {tool.description}
+                    </p>
+                  </div>
+                  <div className="pt-3 mt-3 border-t border-border/40 text-[10px] font-bold uppercase tracking-wider text-primary">
+                    Launch tool →
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── STATS & ARCHITECTURE HIGHLIGHT ───────────────────────── */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { label: 'Available Tools', value: publishedTools.length, icon: Wrench },
             { label: 'Categories',      value: CATEGORIES.length,     icon: TrendingUp },
-            { label: 'Privacy Score',   value: '100%',                icon: ShieldCheck },
-            { label: 'Avg Speed',       value: '<50ms',               icon: Clock },
+            { label: 'Client-Side Scope', value: '100% In-Browser',   icon: ShieldCheck },
+            { label: 'Server File Storage', value: '0 Bytes',         icon: Clock },
           ].map(({ label, value, icon: IconComp }) => (
             <div
               key={label}
@@ -235,9 +272,9 @@ export default function Home() {
               {/* Section heading */}
               <div className="flex items-end justify-between pb-4 border-b-2 border-border">
                 <div>
-                  <h2 className="text-2xl font-black text-foreground tracking-tight">Tools Directory</h2>
+                  <h2 className="text-2xl font-black text-foreground tracking-tight">Full Tool Portfolio</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {searchQuery ? 'Showing matching tools.' : 'Offline-first browser tools grouped by category. Click any tool to launch.'}
+                    {searchQuery ? 'Showing matching tools.' : 'Client-side utilities organized by domain category.'}
                   </p>
                 </div>
                 <span className="hidden sm:inline-flex items-center border border-border bg-muted/40 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
@@ -245,7 +282,7 @@ export default function Home() {
                 </span>
               </div>
 
-              {/* Category groups (Dynamically filters categories and matches) */}
+              {/* Category groups */}
               {filteredTools.length > 0 ? (
                 <div className="space-y-6">
                   {CATEGORIES.map((category) => {
@@ -327,7 +364,7 @@ export default function Home() {
                   <Wrench className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
                   <h3 className="text-sm font-black text-foreground">No matching tools found</h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Try searching for another keyword or check one of our main categories in the sidebar.
+                    Try searching for another keyword or browse our categories.
                   </p>
                   <button
                     onClick={() => setSearchQuery('')}
@@ -339,40 +376,33 @@ export default function Home() {
               )}
             </section>
 
-            {/* Development Roadmap */}
-            <section className="border-t-2 border-border pt-10">
-              <div className="flex items-center justify-between pb-4 mb-6 border-b-2 border-border">
-                <div>
-                  <h2 className="text-xl font-black text-foreground tracking-tight">Development Roadmap</h2>
-                  <p className="text-sm text-muted-foreground mt-1">Upcoming tools in active architectural planning.</p>
-                </div>
-                <span className="inline-flex items-center bg-amber-500/10 text-amber-800 dark:text-amber-300 px-3 py-1 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest">
-                  Planned
-                </span>
+            {/* Transparent Technical Architecture Section */}
+            <section className="bg-card border-2 border-border p-6 card-depth-1 space-y-4">
+              <div className="flex items-center gap-2">
+                <FileCheck2 className="h-5 w-5 text-primary" />
+                <h2 className="text-lg font-black text-foreground">How Local Browser Processing Works</h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {plannedTools.map((tool, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-card/40 border-2 border-border/50 p-5 opacity-70 flex flex-col justify-between h-36 cursor-not-allowed select-none"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="h-7 w-7 bg-muted text-foreground/80 flex items-center justify-center">
-                          <Icon name="FileText" className="h-3.5 w-3.5" />
-                        </div>
-                        <span className="text-[9px] font-extrabold uppercase tracking-widest bg-muted text-foreground/90 px-2 py-0.5 border border-border">
-                          {tool.badge}
-                        </span>
-                      </div>
-                      <h3 className="text-xs font-extrabold text-foreground mb-1">{tool.name}</h3>
-                      <p className="text-[10px] text-foreground/75 leading-relaxed line-clamp-2">{tool.description}</p>
-                    </div>
-                    <div className="text-[9px] text-foreground/80 pt-1.5 border-t border-border/20">
-                      Status: Local feasibility testing
-                    </div>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-muted-foreground leading-relaxed">
+                <div className="p-3 bg-muted/20 border border-border space-y-1.5">
+                  <span className="font-bold text-foreground block">1. Input in Sandbox</span>
+                  <p>Your text, tokens, or files are read into local browser RAM via FileReader and Canvas APIs.</p>
+                </div>
+                <div className="p-3 bg-muted/20 border border-border space-y-1.5">
+                  <span className="font-bold text-foreground block">2. In-Memory Execution</span>
+                  <p>JavaScript Web APIs, Web Crypto, and WebAssembly perform formatting and conversion algorithms locally.</p>
+                </div>
+                <div className="p-3 bg-muted/20 border border-border space-y-1.5">
+                  <span className="font-bold text-foreground block">3. Direct Output Export</span>
+                  <p>Results and compiled files are saved directly to your device storage with zero server-side retention.</p>
+                </div>
+              </div>
+              <div className="pt-1 text-xs">
+                <Link
+                  href="/docs/security-network-audit"
+                  className="font-bold text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  Step-by-step guide to auditing network traffic in browser DevTools →
+                </Link>
               </div>
             </section>
 
@@ -425,31 +455,31 @@ export default function Home() {
             {/* Sidebar Ad */}
             <AdContainer slot="sidebar" />
 
-            {/* Why Our Tools */}
+            {/* Technical Trust Highlights */}
             <div className="space-y-3">
               <div className="pb-2 border-b-2 border-border">
                 <h2 className="text-[10px] font-black uppercase tracking-widest text-foreground">
-                  Why Use Our Tools?
+                  Security &amp; Architecture
                 </h2>
               </div>
               {[
                 {
                   icon: ShieldCheck,
                   iconClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-                  title: '100% Privacy',
-                  desc: 'Zero data transmission. All processing in your browser. Files never touch servers.',
+                  title: 'Local Browser Processing',
+                  desc: 'All file parsing, token inspection, and text analysis execute inside your local browser memory sandbox.',
                 },
                 {
                   icon: Cpu,
                   iconClass: 'bg-primary/10 text-primary',
-                  title: 'Lightning Fast',
-                  desc: 'No upload delays. No server queues. Instant results with modern browser APIs.',
+                  title: 'Zero Tool Server Uploads',
+                  desc: 'No tool processing API endpoints are called. Documents and keys never touch remote database servers.',
                 },
                 {
                   icon: Code2,
                   iconClass: 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
-                  title: 'Open Standards',
-                  desc: 'Built on web standards. Inspect code in browser console. Full transparency.',
+                  title: 'Auditable Web Standards',
+                  desc: 'Built using open Web Standards (Web Crypto, HTML5 Canvas, WebAssembly) verifiable via browser DevTools.',
                 },
               ].map(({ icon: IconComp, iconClass, title, desc }) => (
                 <div key={title} className="bg-card border-2 border-border p-4 card-depth-1 flex gap-3 items-start">
