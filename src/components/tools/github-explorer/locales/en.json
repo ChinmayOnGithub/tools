@@ -1,0 +1,8 @@
+{
+  "title": "GitHub Repository & User Explorer",
+  "description": "Inspect public GitHub repositories, latest releases, commit metrics, and user profiles.",
+  "searchPlaceholder": "Enter repository (e.g. facebook/react) or username...",
+  "searchButton": "Inspect",
+  "recentSearches": "Popular Profiles & Projects",
+  "providerDisclaimer": "This tool sends queries directly to the public GitHub REST API (api.github.com). No authentication credentials are required or stored."
+}

@@ -1,0 +1,7 @@
+{
+  "title": "Live Currency Converter & Exchange Rates",
+  "description": "Convert world currencies in real-time with official exchange rates from the European Central Bank.",
+  "searchPlaceholder": "Enter amount to convert...",
+  "searchButton": "Convert Currency",
+  "providerDisclaimer": "Exchange rates are retrieved live from frankfurter.app via the European Central Bank (ECB) with daily publication updates."
+}

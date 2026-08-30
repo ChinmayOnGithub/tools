@@ -20,7 +20,7 @@ export default function AboutPage() {
           About CoolTools
         </h1>
         <p className="text-base text-muted-foreground leading-relaxed max-w-3xl">
-          CoolTools is an open-source, privacy-first web utilities platform built by an independent developer for developers, designers, and privacy-conscious users. Tools are engineered to process data directly inside your browser memory using standard Web APIs without routing your files or inputs through tool-processing backend servers.
+          CoolTools is an open-source web utilities platform built by an independent developer for programmers, designers, and privacy-conscious users. The platform hosts two distinct types of utilities: <strong>Browser-Local Tools</strong> that execute computations entirely inside your device memory without server uploads, and <strong>Live Public API Tools</strong> that retrieve current information directly from official public data providers.
         </p>
       </section>
 

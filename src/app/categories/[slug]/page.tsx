@@ -180,10 +180,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         <div className="bg-card border-2 border-border p-6 card-depth-1 space-y-3">
           <div className="flex items-center gap-2 text-foreground font-bold text-sm">
             <ShieldCheck className="h-5 w-5 text-primary" />
-            <h2>How Local Browser Processing Works in {category.title}</h2>
+            <h2>{category.slug === 'live-data' ? 'Public API Data Flow & Architecture' : `How Local Browser Processing Works in ${category.title}`}</h2>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            All utilities in the <strong className="text-foreground">{category.title}</strong> category operate locally inside your web browser using modern Web APIs (such as Web Crypto, HTML5 Canvas, FileReader, and WebAssembly). Your document streams, binary files, tokens, and text inputs remain inside your local browser memory and are not sent to any backend tool-processing servers.
+            {category.slug === 'live-data'
+              ? 'Utilities in this category retrieve current public data directly from official third-party open web APIs (such as GitHub, Open-Meteo, European Central Bank, REST Countries, Nager.Date, and NASA). No account registration or private API keys are required, and queries are not stored on our servers.'
+              : `All utilities in the ${category.title} category operate locally inside your web browser using modern Web APIs (such as Web Crypto, HTML5 Canvas, FileReader, and WebAssembly). Your document streams, binary files, tokens, and text inputs remain inside your local browser memory and are not sent to any backend tool-processing servers.`}
           </p>
           <div className="pt-2">
             <Link

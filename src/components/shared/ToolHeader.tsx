@@ -1,21 +1,26 @@
 'use client';
 
 import { PrivacyBadge } from './PrivacyBadge';
+import { FavoriteButton } from './FavoriteButton';
 
 interface ToolHeaderProps {
+  toolId?: string;
   title: string;
   description: string;
   categoryColorBar?: string;
   categoryBadgeClass?: string;
   githubUrl?: string;
+  type?: 'local' | 'api';
 }
 
 export function ToolHeader({ 
+  toolId,
   title, 
   description, 
   categoryColorBar = 'bg-primary', 
   categoryBadgeClass,
-  githubUrl 
+  githubUrl,
+  type = 'local'
 }: ToolHeaderProps) {
   return (
     <section className="relative bg-card border border-border p-6 card-depth-1 overflow-hidden space-y-3">
@@ -32,19 +37,22 @@ export function ToolHeader({
           </p>
         </div>
         
-        {githubUrl && (
-          <a
-            href={githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] font-bold text-muted-foreground hover:text-primary border border-border bg-muted/20 px-3 py-1.5 transition-all rounded-none self-start shrink-0"
-          >
-            [View Source on GitHub]
-          </a>
-        )}
+        <div className="flex items-center gap-2 self-start shrink-0">
+          {toolId && <FavoriteButton toolId={toolId} />}
+          {githubUrl && (
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-bold text-muted-foreground hover:text-primary border border-border bg-muted/20 px-3 py-1.5 transition-all rounded-none"
+            >
+              [Source]
+            </a>
+          )}
+        </div>
       </div>
 
-      <PrivacyBadge className="pt-1" badgeClassName={categoryBadgeClass} />
+      <PrivacyBadge className="pt-1" badgeClassName={categoryBadgeClass} type={type} />
     </section>
   );
 }

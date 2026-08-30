@@ -3,7 +3,7 @@ export interface CategoryEntry {
   slug: string;
   title: string;
   description: string;
-  icon: 'FileText' | 'Image' | 'Terminal' | 'Hash' | 'Calculator' | 'RefreshCw';
+  icon: 'FileText' | 'Image' | 'Terminal' | 'Hash' | 'Calculator' | 'RefreshCw' | 'Globe';
   color: string;
   seoTitle: string;
   seoDescription: string;
@@ -27,6 +27,23 @@ export const CATEGORIES: CategoryEntry[] = [
       'Inspecting claims and expiration timestamps in JSON Web Tokens (JWT)',
       'Detecting invisible zero-width spaces, BiDi override controls, and multi-codepoint emoji clusters',
       'Computing cryptographic hashes (SHA-256, SHA-512, MD5) and generating CSPRNG UUIDv4 identifiers'
+    ],
+  },
+  {
+    id: 'live-data',
+    slug: 'live-data',
+    title: 'Live Data & API Tools',
+    description: 'Real-time utilities querying public web APIs for GitHub projects, weather metrics, ECB exchange rates, country profiles, and NASA astronomy.',
+    icon: 'Globe',
+    color: 'blue',
+    seoTitle: 'Live Data & Public API Tools - GitHub, Weather, Currency & Astronomy',
+    seoDescription: 'Interactive tools that retrieve real-time data from public web APIs without requiring personal API keys or authentication credentials.',
+    overview: 'Tools in this category communicate with public open APIs (such as the GitHub REST API, Open-Meteo, Frankfurter European Central Bank rates, REST Countries, Nager.Date, and NASA Open APIs) to turn live network data into human-readable browser interfaces. Unlike local tools, queries in this category contact stated third-party endpoints.',
+    coreUseCases: [
+      'Inspecting public GitHub repositories, release notes, stars, and user profiles',
+      'Retrieving live meteorological metrics, wind speeds, and barometric pressure worldwide',
+      'Converting fiat currencies using official daily European Central Bank exchange rates',
+      'Exploring astronomical deep-space photography and national public holiday calendars'
     ],
   },
   {

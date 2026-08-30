@@ -267,10 +267,12 @@ export default async function ToolWrapperPage({ params }: PageProps) {
 
       {/* Standardized Hero Title Header */}
       <ToolHeader 
+        toolId={tool.id}
         title={tool.name} 
         description={tool.description} 
         categoryColorBar={colors.bar}
         categoryBadgeClass={colors.badge}
+        type={tool.type || 'local'}
         githubUrl={tool.id === 'json-formatter' || tool.id === 'json-validator' ? 'https://github.com/ChinmayOnGithub/tools/tree/main/src/components/tools/json-workspace' : undefined}
       />
 
@@ -291,11 +293,13 @@ export default async function ToolWrapperPage({ params }: PageProps) {
             {/* Security & Privacy Guarantee Widget */}
             <div className="bg-card border-2 border-border p-5 space-y-3 card-depth-1">
               <div className="flex items-center gap-2 font-extrabold text-xs text-foreground uppercase tracking-wider">
-                <span className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span>Local Browser Processing</span>
+                <span className={`h-2 w-2 rounded-full animate-pulse ${tool.type === 'api' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
+                <span>{tool.type === 'api' ? 'Live Public API' : 'Local Browser Processing'}</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                All computations execute locally inside your browser memory. Your confidential files, tokens, and documents are not sent to any tool processing server.
+                {tool.type === 'api' 
+                  ? 'This tool communicates directly with public open web APIs from your browser. No queries or search logs are stored on our servers.'
+                  : 'All computations execute locally inside your browser memory. Your confidential files, tokens, and documents are not sent to any tool processing server.'}
               </p>
               <Link
                 href="/docs/security-network-audit"

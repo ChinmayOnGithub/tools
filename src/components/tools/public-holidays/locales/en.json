@@ -1,0 +1,7 @@
+{
+  "title": "Public & National Holidays Calendar",
+  "description": "Lookup national and public bank holidays across 100+ countries by year with official observance dates.",
+  "searchPlaceholder": "Select country and year to view holidays...",
+  "searchButton": "View Holidays",
+  "providerDisclaimer": "Holiday schedules are retrieved live from date.nager.at Nager.Date worldwide public holiday API."
+}

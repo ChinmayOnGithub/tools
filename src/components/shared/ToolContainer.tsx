@@ -137,6 +137,34 @@ const TOOLS_COMPONENTS: Record<string, ComponentType<{ slug?: string }>> = {
     loading: toolLoader,
     ssr: false,
   }),
+  'github-explorer': dynamic(() => import('@/components/tools/github-explorer'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
+  'weather-forecast': dynamic(() => import('@/components/tools/weather-forecast'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
+  'currency-converter': dynamic(() => import('@/components/tools/currency-converter'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
+  'country-info': dynamic(() => import('@/components/tools/country-info'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
+  'public-holidays': dynamic(() => import('@/components/tools/public-holidays'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
+  'astronomy-picture': dynamic(() => import('@/components/tools/astronomy-picture'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
+  'http-status-explorer': dynamic(() => import('@/components/tools/http-status-explorer'), {
+    loading: toolLoader,
+    ssr: false,
+  }),
 };
 
 interface ToolContainerProps {

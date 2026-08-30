@@ -494,5 +494,114 @@ export const SEO_CONTENT_MAP: Record<string, SeoToolContent> = {
     faqs: [
       { q: 'Where does Lorem Ipsum originate?', a: 'Lorem Ipsum is derived from sections of Cicero\'s classical work "De Finibus Bonorum et Malorum" written in 45 BC.' }
     ]
+  },
+  'github-explorer': {
+    heading: 'GitHub Repository & Developer Profile Explorer',
+    explanation: 'Inspect public GitHub repositories, stars, forks, open issues, commit metrics, and developer profiles in a readable format.',
+    whenToUse: 'Quickly evaluate open-source repository health, check license terms, inspect contributor profile metrics, or check latest repository stars.',
+    howItWorks: 'Directly queries the public GitHub REST API (api.github.com) from your browser tab and formats repository metadata into structured cards.',
+    privacyExplanation: 'Queries are sent directly from your browser to api.github.com. We do not proxy or store your search history.',
+    exampleInput: 'Query: vercel/next.js',
+    exampleOutput: 'Stars: 125k+, Forks: 27k+, Issues: 2k+, License: MIT',
+    technicalDetails: 'Uses public read-only GitHub REST API v3 endpoints. Rate-limited by GitHub to 60 requests per hour per IP address for unauthenticated requests.',
+    references: [
+      { title: 'GitHub REST API Documentation', url: 'https://docs.github.com/en/rest' }
+    ],
+    faqs: [
+      { q: 'Do I need a GitHub personal access token to use this tool?', a: 'No. This explorer queries public unauthenticated endpoints directly from your browser.' }
+    ]
+  },
+  'weather-forecast': {
+    heading: 'Global Weather & Meteorological Metrics',
+    explanation: 'Retrieve live global temperatures, apparent feels-like values, wind speeds, humidity, and barometric pressure for any city worldwide.',
+    whenToUse: 'Check current weather conditions, compare temperatures across cities, or inspect meteorological pressure and wind data.',
+    howItWorks: 'Geocodes the city name via Open-Meteo Geocoding API and retrieves high-resolution numerical weather prediction models directly in the client.',
+    privacyExplanation: 'Searches query open-meteo.com endpoints directly. Your device geolocation is not accessed unless you explicitly search a city.',
+    exampleInput: 'City: Tokyo',
+    exampleOutput: 'Temperature: 24°C, Humidity: 65%, Wind: 12 km/h, Sky: Mainly Clear',
+    references: [
+      { title: 'Open-Meteo Weather API Documentation', url: 'https://open-meteo.com/en/docs' }
+    ],
+    faqs: [
+      { q: 'How often are weather metrics updated?', a: 'Forecast and atmospheric metrics update hourly using national meteorological weather models (NOAA, ECMWF, DWD).' }
+    ]
+  },
+  'currency-converter': {
+    heading: 'Live Currency Converter & Central Bank Exchange Rates',
+    explanation: 'Convert world currencies in real-time with official reference exchange rates published daily by the European Central Bank (ECB).',
+    whenToUse: 'Calculate international transaction conversions, inspect forex exchange rates, or compare currency pairs (USD, EUR, GBP, JPY, CAD).',
+    howItWorks: 'Fetches ECB official reference rates via the open-source Frankfurter API and computes conversion products with floating-point precision.',
+    privacyExplanation: 'Conversion calculations execute in your browser against cached daily central bank exchange rates.',
+    exampleInput: '100 USD to EUR',
+    exampleOutput: '100 USD = 92.45 EUR (Rate: 1 USD = 0.9245 EUR)',
+    references: [
+      { title: 'European Central Bank Reference Rates', url: 'https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html' },
+      { title: 'Frankfurter Open Source Exchange Rate API', url: 'https://www.frankfurter.app' }
+    ],
+    faqs: [
+      { q: 'What is the data source for these exchange rates?', a: 'Exchange rates are sourced from official daily currency benchmarks published by the European Central Bank (ECB).' }
+    ]
+  },
+  'country-info': {
+    heading: 'Country Profiles & Worldwide Geographical Data',
+    explanation: 'Explore comprehensive national profiles, capital cities, population totals, currencies, official languages, and ISO country codes.',
+    whenToUse: 'Lookup international phone calling codes, verify official languages, check country borders, or inspect demographic metrics.',
+    howItWorks: 'Queries the open-source REST Countries database and formats national attributes into structured metric panels.',
+    privacyExplanation: 'Queries are requested directly from restcountries.com with local client memory caching.',
+    exampleInput: 'Country: Canada',
+    exampleOutput: 'Capital: Ottawa, Population: 38M+, Languages: English, French, Currency: CAD ($)',
+    references: [
+      { title: 'REST Countries Open API', url: 'https://restcountries.com' }
+    ],
+    faqs: [
+      { q: 'Can I search by 2-letter ISO country codes?', a: 'Yes. You can search by common country names or ISO 3166-1 alpha-2 / alpha-3 codes (such as US, CA, JP, DE, GBR).' }
+    ]
+  },
+  'public-holidays': {
+    heading: 'Worldwide Public & Bank Holidays Calendar',
+    explanation: 'Inspect national and public bank holiday schedules across 100+ countries by year with official observance dates.',
+    whenToUse: 'Plan international project deadlines, check foreign market holiday closures, or verify statutory bank holidays.',
+    howItWorks: 'Retrieves official national holiday calendars from the Nager.Date worldwide holiday database API.',
+    privacyExplanation: 'Country selections are requested directly from date.nager.at without tracking user schedules.',
+    exampleInput: 'Country: United States, Year: 2026',
+    exampleOutput: 'Independence Day: 2026-07-04 (Nationwide), Labor Day: 2026-09-07',
+    references: [
+      { title: 'Nager.Date Public Holiday API Documentation', url: 'https://date.nager.at' }
+    ],
+    faqs: [
+      { q: 'Does this calendar distinguish nationwide vs regional holidays?', a: 'Yes. Observances are flagged as either Nationwide (federal/public) or Regional (state/county specific).' }
+    ]
+  },
+  'astronomy-picture': {
+    heading: 'NASA Astronomy Picture of the Day (APOD)',
+    explanation: 'Explore official NASA daily cosmic photography, space exploration imagery, and astrophysical explanations written by professional astronomers.',
+    whenToUse: 'Explore daily discoveries in astronomy, observe high-resolution deep-space photography, and learn astrophysics concepts.',
+    howItWorks: 'Directly fetches NASA daily curated astronomical imagery and explanations from the official NASA Open API.',
+    privacyExplanation: 'Requests are sent directly to api.nasa.gov. No search or viewing telemetry is recorded on our servers.',
+    exampleInput: 'Daily Request',
+    exampleOutput: 'High-definition space photograph with title, copyright, and astrophysicist description',
+    references: [
+      { title: 'NASA Astronomy Picture of the Day Archive', url: 'https://apod.nasa.gov/apod/' },
+      { title: 'NASA Open API Portal', url: 'https://api.nasa.gov' }
+    ],
+    faqs: [
+      { q: 'Who writes the explanations for the astronomy pictures?', a: 'All APOD descriptions are written by professional astronomers and curated by NASA Goddard Space Flight Center.' }
+    ]
+  },
+  'http-status-explorer': {
+    heading: 'HTTP Status Code & Response Header Explorer',
+    explanation: 'Search and inspect standard IETF RFC 9110 HTTP status codes, meanings, caching behaviors, and developer troubleshooting actions.',
+    whenToUse: 'Debug REST API response codes (such as 400, 401, 403, 404, 422, 500, 502), choose semantic HTTP codes for API design, or check cacheability headers.',
+    howItWorks: 'Runs completely in your browser memory against a structured RFC 9110 dataset with category filtering and keyword search.',
+    privacyExplanation: 'Status code lookups run 100% locally inside your browser memory without any network requests.',
+    exampleInput: 'Code: 422',
+    exampleOutput: '422 Unprocessable Entity: Client syntax is valid but semantic instructions cannot be processed.',
+    technicalDetails: 'Classifies codes into 1xx (Informational), 2xx (Successful), 3xx (Redirection), 4xx (Client Error), and 5xx (Server Error) classes according to RFC 9110 specifications.',
+    references: [
+      { title: 'IETF RFC 9110: HTTP Semantics Section 15', url: 'https://datatracker.ietf.org/doc/html/rfc9110#section-15' }
+    ],
+    faqs: [
+      { q: 'What is the difference between HTTP 401 and HTTP 403?', a: 'HTTP 401 Unauthorized means the client must authenticate itself (missing or invalid credentials), whereas HTTP 403 Forbidden means the server recognizes the identity but denies permission.' }
+    ]
   }
 };

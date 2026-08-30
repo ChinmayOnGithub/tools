@@ -1,0 +1,7 @@
+{
+  "title": "HTTP Status Code & Header Explorer",
+  "description": "Inspect standard IETF RFC 9110 HTTP status codes, meanings, developer recovery actions, and response headers.",
+  "searchPlaceholder": "Search status code (e.g. 404, 502, 401, 200, 301)...",
+  "searchButton": "Find Code",
+  "providerDisclaimer": "HTTP status codes and architectural specifications are compiled from IETF RFC 9110 and standard web specifications."
+}

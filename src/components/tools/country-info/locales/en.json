@@ -1,0 +1,7 @@
+{
+  "title": "Country Profiles & Information",
+  "description": "Inspect population metrics, capitals, official languages, currencies, and geographical regions worldwide.",
+  "searchPlaceholder": "Search country name or code (e.g. Canada, Japan, DE, India)...",
+  "searchButton": "Search Country",
+  "providerDisclaimer": "Country profiles are queried live from the public REST Countries API (restcountries.com) under open database standards."
+}

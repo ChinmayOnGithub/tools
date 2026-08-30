@@ -59,7 +59,6 @@ export default function Home() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   const publishedTools = TOOLS_REGISTRY.filter((t) => t.status === 'published');
-  const flagshipTools = publishedTools.filter((t) => t.qualityTier === 'flagship');
 
   // Focus search input when user presses '/'
   useEffect(() => {
@@ -192,46 +191,137 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── FLAGSHIP TOOLS SPOTLIGHT ─────────────────────────────── */}
+        {/* ── TOOL SUITE SHOWCASES (DEVELOPER, FILE, LIVE DATA) ────── */}
         {!searchQuery && (
-          <section className="space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b-2 border-border">
-              <div className="flex items-center gap-2">
-                <Terminal className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-black text-foreground tracking-tight">Featured Developer Tools</h2>
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                Flagship Suite
-              </span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {flagshipTools.map((tool) => (
-                <Link
-                  key={tool.id}
-                  href={`/tools/${tool.id}`}
-                  className="bg-card border-2 border-border p-5 hover:border-primary transition-all duration-150 card-depth-1 group relative flex flex-col justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="h-9 w-9 bg-primary/10 text-primary flex items-center justify-center font-bold">
-                        <Icon name={tool.icon} className="h-5 w-5" />
-                      </div>
-                      <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-                    </div>
-                    <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors">
-                      {tool.name}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {tool.description}
-                    </p>
-                  </div>
-                  <div className="pt-3 mt-3 border-t border-border/40 text-[10px] font-bold uppercase tracking-wider text-primary">
-                    Launch tool →
-                  </div>
+          <div className="space-y-8">
+            {/* 1. Developer Tools */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b-2 border-border">
+                <div className="flex items-center gap-2">
+                  <Terminal className="h-5 w-5 text-emerald-500" />
+                  <h2 className="text-xl font-black text-foreground tracking-tight">Developer Tools</h2>
+                </div>
+                <Link href="/categories/developer" className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline flex items-center gap-1">
+                  View all developer tools <ArrowRight className="h-3 w-3" />
                 </Link>
-              ))}
-            </div>
-          </section>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {publishedTools
+                  .filter((t) => ['json-formatter', 'jwt-decoder', 'unicode-inspector', 'http-status-explorer'].includes(t.id))
+                  .map((tool) => (
+                    <Link
+                      key={tool.id}
+                      href={`/tools/${tool.id}`}
+                      className="bg-card border-2 border-border p-5 hover:border-emerald-500 transition-all duration-150 card-depth-1 group relative flex flex-col justify-between"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="h-9 w-9 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                            <Icon name={tool.icon} className="h-5 w-5" />
+                          </div>
+                          <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        </div>
+                        <h3 className="text-sm font-black text-foreground group-hover:text-emerald-500 transition-colors">
+                          {tool.name}
+                        </h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                          {tool.description}
+                        </p>
+                      </div>
+                      <div className="pt-3 mt-3 border-t border-border/40 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                        Launch tool →
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            </section>
+
+            {/* 2. Private File Tools */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b-2 border-border">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-red-500" />
+                  <h2 className="text-xl font-black text-foreground tracking-tight">Private File &amp; PDF Tools</h2>
+                </div>
+                <Link href="/categories/pdf" className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline flex items-center gap-1">
+                  View all PDF tools <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {publishedTools
+                  .filter((t) => ['pdf-merge', 'pdf-compress', 'pdf-split', 'image-compressor'].includes(t.id))
+                  .map((tool) => (
+                    <Link
+                      key={tool.id}
+                      href={`/tools/${tool.id}`}
+                      className="bg-card border-2 border-border p-5 hover:border-red-500 transition-all duration-150 card-depth-1 group relative flex flex-col justify-between"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="h-9 w-9 bg-red-500/10 text-red-600 dark:text-red-400 flex items-center justify-center font-bold">
+                            <Icon name={tool.icon} className="h-5 w-5" />
+                          </div>
+                          <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-red-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        </div>
+                        <h3 className="text-sm font-black text-foreground group-hover:text-red-500 transition-colors">
+                          {tool.name}
+                        </h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                          {tool.description}
+                        </p>
+                      </div>
+                      <div className="pt-3 mt-3 border-t border-border/40 text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
+                        Launch tool →
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            </section>
+
+            {/* 3. Live Data Tools */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b-2 border-border">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-blue-500 animate-pulse" />
+                  <h2 className="text-xl font-black text-foreground tracking-tight">Live Public Data Tools</h2>
+                </div>
+                <Link href="/categories/live-data" className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline flex items-center gap-1">
+                  View all live data tools <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {publishedTools
+                  .filter((t) => ['github-explorer', 'weather-forecast', 'currency-converter', 'astronomy-picture'].includes(t.id))
+                  .map((tool) => (
+                    <Link
+                      key={tool.id}
+                      href={`/tools/${tool.id}`}
+                      className="bg-card border-2 border-border p-5 hover:border-blue-500 transition-all duration-150 card-depth-1 group relative flex flex-col justify-between"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="h-9 w-9 bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                            <Icon name={tool.icon} className="h-5 w-5" />
+                          </div>
+                          <span className="text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 bg-blue-500/10 text-blue-600 border border-blue-500/20">
+                            LIVE
+                          </span>
+                        </div>
+                        <h3 className="text-sm font-black text-foreground group-hover:text-blue-500 transition-colors">
+                          {tool.name}
+                        </h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                          {tool.description}
+                        </p>
+                      </div>
+                      <div className="pt-3 mt-3 border-t border-border/40 text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                        Launch tool →
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            </section>
+          </div>
         )}
 
         {/* ── STATS & ARCHITECTURE HIGHLIGHT ───────────────────────── */}
@@ -239,8 +329,8 @@ export default function Home() {
           {[
             { label: 'Available Tools', value: publishedTools.length, icon: Wrench },
             { label: 'Categories',      value: CATEGORIES.length,     icon: TrendingUp },
-            { label: 'Client-Side Scope', value: '100% In-Browser',   icon: ShieldCheck },
-            { label: 'Server File Storage', value: '0 Bytes',         icon: Clock },
+            { label: 'Local Compute',   value: 'In-Browser RAM',      icon: ShieldCheck },
+            { label: 'Server File Logs',value: '0 Bytes Stored',      icon: Clock },
           ].map(({ label, value, icon: IconComp }) => (
             <div
               key={label}
@@ -251,7 +341,7 @@ export default function Home() {
                   <IconComp className="h-5 w-5" />
                 </div>
               </div>
-              <p className="text-2xl font-black text-foreground tracking-tight">{value}</p>
+              <p className="text-xl font-black text-foreground tracking-tight">{value}</p>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">{label}</p>
             </div>
           ))}

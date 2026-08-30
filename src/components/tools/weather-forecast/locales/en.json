@@ -1,0 +1,8 @@
+{
+  "title": "Global Weather Forecast",
+  "description": "Get current weather metrics, temperatures, humidity, wind speeds, and cloud covers worldwide.",
+  "searchPlaceholder": "Search city (e.g. London, Tokyo, San Francisco, Mumbai)...",
+  "searchButton": "Get Weather",
+  "recentLocations": "Popular Cities",
+  "providerDisclaimer": "Weather queries are retrieved live using Open-Meteo free non-commercial public APIs without API keys."
+}
