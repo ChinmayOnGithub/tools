@@ -6,10 +6,10 @@ const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://*.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.clarity.ms;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms https://*.bing.com;
+  img-src 'self' blob: data: https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms https://*.bing.com https://avatars.githubusercontent.com https://flagcdn.com https://upload.wikimedia.org https://apod.nasa.gov https://*.nasa.gov;
   font-src 'self' data:;
-  connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms https://*.bing.com https://*.google.com https://*.googleadservices.com;
-  frame-src 'self' https://googleads.g.doubleclick.net https://*.doubleclick.net https://pagead2.googlesyndication.com;
+  connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.clarity.ms https://*.bing.com https://*.google.com https://*.googleadservices.com https://api.nasa.gov https://api.github.com https://*.open-meteo.com https://api.frankfurter.app https://restcountries.com https://date.nager.at;
+  frame-src 'self' https://googleads.g.doubleclick.net https://*.doubleclick.net https://pagead2.googlesyndication.com https://www.youtube.com https://*.youtube.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';
