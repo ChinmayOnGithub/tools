@@ -20,7 +20,7 @@ export default function AboutPage() {
           About CoolTools
         </h1>
         <p className="text-base text-muted-foreground leading-relaxed max-w-3xl">
-          CoolTools is an open-source, privacy-first web utilities platform built by a developer for developers, designers, and privacy-conscious users. Every utility is engineered to execute directly inside your browser memory using modern Web APIs without routing sensitive files or tokens through remote servers.
+          CoolTools is an open-source, privacy-first web utilities platform built by an independent developer for developers, designers, and privacy-conscious users. Tools are engineered to process data directly inside your browser memory using standard Web APIs without routing your files or inputs through tool-processing backend servers.
         </p>
       </section>
 
@@ -30,9 +30,9 @@ export default function AboutPage() {
           <div className="h-10 w-10 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2">
             <ShieldCheck className="h-5 w-5" />
           </div>
-          <h2 className="text-base font-bold text-foreground">Client-Side Isolation</h2>
+          <h2 className="text-base font-bold text-foreground">Client-Side Processing</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Your files, JSON payloads, tokens, and documents are loaded into local browser memory via FileReader, Canvas, and WebAssembly. No backend tool-processing API receives or stores your input data.
+            Your files, JSON payloads, tokens, and documents are handled in local browser memory via standard FileReader, Canvas, and WebAssembly APIs. No backend tool-processing API receives or stores your input data.
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export default function AboutPage() {
           </div>
           <h2 className="text-base font-bold text-foreground">WebAssembly &amp; Web Crypto</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            We utilize high-performance standard browser engines—including W3C Web Crypto for CSPRNG passwords and SHA hashing, pdf-lib for document restructuring, and Ghostscript WASM for PDF optimization.
+            We utilize standard browser capabilities—including the W3C Web Crypto API for CSPRNG passwords and SHA digests, pdf-lib for document restructuring, and Ghostscript WASM for PDF optimization.
           </p>
         </div>
 
@@ -50,9 +50,9 @@ export default function AboutPage() {
           <div className="h-10 w-10 bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-2">
             <Code2 className="h-5 w-5" />
           </div>
-          <h2 className="text-base font-bold text-foreground">RFC &amp; ISO Standards</h2>
+          <h2 className="text-base font-bold text-foreground">Standards Alignment</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Our tools strictly implement official technical standards, including RFC 8259 (JSON), RFC 7519 (JWT), RFC 4122 (UUIDv4), RFC 3986 (URI), and Unicode 15.0 specifications.
+            Where applicable, tools implement authoritative specifications such as RFC 8259 (JSON), RFC 7519 (JWT), RFC 4122 (UUIDv4), RFC 3986 (URI), and Unicode 15.0 guidelines.
           </p>
         </div>
 
