@@ -79,7 +79,7 @@ export default function SolveAProblemSection() {
           href="/guides"
           className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline self-start sm:self-auto"
         >
-          <span>Explore all 23 Problem Guides</span>
+          <span>Explore Developer Guides</span>
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>

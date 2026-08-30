@@ -4,15 +4,16 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, BookOpen } from 'lucide-react';
-import { GUIDE_DOMAINS } from '@/config/docs-registry';
+import { getPublishedNavigation } from '@/config/docs-registry';
 
 export default function DocsMobileNav() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const navigation = getPublishedNavigation();
 
   // Find currently active guide title if available
   let activeTitle = 'Documentation Menu';
-  for (const domain of GUIDE_DOMAINS) {
+  for (const domain of navigation) {
     const match = domain.items.find((i) => `/guides/${i.slug}` === pathname);
     if (match) {
       activeTitle = `${domain.title}: ${match.title}`;
@@ -36,7 +37,7 @@ export default function DocsMobileNav() {
 
       {isOpen && (
         <div className="p-4 border-t border-border bg-background space-y-5 max-h-[60vh] overflow-y-auto">
-          {GUIDE_DOMAINS.map((domain) => (
+          {navigation.map((domain) => (
             <div key={domain.id} className="space-y-1.5">
               <h4 className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
                 {domain.title}

@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { BookOpen, ArrowRight } from 'lucide-react';
-import { GUIDES_REGISTRY } from '@/config/docs-registry';
-import { GUIDES_ARTICLES } from '@/config/guides-data';
+import { getPublishedGuidesForTool } from '@/config/docs-registry';
 
 interface RelatedGuidesListProps {
   toolId: string;
@@ -14,17 +13,8 @@ export default function RelatedGuidesList({
   className = '',
   maxItems = 3,
 }: RelatedGuidesListProps) {
-  const allGuides = [
-    ...GUIDES_REGISTRY,
-    ...GUIDES_ARTICLES.filter((g) => !GUIDES_REGISTRY.some((m) => m.slug === g.slug)),
-  ];
-
-  // Find guides where this tool is either the primary tool or related
-  const relevantGuides = allGuides.filter((g) => {
-    const isPrimary = ('primaryToolId' in g && g.primaryToolId === toolId);
-    const isRelated = ('relatedToolIds' in g && Array.isArray(g.relatedToolIds) && g.relatedToolIds.includes(toolId));
-    return isPrimary || isRelated;
-  }).slice(0, maxItems);
+  // Find published guides where this tool is either primary or related
+  const relevantGuides = getPublishedGuidesForTool(toolId).slice(0, maxItems);
 
   if (relevantGuides.length === 0) return null;
 
@@ -47,8 +37,6 @@ export default function RelatedGuidesList({
 
       <div className="grid grid-cols-1 gap-3">
         {relevantGuides.map((guide) => {
-          const categoryBadge = 'categoryTitle' in guide ? guide.categoryTitle : ('clusterName' in guide ? guide.clusterName : 'Guide');
-
           return (
             <Link
               key={guide.id}
@@ -59,7 +47,7 @@ export default function RelatedGuidesList({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="text-[9px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5">
-                      {categoryBadge}
+                      {guide.categoryTitle}
                     </span>
                     <span className="text-[10px] text-muted-foreground">{guide.readTime}</span>
                   </div>

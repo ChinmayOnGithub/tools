@@ -9,7 +9,10 @@ import {
   ArrowRight, 
   Layers
 } from 'lucide-react';
-import { GUIDE_DOMAINS } from '@/config/docs-registry';
+import { 
+  getPublishedNavigation, 
+  getPublishedGuides 
+} from '@/config/docs-registry';
 import { SITE_URL } from '@/config/site';
 import DocsLayout from '@/components/docs/DocsLayout';
 import AdContainer from '@/components/shared/AdContainer';
@@ -31,6 +34,9 @@ const DOMAIN_ICONS: Record<string, typeof FileCode2> = {
 };
 
 export default function GuidesIndexPage() {
+  const publishedNav = getPublishedNavigation();
+  const publishedGuides = getPublishedGuides();
+
   const collectionSchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -50,7 +56,7 @@ export default function GuidesIndexPage() {
         {/* Header section */}
         <header className="space-y-3 pb-6 border-b border-border">
           <div className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5">
-            <span>Developer Knowledge Base</span>
+            <span>Developer Knowledge Base ({publishedGuides.length} published)</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
             Guides &amp; Solutions
@@ -60,9 +66,9 @@ export default function GuidesIndexPage() {
           </p>
         </header>
 
-        {/* Featured Documentation Categories */}
+        {/* Featured Documentation Categories (Only domains with published guides) */}
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {GUIDE_DOMAINS.map((domain) => {
+          {publishedNav.map((domain) => {
             const IconComp = DOMAIN_ICONS[domain.id] || FileCode2;
 
             return (
@@ -75,9 +81,14 @@ export default function GuidesIndexPage() {
                     <div className="h-8 w-8 bg-primary/10 text-primary flex items-center justify-center font-bold">
                       <IconComp className="h-4 w-4" />
                     </div>
-                    <h2 className="text-sm font-black text-foreground group-hover:text-primary transition-colors">
-                      {domain.title}
-                    </h2>
+                    <div className="flex items-baseline gap-2">
+                      <h2 className="text-sm font-black text-foreground group-hover:text-primary transition-colors">
+                        {domain.title}
+                      </h2>
+                      <span className="text-[10px] font-bold text-muted-foreground">
+                        ({domain.items.length})
+                      </span>
+                    </div>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     {domain.description}
@@ -86,9 +97,9 @@ export default function GuidesIndexPage() {
 
                 <div className="space-y-1 pt-3 border-t border-border/50 text-xs">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-                    Featured in this section:
+                    Published in this domain:
                   </span>
-                  {domain.items.slice(0, 3).map((item) => (
+                  {domain.items.map((item) => (
                     <Link
                       key={item.slug}
                       href={`/guides/${item.slug}`}

@@ -110,80 +110,42 @@ export interface GuideArticle {
   nextGuide?: { title: string; slug: string };
 }
 
-export interface GuideDomainNavigation {
+export interface GuideDomainMeta {
   id: string;
   title: string;
   description: string;
-  items: Array<{
-    title: string;
-    slug: string;
-    type: GuideType;
-  }>;
 }
 
-export const GUIDE_DOMAINS: GuideDomainNavigation[] = [
+export const GUIDE_DOMAINS_META: GuideDomainMeta[] = [
   {
     id: 'json',
     title: 'JSON & Data',
     description: 'Understand, validate, format, and debug structured JSON data.',
-    items: [
-      { title: 'Why JSON.parse() Fails: Syntax Errors', slug: 'why-json-parse-fails-syntax-errors', type: 'guide' },
-      { title: 'JSON Trailing Commas', slug: 'json-trailing-commas', type: 'guide' },
-      { title: 'JSON vs JavaScript Objects', slug: 'json-vs-javascript-objects', type: 'reference' },
-      { title: 'Validate Large JSON Files', slug: 'how-to-validate-large-json-files', type: 'guide' },
-      { title: 'JSON Escaping Explained', slug: 'json-escaping-explained', type: 'guide' },
-    ],
   },
   {
     id: 'jwt',
     title: 'JWT & Authentication',
     description: 'Inspect tokens, decode claims, and troubleshoot expiration issues.',
-    items: [
-      { title: 'JWT Decoding vs Verification', slug: 'jwt-decoding-vs-verification', type: 'guide' },
-      { title: 'JWT Expiration: exp, iat & nbf', slug: 'how-jwt-expiration-works-exp-iat-nbf', type: 'reference' },
-      { title: 'How to Debug Expired JWT', slug: 'how-to-debug-expired-jwt', type: 'workflow' },
-      { title: 'Base64 vs Base64URL in JWT', slug: 'base64-vs-base64url-jwt', type: 'reference' },
-      { title: 'How to Read JWT Claims', slug: 'how-to-read-jwt-claims', type: 'reference' },
-    ],
   },
   {
     id: 'unicode',
     title: 'Unicode & Text',
     description: 'Find invisible characters, detect homoglyphs, and debug encoding issues.',
-    items: [
-      { title: 'Find Invisible Unicode Characters', slug: 'how-to-find-invisible-unicode-characters', type: 'guide' },
-      { title: 'What is a Zero-Width Space (U+200B)?', slug: 'what-is-zero-width-space', type: 'guide' },
-      { title: 'UTF-8 vs UTF-16 Explained', slug: 'utf-8-vs-utf-16-explained', type: 'reference' },
-      { title: 'Confusable Homoglyphs', slug: 'why-identical-characters-differ-confusables', type: 'reference' },
-      { title: 'Unicode Normalization (NFC vs NFD)', slug: 'unicode-normalization-nfc-nfd', type: 'guide' },
-    ],
   },
   {
     id: 'timestamp',
     title: 'Time & APIs',
     description: 'Work with Unix timestamps, ISO 8601 strings, and timezone conversions.',
-    items: [
-      { title: 'Unix Timestamp: Seconds vs Milliseconds', slug: 'unix-timestamp-seconds-vs-milliseconds', type: 'reference' },
-      { title: 'Read Timestamps in JWTs', slug: 'how-to-read-timestamps-in-jwt', type: 'workflow' },
-      { title: 'ISO 8601 vs RFC 3339 Formats', slug: 'iso-8601-vs-rfc-3339', type: 'reference' },
-      { title: 'Why API Timestamps Look Wrong', slug: 'why-api-timestamps-are-wrong', type: 'guide' },
-    ],
   },
   {
     id: 'pdf',
     title: 'PDF & Files',
     description: 'Solve document compression, merging, splitting, and conversion tasks locally.',
-    items: [
-      { title: 'How to Reduce PDF File Size', slug: 'how-to-reduce-pdf-file-size', type: 'guide' },
-      { title: 'Merge PDF Files in Correct Order', slug: 'how-to-merge-pdf-files-correct-order', type: 'workflow' },
-      { title: 'Extract Specific Pages from PDF', slug: 'how-to-extract-pages-from-pdf', type: 'guide' },
-      { title: 'Convert Images into a PDF', slug: 'how-to-convert-images-to-pdf', type: 'workflow' },
-    ],
   },
 ];
 
 // ──────────────────────────────────────────────────────────────────────────
-// FULLY MIGRATED FLAGSHIP JSON GUIDE (Modular Section Data Model)
+// CENTRAL SOURCE OF TRUTH: GUIDES_REGISTRY
 // ──────────────────────────────────────────────────────────────────────────
 export const GUIDES_REGISTRY: GuideArticle[] = [
   {
@@ -202,10 +164,7 @@ export const GUIDES_REGISTRY: GuideArticle[] = [
     relatedToolIds: ['json-formatter', 'unicode-inspector'],
     relatedGuides: ['json-trailing-commas', 'json-vs-javascript-objects', 'json-escaping-explained'],
     prevGuide: undefined,
-    nextGuide: {
-      title: 'JSON Trailing Commas',
-      slug: 'json-trailing-commas',
-    },
+    nextGuide: undefined,
     sections: [
       {
         type: 'callout',
@@ -381,16 +340,6 @@ export const GUIDES_REGISTRY: GuideArticle[] = [
       },
       {
         type: 'heading',
-        id: 'related-guides',
-        level: 2,
-        text: 'Related Guides & Next Reading',
-      },
-      {
-        type: 'relatedGuides',
-        guideSlugs: ['json-trailing-commas', 'json-vs-javascript-objects', 'json-escaping-explained'],
-      },
-      {
-        type: 'heading',
         id: 'references',
         level: 2,
         text: 'Standards & Authoritative References',
@@ -406,3 +355,138 @@ export const GUIDES_REGISTRY: GuideArticle[] = [
     ],
   },
 ];
+
+// ──────────────────────────────────────────────────────────────────────────
+// CENTRAL DOCUMENTATION DATA-ACCESS LAYER
+// ──────────────────────────────────────────────────────────────────────────
+
+/**
+ * Returns all published guide articles.
+ */
+export function getPublishedGuides(): GuideArticle[] {
+  return GUIDES_REGISTRY.filter((g) => g.published === true);
+}
+
+/**
+ * Returns an array of all published guide slugs (used by generateStaticParams, sitemaps).
+ */
+export function getPublishedGuideSlugs(): string[] {
+  return getPublishedGuides().map((g) => g.slug);
+}
+
+/**
+ * Retrieves a single published guide by its URL slug.
+ */
+export function getGuideBySlug(slug: string): GuideArticle | undefined {
+  const guide = GUIDES_REGISTRY.find((g) => g.slug === slug);
+  if (!guide || !guide.published) {
+    return undefined;
+  }
+  return guide;
+}
+
+/**
+ * Returns published guides filtered by category/domain.
+ */
+export function getPublishedGuidesByDomain(domainId: string): GuideArticle[] {
+  return getPublishedGuides().filter((g) => g.category === domainId);
+}
+
+/**
+ * Returns active navigation structure containing ONLY domains that have at least one published guide.
+ */
+export interface PublishedDomainNav {
+  id: string;
+  title: string;
+  description: string;
+  items: Array<{
+    title: string;
+    slug: string;
+    type: GuideType;
+  }>;
+}
+
+export function getPublishedNavigation(): PublishedDomainNav[] {
+  const published = getPublishedGuides();
+  const nav: PublishedDomainNav[] = [];
+
+  for (const domain of GUIDE_DOMAINS_META) {
+    const domainGuides = published.filter((g) => g.category === domain.id);
+    if (domainGuides.length > 0) {
+      nav.push({
+        id: domain.id,
+        title: domain.title,
+        description: domain.description,
+        items: domainGuides.map((g) => ({
+          title: g.title,
+          slug: g.slug,
+          type: g.type,
+        })),
+      });
+    }
+  }
+
+  return nav;
+}
+
+/**
+ * Resolves related guides for a given guide, ensuring all returned entries exist, are published, and exclude self.
+ */
+export function getRelatedPublishedGuides(guide: GuideArticle): GuideArticle[] {
+  const allPublished = getPublishedGuides();
+  const result: GuideArticle[] = [];
+
+  if (guide.relatedGuides && guide.relatedGuides.length > 0) {
+    for (const slug of guide.relatedGuides) {
+      if (slug !== guide.slug) {
+        const match = allPublished.find((g) => g.slug === slug);
+        if (match && !result.some((r) => r.slug === match.slug)) {
+          result.push(match);
+        }
+      }
+    }
+  }
+
+  // Fallback: If no explicit related guides are published yet, find other published guides in same domain
+  if (result.length === 0) {
+    const domainMatches = allPublished.filter((g) => g.category === guide.category && g.slug !== guide.slug);
+    result.push(...domainMatches);
+  }
+
+  return result;
+}
+
+/**
+ * Returns the previous published guide within the same category/domain.
+ */
+export function getPreviousPublishedGuide(currentGuide: GuideArticle): { title: string; slug: string } | undefined {
+  const domainGuides = getPublishedGuidesByDomain(currentGuide.category);
+  const currentIndex = domainGuides.findIndex((g) => g.slug === currentGuide.slug);
+  if (currentIndex > 0) {
+    const prev = domainGuides[currentIndex - 1];
+    return { title: prev.title, slug: prev.slug };
+  }
+  return undefined;
+}
+
+/**
+ * Returns the next published guide within the same category/domain.
+ */
+export function getNextPublishedGuide(currentGuide: GuideArticle): { title: string; slug: string } | undefined {
+  const domainGuides = getPublishedGuidesByDomain(currentGuide.category);
+  const currentIndex = domainGuides.findIndex((g) => g.slug === currentGuide.slug);
+  if (currentIndex !== -1 && currentIndex < domainGuides.length - 1) {
+    const next = domainGuides[currentIndex + 1];
+    return { title: next.title, slug: next.slug };
+  }
+  return undefined;
+}
+
+/**
+ * Returns published guides relevant to a specific tool (for tool page "Learn more" integrations).
+ */
+export function getPublishedGuidesForTool(toolId: string): GuideArticle[] {
+  return getPublishedGuides().filter(
+    (g) => g.primaryToolId === toolId || (g.relatedToolIds && g.relatedToolIds.includes(toolId))
+  );
+}

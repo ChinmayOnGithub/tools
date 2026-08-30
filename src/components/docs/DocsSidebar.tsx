@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { GUIDE_DOMAINS } from '@/config/docs-registry';
+import { getPublishedNavigation } from '@/config/docs-registry';
 
 interface DocsSidebarProps {
   className?: string;
@@ -10,6 +10,7 @@ interface DocsSidebarProps {
 
 export default function DocsSidebar({ className = '' }: DocsSidebarProps) {
   const pathname = usePathname();
+  const navigation = getPublishedNavigation();
 
   return (
     <nav
@@ -26,7 +27,7 @@ export default function DocsSidebar({ className = '' }: DocsSidebarProps) {
       </div>
 
       <div className="space-y-6">
-        {GUIDE_DOMAINS.map((domain) => (
+        {navigation.map((domain) => (
           <div key={domain.id} className="space-y-2">
             <h3 className="text-[11px] font-black uppercase tracking-wider text-muted-foreground">
               {domain.title}

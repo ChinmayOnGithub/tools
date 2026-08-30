@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Search, X, CornerDownLeft, BookOpen, Wrench, Layers } from 'lucide-react';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
-import { GUIDES_ARTICLES, WORKFLOWS_DATA } from '@/config/guides-data';
+import { getPublishedGuides } from '@/config/docs-registry';
+import { WORKFLOWS_DATA } from '@/config/guides-data';
 import { trackInternalSearch } from '@/lib/analytics';
 
 interface SearchOverlayProps {
@@ -33,12 +34,11 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     return aVal - bVal;
   });
 
-  const guideResults = cleanQuery === '' ? [] : GUIDES_ARTICLES.filter((guide) => {
+  const guideResults = cleanQuery === '' ? [] : getPublishedGuides().filter((guide) => {
     return (
       guide.title.toLowerCase().includes(cleanQuery) ||
       guide.shortDescription.toLowerCase().includes(cleanQuery) ||
-      guide.problemStatement.toLowerCase().includes(cleanQuery) ||
-      guide.clusterName.toLowerCase().includes(cleanQuery)
+      guide.categoryTitle.toLowerCase().includes(cleanQuery)
     );
   });
 
@@ -164,7 +164,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         </span>
                       </div>
                       <span className="text-[9px] bg-primary/10 text-primary px-2 py-0.5 font-bold uppercase tracking-wider shrink-0">
-                        {guide.clusterName}
+                        {guide.categoryTitle}
                       </span>
                     </Link>
                   ))}

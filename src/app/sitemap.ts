@@ -2,7 +2,8 @@ import { MetadataRoute } from 'next';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import { CATEGORIES } from '@/config/categories';
 import { DOCS_ARTICLES } from '@/config/docs-data';
-import { GUIDES_ARTICLES, WORKFLOWS_DATA } from '@/config/guides-data';
+import { getPublishedGuides } from '@/config/docs-registry';
+import { WORKFLOWS_DATA } from '@/config/guides-data';
 import { SITE_URL } from '@/config/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -66,7 +67,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  const guideRoutes = GUIDES_ARTICLES.map((guide) => ({
+  // Only index published guides through central data access helper
+  const guideRoutes = getPublishedGuides().map((guide) => ({
     url: `${siteUrl}/guides/${guide.slug}`,
     lastModified: new Date(guide.updatedAt),
     changeFrequency: 'weekly' as const,
