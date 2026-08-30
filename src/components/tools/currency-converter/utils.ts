@@ -46,7 +46,7 @@ export async function fetchLiveExchangeRate(amount: number, from: string, to: st
     };
   }
 
-  const url = `https://api.frankfurter.app/latest?amount=${amount}&from=${from}&to=${to}`;
+  const url = `https://api.frankfurter.dev/v1/latest?amount=${amount}&from=${from}&to=${to}`;
 
   return fetchLiveApi<CurrencyConversion>(
     url,

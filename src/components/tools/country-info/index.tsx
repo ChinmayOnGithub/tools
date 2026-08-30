@@ -5,7 +5,7 @@ import { Search, Globe2, Users, Compass, Languages, Coins, Clock } from 'lucide-
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { LiveStatusHeader, LiveErrorBanner } from '@/components/shared/LiveToolComponents';
-import { fetchLiveCountry, REST_COUNTRIES_PROVIDER, CountryProfile } from './utils';
+import { fetchLiveCountry, COUNTRIES_PROVIDER, CountryProfile } from './utils';
 import { trackToolLaunch, trackToolCompletion } from '@/lib/analytics';
 import t from './locales/en.json';
 
@@ -50,7 +50,7 @@ export default function CountryInfo() {
     <div className="space-y-6 w-full">
       {/* Live Status & Provider Bar */}
       <LiveStatusHeader
-        provider={REST_COUNTRIES_PROVIDER}
+        provider={COUNTRIES_PROVIDER}
         lastUpdated={lastUpdated}
         loading={loading}
         onRefresh={() => executeSearch(query)}
