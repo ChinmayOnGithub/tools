@@ -13,25 +13,51 @@ import { TOOLS_REGISTRY } from './tools-registry';
 describe('Central Documentation Data-Access Layer & Integrity', () => {
   it('strictly filters only published === true guides', () => {
     const published = getPublishedGuides();
-    expect(published.length).toBeGreaterThan(0);
+    expect(published.length).toBe(11); // 6 JSON + 5 JWT
 
     for (const guide of published) {
       expect(guide.published).toBe(true);
     }
   });
 
-  it('correctly handles getGuideBySlug for published vs unpublished/nonexistent slugs', () => {
-    const validGuide = getGuideBySlug('why-json-parse-fails-syntax-errors');
-    expect(validGuide).toBeDefined();
-    expect(validGuide?.slug).toBe('why-json-parse-fails-syntax-errors');
+  it('validates complete JSON cluster (6 guides)', () => {
+    const jsonSlugs = [
+      'why-json-parse-fails-syntax-errors',
+      'json-trailing-commas',
+      'json-vs-javascript-objects',
+      'json-escaping-explained',
+      'debug-malformed-api-json',
+      'json-parse-error-messages',
+    ];
 
-    const nonexistent = getGuideBySlug('nonexistent-slug-xyz');
-    expect(nonexistent).toBeUndefined();
+    for (const slug of jsonSlugs) {
+      const guide = getGuideBySlug(slug);
+      expect(guide).toBeDefined();
+      expect(guide?.category).toBe('json');
+      expect(guide?.sections.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('validates complete JWT cluster (5 guides)', () => {
+    const jwtSlugs = [
+      'jwt-decoding-vs-verification',
+      'how-jwt-expiration-works-exp-iat-nbf',
+      'how-to-debug-expired-jwt',
+      'base64-vs-base64url-jwt',
+      'how-to-read-jwt-claims',
+    ];
+
+    for (const slug of jwtSlugs) {
+      const guide = getGuideBySlug(slug);
+      expect(guide).toBeDefined();
+      expect(guide?.category).toBe('jwt');
+      expect(guide?.sections.length).toBeGreaterThanOrEqual(2);
+    }
   });
 
   it('excludes empty domains in getPublishedNavigation()', () => {
     const nav = getPublishedNavigation();
-    expect(nav.length).toBeGreaterThan(0);
+    expect(nav.length).toBe(2); // JSON and JWT published
 
     for (const domain of nav) {
       expect(domain.items.length).toBeGreaterThan(0);
@@ -83,6 +109,12 @@ describe('Central Documentation Data-Access Layer & Integrity', () => {
       expect(g.published).toBe(true);
       const matches = g.primaryToolId === 'json-validator' || (g.relatedToolIds && g.relatedToolIds.includes('json-validator'));
       expect(matches).toBe(true);
+    }
+
+    const jwtDecoderGuides = getPublishedGuidesForTool('jwt-decoder');
+    expect(jwtDecoderGuides.length).toBeGreaterThan(0);
+    for (const g of jwtDecoderGuides) {
+      expect(g.published).toBe(true);
     }
   });
 

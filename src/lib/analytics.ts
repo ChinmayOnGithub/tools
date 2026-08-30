@@ -111,6 +111,10 @@ export function trackGuideView(guideSlug: string) {
   event('guide_view', 'guide', guideSlug);
 }
 
+export function trackGuideTryTool(guideSlug: string, toolId: string) {
+  event('guide_try_tool', 'guide', `${guideSlug} -> ${toolId}`);
+}
+
 export function trackWorkflowView(workflowSlug: string) {
   event('workflow_view', 'workflow', workflowSlug);
 }
@@ -126,6 +130,7 @@ const analytics = {
   trackRelatedToolClick,
   trackInternalSearch,
   trackGuideView,
+  trackGuideTryTool,
   trackWorkflowView,
 };
 

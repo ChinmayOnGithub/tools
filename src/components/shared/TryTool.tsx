@@ -1,12 +1,16 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight, Sparkles, Terminal } from 'lucide-react';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
+import { trackGuideTryTool } from '@/lib/analytics';
 
 interface TryToolProps {
   toolId: string;
   actionText?: string;
   explanation?: string;
   sampleInput?: string;
+  guideSlug?: string;
   className?: string;
 }
 
@@ -15,6 +19,7 @@ export default function TryTool({
   actionText,
   explanation,
   sampleInput,
+  guideSlug,
   className = '',
 }: TryToolProps) {
   const tool = TOOLS_REGISTRY.find((t) => t.id === toolId);
@@ -26,6 +31,10 @@ export default function TryTool({
   const toolUrl = sampleInput 
     ? `/tools/${tool.id}?input=${encodeURIComponent(sampleInput)}`
     : `/tools/${tool.id}`;
+
+  const handleClick = () => {
+    trackGuideTryTool(guideSlug || 'guide', toolId);
+  };
 
   return (
     <div className={`border-2 border-primary/40 bg-primary/5 p-4 space-y-3 ${className}`}>
@@ -40,6 +49,7 @@ export default function TryTool({
 
         <Link
           href={toolUrl}
+          onClick={handleClick}
           className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-primary text-primary-foreground font-bold text-xs hover:bg-primary/90 transition-colors shrink-0"
         >
           <span>{buttonLabel}</span>
