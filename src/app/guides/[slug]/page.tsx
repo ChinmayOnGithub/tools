@@ -1,22 +1,22 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { 
-  BookOpen, 
-  Clock, 
-  Calendar, 
-  ArrowLeft, 
-  AlertTriangle, 
-  ShieldCheck, 
-  ExternalLink,
-  Layers
-} from 'lucide-react';
-import { GUIDES_ARTICLES, WORKFLOWS_DATA } from '@/config/guides-data';
+import { ExternalLink } from 'lucide-react';
+import { GUIDES_REGISTRY } from '@/config/docs-registry';
+import { GUIDES_ARTICLES } from '@/config/guides-data';
 import { TOOLS_REGISTRY } from '@/config/tools-registry';
 import { SITE_URL } from '@/config/site';
-import ToolCard from '@/components/shared/ToolCard';
+
+import DocsLayout from '@/components/docs/DocsLayout';
+import DocsTableOfContents, { TocItem } from '@/components/docs/DocsTableOfContents';
+import DocsCallout from '@/components/docs/DocsCallout';
+import DocsCodeBlock from '@/components/docs/DocsCodeBlock';
+import DocsComparison from '@/components/docs/DocsComparison';
+import ReferenceTable from '@/components/docs/ReferenceTable';
+import WorkflowSteps from '@/components/docs/WorkflowSteps';
+import DocsPagination from '@/components/docs/DocsPagination';
 import TryTool from '@/components/shared/TryTool';
-import InteractiveExampleRunner from '@/components/shared/InteractiveExampleRunner';
+import ToolCard from '@/components/shared/ToolCard';
 import AdContainer from '@/components/shared/AdContainer';
 
 interface GuidePageProps {
@@ -24,27 +24,31 @@ interface GuidePageProps {
 }
 
 export async function generateStaticParams() {
-  return GUIDES_ARTICLES.map((article) => ({
-    slug: article.slug,
-  }));
+  const allSlugs = new Set([
+    ...GUIDES_REGISTRY.map((g) => g.slug),
+    ...GUIDES_ARTICLES.map((g) => g.slug),
+  ]);
+  return Array.from(allSlugs).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: GuidePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const guide = GUIDES_ARTICLES.find((g) => g.slug === slug);
+  const modernGuide = GUIDES_REGISTRY.find((g) => g.slug === slug);
+  const legacyGuide = GUIDES_ARTICLES.find((g) => g.slug === slug);
+  const guide = modernGuide || legacyGuide;
 
   if (!guide) return {};
 
   const siteUrl = SITE_URL;
 
   return {
-    title: `${guide.title} - CoolTools Guide`,
+    title: `${guide.title} - CoolTools Documentation`,
     description: guide.shortDescription,
     alternates: {
       canonical: `${siteUrl}/guides/${slug}`,
     },
     openGraph: {
-      title: `${guide.title} - CoolTools Developer Guide`,
+      title: `${guide.title} - Developer Guide`,
       description: guide.shortDescription,
       url: `${siteUrl}/guides/${slug}`,
       type: 'article',
@@ -54,217 +58,382 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
 
 export default async function GuideArticlePage({ params }: GuidePageProps) {
   const { slug } = await params;
-  const guide = GUIDES_ARTICLES.find((g) => g.slug === slug);
+  const modernGuide = GUIDES_REGISTRY.find((g) => g.slug === slug);
+  const legacyGuide = GUIDES_ARTICLES.find((g) => g.slug === slug);
 
-  if (!guide) {
+  if (!modernGuide && !legacyGuide) {
     notFound();
   }
 
   const siteUrl = SITE_URL;
 
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'TechArticle',
-    headline: guide.title,
-    description: guide.shortDescription,
-    url: `${siteUrl}/guides/${guide.slug}`,
-    dateModified: guide.updatedAt,
-    author: {
-      '@type': 'Person',
-      name: 'Chinmay Patil',
-    },
-  };
+  // ──────────────────────────────────────────────────────────────────────────
+  // PATH A: FULLY MIGRATED MODERN DEVELOPER DOCUMENTATION RENDERER
+  // ──────────────────────────────────────────────────────────────────────────
+  if (modernGuide) {
+    const guide = modernGuide;
 
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-      { '@type': 'ListItem', position: 2, name: 'Problem Guides', item: `${siteUrl}/guides` },
-      { '@type': 'ListItem', position: 3, name: guide.title, item: `${siteUrl}/guides/${guide.slug}` },
-    ],
-  };
+    // Derive TOC automatically from headings
+    const tocItems: TocItem[] = [];
+    guide.sections.forEach((sec) => {
+      if (sec.type === 'heading') {
+        tocItems.push({
+          id: sec.id,
+          text: sec.text,
+          level: sec.level,
+        });
+      }
+    });
 
+    const articleSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'TechArticle',
+      headline: guide.title,
+      description: guide.shortDescription,
+      url: `${siteUrl}/guides/${guide.slug}`,
+      dateModified: guide.updatedAt,
+      author: {
+        '@type': 'Person',
+        name: 'Chinmay Patil',
+      },
+    };
+
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+        { '@type': 'ListItem', position: 2, name: 'Guides', item: `${siteUrl}/guides` },
+        { '@type': 'ListItem', position: 3, name: guide.categoryTitle, item: `${siteUrl}/guides` },
+        { '@type': 'ListItem', position: 4, name: guide.title, item: `${siteUrl}/guides/${guide.slug}` },
+      ],
+    };
+
+    return (
+      <DocsLayout toc={<DocsTableOfContents items={tocItems} />}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+
+        {/* Clean Breadcrumb */}
+        <nav className="text-xs text-muted-foreground flex gap-2 items-center mb-6" aria-label="Breadcrumb">
+          <Link href="/" className="hover:underline">Home</Link>
+          <span>/</span>
+          <Link href="/guides" className="hover:underline">Guides</Link>
+          <span>/</span>
+          <span className="text-primary font-bold">{guide.categoryTitle}</span>
+          <span>/</span>
+          <span className="text-foreground font-medium truncate">{guide.title}</span>
+        </nav>
+
+        {/* Dense Technical Header */}
+        <header className="space-y-3 pb-6 border-b border-border">
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-primary">
+            <span className="bg-primary/10 px-2 py-0.5">{guide.categoryTitle}</span>
+            <span className="text-muted-foreground font-medium">· Updated {guide.updatedAt}</span>
+            <span className="text-muted-foreground font-medium">· {guide.readTime}</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground leading-tight">
+            {guide.title}
+          </h1>
+
+          {guide.introduction && (
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              {guide.introduction}
+            </p>
+          )}
+        </header>
+
+        {/* Mobile Inline TOC */}
+        <DocsTableOfContents items={tocItems} />
+
+        {/* Documentation Content Stream */}
+        <div className="py-6 space-y-6">
+          {guide.sections.map((section, idx) => {
+            switch (section.type) {
+              case 'heading': {
+                const Tag = section.level === 2 ? 'h2' : 'h3';
+                const headingClass =
+                  section.level === 2
+                    ? 'text-lg sm:text-xl font-bold tracking-tight text-foreground pt-6 border-t border-border first:border-0 first:pt-0'
+                    : 'text-sm sm:text-base font-bold text-foreground pt-3';
+
+                return (
+                  <Tag key={idx} id={section.id} className={headingClass}>
+                    {section.text}
+                  </Tag>
+                );
+              }
+
+              case 'paragraph': {
+                return (
+                  <p key={idx} className="text-xs sm:text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {section.content}
+                  </p>
+                );
+              }
+
+              case 'callout': {
+                return (
+                  <DocsCallout key={idx} variant={section.variant} title={section.title}>
+                    {section.content}
+                  </DocsCallout>
+                );
+              }
+
+              case 'code': {
+                return (
+                  <DocsCodeBlock
+                    key={idx}
+                    code={section.code}
+                    language={section.language}
+                    title={section.title}
+                  />
+                );
+              }
+
+              case 'comparison': {
+                return (
+                  <DocsComparison
+                    key={idx}
+                    invalidTitle={section.invalidTitle}
+                    invalidCode={section.invalidCode}
+                    validTitle={section.validTitle}
+                    validCode={section.validCode}
+                    explanation={section.explanation}
+                    language={section.language}
+                  />
+                );
+              }
+
+              case 'table': {
+                return (
+                  <ReferenceTable
+                    key={idx}
+                    headers={section.headers}
+                    rows={section.rows}
+                    caption={section.caption}
+                  />
+                );
+              }
+
+              case 'steps': {
+                return (
+                  <WorkflowSteps
+                    key={idx}
+                    title={section.title}
+                    steps={section.steps}
+                  />
+                );
+              }
+
+              case 'tryTool': {
+                return (
+                  <TryTool
+                    key={idx}
+                    toolId={section.toolId}
+                    actionText={section.actionText}
+                    explanation={section.explanation}
+                    sampleInput={section.sampleInput}
+                  />
+                );
+              }
+
+              case 'relatedTools': {
+                const tools = TOOLS_REGISTRY.filter((t) => section.toolIds.includes(t.id));
+                return (
+                  <div key={idx} className="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">
+                    {tools.map((t) => (
+                      <ToolCard key={t.id} tool={t} />
+                    ))}
+                  </div>
+                );
+              }
+
+              case 'relatedGuides': {
+                const related = GUIDES_REGISTRY.filter((g) => section.guideSlugs.includes(g.slug));
+                return (
+                  <div key={idx} className="space-y-2 my-4">
+                    {related.map((g) => (
+                      <Link
+                        key={g.id}
+                        href={`/guides/${g.slug}`}
+                        className="block p-3 border border-border bg-card hover:border-primary transition-all text-xs"
+                      >
+                        <strong className="text-foreground block font-bold mb-0.5">{g.title}</strong>
+                        <span className="text-muted-foreground text-[11px] line-clamp-1">{g.shortDescription}</span>
+                      </Link>
+                    ))}
+                  </div>
+                );
+              }
+
+              case 'references': {
+                return (
+                  <ul key={idx} className="space-y-1 text-xs text-muted-foreground pt-2">
+                    {section.items.map((ref, rIdx) => (
+                      <li key={rIdx}>
+                        <a
+                          href={ref.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline font-semibold inline-flex items-center gap-1"
+                        >
+                          <span>{ref.title}</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
+
+              default:
+                return null;
+            }
+          })}
+        </div>
+
+        {/* Documentation Pagination (Previous / Next) */}
+        <DocsPagination prev={guide.prevGuide} next={guide.nextGuide} />
+
+        <AdContainer slot="bottom" />
+      </DocsLayout>
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // PATH B: FALLBACK COMPATIBILITY RENDERER FOR OTHER CLUSTER GUIDES
+  // (Rendered cleanly within DocsLayout typography)
+  // ──────────────────────────────────────────────────────────────────────────
+  const guide = legacyGuide!;
   const primaryTool = TOOLS_REGISTRY.find((t) => t.id === guide.primaryToolId);
   const relatedTools = TOOLS_REGISTRY.filter(
     (t) => guide.relatedToolIds.includes(t.id) && t.status === 'published'
   );
 
-  const workflow = guide.workflowSlug
-    ? WORKFLOWS_DATA.find((w) => w.slug === guide.workflowSlug)
-    : null;
+  const tocItems: TocItem[] = [
+    { id: 'problem', text: 'Problem Statement', level: 2 },
+    { id: 'short-answer', text: 'Short Answer', level: 2 },
+    { id: 'technical-explanation', text: 'Why This Happens', level: 2 },
+    { id: 'examples', text: 'Examples & Solutions', level: 2 },
+    { id: 'common-mistakes', text: 'Common Mistakes', level: 2 },
+    { id: 'references', text: 'Standards & References', level: 2 },
+  ];
 
   return (
-    <div className="w-full space-y-8 py-4">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-
-      {/* Breadcrumb Navigation */}
-      <nav className="text-xs text-muted-foreground flex gap-2 items-center" aria-label="Breadcrumb">
+    <DocsLayout toc={<DocsTableOfContents items={tocItems} />}>
+      {/* Breadcrumb */}
+      <nav className="text-xs text-muted-foreground flex gap-2 items-center mb-6" aria-label="Breadcrumb">
         <Link href="/" className="hover:underline">Home</Link>
         <span>/</span>
         <Link href="/guides" className="hover:underline">Guides</Link>
         <span>/</span>
-        <span className="font-semibold text-foreground truncate">{guide.title}</span>
+        <span className="text-primary font-bold">{guide.clusterName}</span>
+        <span>/</span>
+        <span className="text-foreground font-medium truncate">{guide.title}</span>
       </nav>
 
-      {/* Hero Header */}
-      <section className="relative bg-card border-2 border-border p-6 sm:p-8 card-depth-2 space-y-4 overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
-        
-        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2.5 py-0.5 font-black uppercase tracking-wider text-[10px]">
-            <BookOpen className="h-3 w-3" />
-            <span>{guide.clusterName}</span>
-          </span>
-          <span className="flex items-center gap-1 font-semibold">
-            <Clock className="h-3.5 w-3.5" />
-            <span>{guide.readTime}</span>
-          </span>
-          <span className="flex items-center gap-1 font-semibold">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>Updated {guide.updatedAt}</span>
-          </span>
+      {/* Header */}
+      <header className="space-y-3 pb-6 border-b border-border">
+        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-primary">
+          <span className="bg-primary/10 px-2 py-0.5">{guide.clusterName}</span>
+          <span className="text-muted-foreground font-medium">· Updated {guide.updatedAt}</span>
+          <span className="text-muted-foreground font-medium">· {guide.readTime}</span>
         </div>
 
-        <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-foreground leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground leading-tight">
           {guide.title}
         </h1>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-3xl">
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
           {guide.shortDescription}
         </p>
-      </section>
+      </header>
 
-      {/* Article Body */}
-      <article className="space-y-8">
-        {/* Problem Statement Box */}
-        <section className="bg-card border-2 border-border p-6 card-depth-1 space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
-            <span>What Problem Does This Solve?</span>
-          </h2>
-          <p className="text-xs sm:text-sm text-foreground leading-relaxed font-medium">
-            {guide.problemStatement}
-          </p>
-        </section>
+      <DocsTableOfContents items={tocItems} />
 
-        {/* The Short Answer (Executive Summary) */}
-        <section className="bg-primary/5 border-2 border-primary/30 p-6 card-depth-1 space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-primary flex items-center gap-1.5">
-            <ShieldCheck className="h-4 w-4 text-primary" />
-            <span>The Short Answer</span>
-          </h2>
-          <p className="text-xs sm:text-sm text-foreground leading-relaxed font-semibold">
-            {guide.shortAnswer}
-          </p>
-        </section>
+      <div className="py-6 space-y-6">
+        <DocsCallout variant="important" title="Short Answer">
+          {guide.shortAnswer}
+        </DocsCallout>
 
-        {/* In-Depth Technical Explanation */}
-        <section className="bg-card border-2 border-border p-6 sm:p-8 card-depth-1 space-y-4">
-          <h2 className="text-lg sm:text-xl font-black text-foreground">
-            Why This Happens (Technical Deep Dive)
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            {guide.technicalReason}
-          </p>
-        </section>
+        <h2 id="problem" className="text-lg font-bold text-foreground pt-4 border-t border-border">
+          What Problem Does This Solve?
+        </h2>
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          {guide.problemStatement}
+        </p>
 
-        {/* Interactive Comparison & Runnable Examples */}
-        {guide.examples.length > 0 && primaryTool && (
-          <section className="space-y-4">
-            <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-wider text-primary">
-                Side-by-Side Analysis
-              </span>
-              <h2 className="text-lg font-black text-foreground">
-                Practical Code Examples &amp; Verified Fixes
-              </h2>
+        <h2 id="technical-explanation" className="text-lg font-bold text-foreground pt-4 border-t border-border">
+          Why This Happens (Technical Details)
+        </h2>
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          {guide.technicalReason}
+        </p>
+
+        {guide.examples.length > 0 && (
+          <>
+            <h2 id="examples" className="text-lg font-bold text-foreground pt-4 border-t border-border">
+              Examples &amp; Verified Fixes
+            </h2>
+            <div className="space-y-4">
+              {guide.examples.map((ex, idx) => (
+                <DocsComparison
+                  key={idx}
+                  invalidTitle="Invalid Example"
+                  invalidCode={ex.invalid}
+                  validTitle={ex.title}
+                  validCode={ex.validFix}
+                  explanation={ex.reason}
+                  language={ex.language}
+                />
+              ))}
             </div>
-            <InteractiveExampleRunner
-              examples={guide.examples}
-              toolId={primaryTool.id}
-              toolName={primaryTool.name}
-            />
-          </section>
+          </>
         )}
 
-        {/* Direct Interactive Tool CTA */}
         {primaryTool && (
-          <section className="space-y-3">
-            <TryTool
-              toolId={primaryTool.id}
-              actionText={`Open in ${primaryTool.name}`}
-              sampleInput={guide.samplePayload}
-            />
-          </section>
+          <TryTool
+            toolId={primaryTool.id}
+            actionText={`Open in ${primaryTool.name}`}
+            sampleInput={guide.samplePayload}
+          />
         )}
 
-        {/* Common Mistakes */}
         {guide.commonMistakes.length > 0 && (
-          <section className="bg-card border-2 border-border p-6 card-depth-1 space-y-3">
-            <h2 className="text-sm font-black text-foreground uppercase tracking-wider">
+          <>
+            <h2 id="common-mistakes" className="text-lg font-bold text-foreground pt-4 border-t border-border">
               Common Mistakes Developers Make
             </h2>
-            <ul className="list-disc list-inside space-y-2 text-xs text-muted-foreground leading-relaxed">
-              {guide.commonMistakes.map((mistake, idx) => (
-                <li key={idx}>
-                  <strong className="text-foreground">{mistake.split('(')[0]}</strong>
-                  {mistake.includes('(') ? ` (${mistake.split('(').slice(1).join('(')}` : ''}
-                </li>
+            <ul className="list-disc list-inside space-y-1.5 text-xs text-muted-foreground">
+              {guide.commonMistakes.map((m, idx) => (
+                <li key={idx}>{m}</li>
               ))}
             </ul>
-          </section>
+          </>
         )}
 
-        {/* Limitations & Edge Cases */}
-        {guide.limitations.length > 0 && (
-          <section className="bg-muted/20 border-2 border-border p-6 space-y-3 text-xs">
-            <h2 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
-              Technical Limitations &amp; Boundary Conditions
-            </h2>
-            <ul className="list-disc list-inside space-y-1.5 text-muted-foreground">
-              {guide.limitations.map((limit, idx) => (
-                <li key={idx}>{limit}</li>
-              ))}
-            </ul>
-          </section>
+        {relatedTools.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">
+            {relatedTools.map((t) => (
+              <ToolCard key={t.id} tool={t} />
+            ))}
+          </div>
         )}
 
-        {/* Associated Workflow Link */}
-        {workflow && (
-          <section className="bg-card border-2 border-border p-5 card-depth-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-primary">
-                <Layers className="h-3.5 w-3.5" />
-                <span>Recommended Multi-Tool Workflow</span>
-              </div>
-              <h3 className="text-sm font-black text-foreground">{workflow.title}</h3>
-              <p className="text-xs text-muted-foreground">{workflow.description}</p>
-            </div>
-            <Link
-              href={`/workflows/${workflow.slug}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 border-2 border-border bg-muted/40 text-xs font-bold hover:border-primary hover:text-primary transition-colors shrink-0"
-            >
-              <span>View Full Workflow</span>
-              <ExternalLink className="h-3 w-3" />
-            </Link>
-          </section>
-        )}
-
-        {/* Standards & Technical References */}
         {guide.references.length > 0 && (
-          <section className="bg-card border-2 border-border p-5 card-depth-1 space-y-3 text-xs">
-            <h2 className="text-xs font-black uppercase tracking-wider text-foreground flex items-center gap-1.5">
-              <BookOpen className="h-3.5 w-3.5 text-primary" />
-              <span>Standards &amp; Authoritative References</span>
+          <>
+            <h2 id="references" className="text-lg font-bold text-foreground pt-4 border-t border-border">
+              Standards &amp; References
             </h2>
-            <ul className="space-y-1.5 pt-1">
+            <ul className="space-y-1 text-xs text-muted-foreground">
               {guide.references.map((ref, idx) => (
                 <li key={idx}>
                   <a
@@ -279,36 +448,11 @@ export default async function GuideArticlePage({ params }: GuidePageProps) {
                 </li>
               ))}
             </ul>
-          </section>
+          </>
         )}
-      </article>
-
-      {/* Related Tools Section */}
-      {relatedTools.length > 0 && (
-        <section className="space-y-4 pt-4 border-t-2 border-border">
-          <h2 className="text-lg font-bold text-foreground">
-            Continue Workflow in Related Client-Side Tools
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {relatedTools.map((t) => (
-              <ToolCard key={t.id} tool={t} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Back to Guides Index */}
-      <div className="flex justify-between items-center pt-4">
-        <Link
-          href="/guides"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Back to Problem Guides Index</span>
-        </Link>
       </div>
 
       <AdContainer slot="bottom" />
-    </div>
+    </DocsLayout>
   );
 }
