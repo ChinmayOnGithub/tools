@@ -94,7 +94,7 @@ jobs:
           persist-credentials: false
 
       - name: Run Scorecard analysis
-        uses: ossf/scorecard-action@v2.4.0
+        uses: ossf/scorecard-action@v2.4.4
         continue-on-error: true
         with:
           results_file: scorecard.sarif
